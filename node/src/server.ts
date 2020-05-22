@@ -2,8 +2,8 @@
  * Module dependencies.
  */
 import createApp from 'app';
-const debug = require('debug')('pal3-mobile:server');
-const http = require('http');
+import http from 'http';
+import { logger } from 'utils/logging';
 
 /**
  * Normalize a port into a number, string, or false.
@@ -23,7 +23,7 @@ function normalizePort(val: any) {
 
 async function serverStart() {
   const app = await createApp();
-  const port = normalizePort(process.env.PORT || '3001');
+  const port = normalizePort(process.env.PORT || '3000');
   app.set('port', port);
   const server = http.createServer(app);
   server.on('error', (error: any) => {
@@ -36,11 +36,9 @@ async function serverStart() {
       case 'EACCES':
         console.error(bind + ' requires elevated privileges');
         process.exit(1);
-        break;
       case 'EADDRINUSE':
         console.error(bind + ' is already in use');
         process.exit(1);
-        break;
       default:
         throw error;
     }
@@ -49,7 +47,7 @@ async function serverStart() {
     const addr = server.address();
     const bind =
       typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+    logger.info(`Listening on ${bind}`);
   });
   server.listen(port);
   console.log('node version ' + process.version);

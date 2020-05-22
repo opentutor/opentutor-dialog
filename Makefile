@@ -3,10 +3,10 @@ clean:
 	cd node \
 	&& $(MAKE) clean
 
-PHONY: docker-build
-docker-build:
+PHONE: run
+run:
 	cd node \
-	&& $(MAKE) docker-build
+	&& $(MAKE) run
 
 PHONY: format
 format:

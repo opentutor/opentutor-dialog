@@ -33,6 +33,9 @@ node_modules/prettier:
 node_modules/typescript:
 	npm ci
 
+run: node_modules/typescript
+	npm run start:dev
+
 .PHONY: test
 test: clean-env node_modules/mocha
 	export APP_DISABLE_AUTO_START=true \
