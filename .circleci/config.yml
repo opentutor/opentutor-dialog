@@ -1,0 +1,84 @@
+version: 2.1
+aliases:
+  - &only-tagged-releases
+    tags:
+      only: /^\d+\.\d+\.\d+(-[a-z\d\-.]+)?$/
+    branches:
+      ignore: /.*/
+  - &only-untagged
+    tags:
+      ignore: /.*/
+orbs:
+  docker: circleci/docker@0.5.20
+  environment:
+    DOCKER_BUILDKIT: 1
+executors:
+  node:
+    docker:
+      - image: circleci/node:13.2
+        environment:
+          DOCKER_BUILDKIT: 1
+jobs:
+  test-audit:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Audit js
+          command: cd node && npm run test:audit
+  test-format:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: cd node && npm ci
+      - run:
+          name: Test format
+          command: cd node && npm run test:format
+  test-lint:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: cd node && npm ci
+      - run:
+          name: Test lint
+          command: cd node && npm run test:lint
+  test-types:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: cd node && npm ci
+      - run:
+          name: Test types
+          command: cd node && npm run test:types
+  test:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: cd node && npm ci
+      - run:
+          name: Test
+          command:
+            cd node && make test
+workflows:
+  test:
+    jobs:
+      - test-format:
+          filters: *only-untagged
+      - test-audit:
+          filters: *only-untagged
+      - test-lint:
+          filters: *only-untagged
+      - test-types:
+          filters: *only-untagged
+      - test:
+          filters: *only-untagged
+
+  
