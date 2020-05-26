@@ -18,7 +18,21 @@ describe('session', () => {
       expect(response.status).to.equal(400);
     });
 
-    [
+    it("should send a question to the user to initiate dialog", async () => {
+          const response = await request(app)
+              .post('/session')
+              .send();
+          expect(response.status).to.equal(200);
+          // console.log(response);
+          expect(response.body.data).to.have.property('promptMessage');
+    });
+
+    it('should read the user\'s initial response and respond appropriately');
+
+
+
+
+      [
       {
         inputAnswer: 'it catches fire',
         expectedResponseCategory: 'good',
@@ -34,6 +48,8 @@ describe('session', () => {
         const response = await request(app)
           .post('/session')
           .send({ sessionId: 'nonExistanceSessionId' });
+        console.log(response.body);
+
         expect(response.status).to.equal(400);
         expect(response.body).to.have.property(
           'category',
@@ -45,5 +61,8 @@ describe('session', () => {
         );
       });
     });
+
+
+
   });
 });
