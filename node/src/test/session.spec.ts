@@ -11,7 +11,8 @@ describe('session', () => {
   });
 
   describe('POST', () => {
-    it('responds with a 400 error when user does not pass answer', async () => {
+
+    it('responds with a 400 error when no session info passed', async () => {
       const response = await request(app)
         .post('/session')
         .send();
@@ -21,46 +22,65 @@ describe('session', () => {
     it("should send a question to the user to initiate dialog", async () => {
           const response = await request(app)
               .post('/session')
-              .send();
+              .send({
+                  Id: '1',
+                  User: 'rush',
+                  UseDB: true,
+                  ScriptXML: null,
+                  LSASpaceName: "English_TASA",
+                  ScriptURL: null
+              });
           expect(response.status).to.equal(200);
-          // console.log(response);
-          expect(response.body.data).to.have.property('promptMessage');
+          console.log(response.body.data);
+          var data = JSON.parse(response.body.data);
+          expect(data).to.have.property('questionText');
     });
 
-    it('should read the user\'s initial response and respond appropriately');
+    // it('should read the user\'s initial response and respond appropriately', async () => {
+    //   const response = await request(app)
+    //       .post('/session')
+    //       .send({
+    //           Id: '1',
+    //           User: 'rush',
+    //           UseDB: true,
+    //           ScriptXML: null,
+    //           LSASpaceName: "English_TASA",
+    //           ScriptURL: null
+    //       });
+    //   expect(response.body.data).to.have.property('promptMessage');
+    // });
 
 
-
-
-      [
-      {
-        inputAnswer: 'it catches fire',
-        expectedResponseCategory: 'good',
-        expectedResponseScore: 1.0,
-      },
-      {
-        inputAnswer: 'it turns red',
-        expectedResponseCategory: 'bad',
-        expectedResponseScore: 0.0,
-      },
-    ].forEach(ex => {
-      it(`responds with good|bad + score when user passes answer: ${ex.inputAnswer}`, async () => {
-        const response = await request(app)
-          .post('/session')
-          .send({ sessionId: 'nonExistanceSessionId' });
-        console.log(response.body);
-
-        expect(response.status).to.equal(400);
-        expect(response.body).to.have.property(
-          'category',
-          ex.expectedResponseCategory
-        );
-        expect(response.body).to.have.property(
-          'score',
-          ex.expectedResponseScore
-        );
-      });
-    });
+    //   //reference text given by Larry on fixtures
+    //   [
+    //   {
+    //     inputAnswer: 'it catches fire',
+    //     expectedResponseCategory: 'good',
+    //     expectedResponseScore: 1.0,
+    //   },
+    //   {
+    //     inputAnswer: 'it turns red',
+    //     expectedResponseCategory: 'bad',
+    //     expectedResponseScore: 0.0,
+    //   },
+    // ].forEach(ex => {
+    //   it(`responds with good|bad + score when user passes answer: ${ex.inputAnswer}`, async () => {
+    //     const response = await request(app)
+    //       .post('/session')
+    //       .send({ sessionId: 'nonExistanceSessionId' });
+    //     console.log(response.body);
+    //
+    //     expect(response.status).to.equal(400);
+    //     expect(response.body).to.have.property(
+    //       'category',
+    //       ex.expectedResponseCategory
+    //     );
+    //     expect(response.body).to.have.property(
+    //       'score',
+    //       ex.expectedResponseScore
+    //     );
+    //   });
+    // });
 
 
 
