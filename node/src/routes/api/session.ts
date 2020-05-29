@@ -1,7 +1,9 @@
 import express, { Request, Response } from 'express';
+import AutoTutorQuestion from 'models/AutoTutorQuestion';
+
 const router = express.Router({ mergeParams: true });
 
-router.post('/session', (req: Request, res: Response) => {
+router.post('/', (req: Request, res: Response) => {
     //if there is no session ID, send error.
     if(req.body['Id'] == null) {
         res.status(400)
@@ -27,41 +29,9 @@ router.post('/session', (req: Request, res: Response) => {
     });
 });
 
-//classes for the packets?
-class AutoTutorAnswer
-{
-    answerText = '';
-    questionContext = '';
-    regexMatches = {};
-    type = '';
-    threshold = 0.0;
-    isGood = false;
-}
 
-class AutoTutorQuestion
-{
-    rootExpectationId = 0;
-    expectations = {};
-    questionIntro = '';
-    questionText = 'What are the challenges to demonstrating integrity in a group?';
-    recapText = {};
 
-    positiveFeedback = {};
-    negativeFeedback = {};
-    neutralFeedback = {};
-    promptStart = {};
-    hintStart = {};
-    pump = {};
-    pumpBlank = {};
 
-    media = {};
-    originalXml = '';
-
-    convertToJson() {
-        var jsonObject = JSON.stringify(this);
-        return jsonObject;
-    }
-}
 
 
 export default router;
