@@ -6,9 +6,10 @@ const router = express.Router({ mergeParams: true });
 
 //This is the array that has hardcoded dialogs
 var dialogs = [
-    'What are the challenges to demonstrating integrity in a group?',
-    'OK. Consider this. How can it affect you when you correct someone\'s behavior?',
-    'Good. Peer pressure can push you to allow and participate in inappropriate behavior. When you correct somone\'s behavior, you may get them in trouble or negatively impact your relationship with them.\n However, integrity means speaking out even when it is unpopular.\n'
+    'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+    'So. Look at it this way. How can it affect you when you correct someone\'s behavior?',
+    'Yeah, that\'s right. Let\'s try this together. How can it affect someone when you correct their behavior?',
+    'Good. Peer pressure can push you to allow and participate in inappropriate behavior.\nWhen you correct somone\'s behavior, you may get them in trouble or negatively impact your relationship with them.\nHowever, integrity means speaking out even when it is unpopular.\n AutoTutor has terminated the session. Re-open the chat window to start a new test.'
 ];
 
 

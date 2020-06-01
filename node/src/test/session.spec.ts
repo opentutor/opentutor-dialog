@@ -40,12 +40,20 @@ describe('session', () => {
     var turn = 0;
     [
         {
-          inputAnswer: 'Peer pressure can cause you to allow inappropriate behavior.',
-            turn: 1
+          inputAnswer: 'Peer pressure',
+            turn: 1,
+            expectedResponse: 'How can it affect you when you correct someone\'s behavior?'
         },
         {
-            inputAnswer: 'If you correct someone\'s behavior, you may get them in trouble or it may be harder to work with them.',
-            turn: 2
+            inputAnswer: 'Enforcing the rules can make you unpopular.',
+            turn: 2,
+            expectedResponse: 'How can it affect someone when you correct their behavior?'
+        },
+        {
+          inputAnswer: 'If you correct someone\'s behavior, you may get them in trouble or it may be harder to work with them.',
+            turn: 3,
+            expectedResponse: 'Peer pressure can push you to allow and participate in inappropriate behavior.\nWhen you correct somone\'s behavior, you may get them in trouble or negatively impact your relationship with them.\nHowever, integrity means speaking out even when it is unpopular.\n AutoTutor has terminated the session. Re-open the chat window to start a new test.'
+
         }
     ].forEach( ex => {
         it('upon accepting the users response to the question, it should respond appropriately' , async () => {
@@ -57,6 +65,7 @@ describe('session', () => {
                 });
 
             expect(response2.body).to.have.property('dialog');
+            expect(response2.body.dialog).to.have.string(ex.expectedResponse);
             console.log('OpenTutor says:  ' + response2.body.dialog);
         });
     });
