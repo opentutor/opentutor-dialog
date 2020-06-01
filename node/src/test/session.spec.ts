@@ -19,7 +19,7 @@ describe('session', () => {
       expect(response.status).to.equal(400);
     });
 
-    it("should send a question to the user to initiate dialog", async () => {
+    it("should send a question to the user to initiate dialog when session is started", async () => {
           const response = await request(app)
               .post('/session')
               .send({
@@ -34,6 +34,28 @@ describe('session', () => {
           console.log(response.body.data);
           var data = JSON.parse(response.body.data);
           expect(data).to.have.property('questionText');
+    });
+
+    it('upon accepting the users response to the question, it should respond appropriately' , async () => {
+        const response = await request(app)
+            .post('/session')
+            .send({
+                Id: '1',
+                User: 'rush',
+                UseDB: true,
+                ScriptXML: null,
+                LSASpaceName: "English_TASA",
+                ScriptURL: null
+            });
+        const response2 = await request(app)
+            .post('/session/dialog')
+            .send({
+                message: 'Some message',
+                turn: 1
+            });
+
+        expect(response2.body).to.have.property('dialog');
+        console.log('response from API is ' + response2.body.dialog);
     });
 
     // it('should read the user\'s initial response and respond appropriately', async () => {
