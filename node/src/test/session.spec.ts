@@ -31,32 +31,36 @@ describe('session', () => {
                   ScriptURL: null
               });
           expect(response.status).to.equal(200);
-          console.log(response.body.data);
+          // console.log(response.body.data);
           var data = JSON.parse(response.body.data);
           expect(data).to.have.property('questionText');
+          console.log('OpenTutor says:  ' + response.body.dialog);
     });
 
-    it('upon accepting the users response to the question, it should respond appropriately' , async () => {
-        const response = await request(app)
-            .post('/session')
-            .send({
-                Id: '1',
-                User: 'rush',
-                UseDB: true,
-                ScriptXML: null,
-                LSASpaceName: "English_TASA",
-                ScriptURL: null
-            });
-        const response2 = await request(app)
-            .post('/session/dialog')
-            .send({
-                message: 'Some message',
-                turn: 1
-            });
+    var turn = 0;
+    [
+        {
+          inputAnswer: 'Peer pressure can cause you to allow inappropriate behavior.',
+            turn: 1
+        },
+        {
+            inputAnswer: 'If you correct someone\'s behavior, you may get them in trouble or it may be harder to work with them.',
+            turn: 2
+        }
+    ].forEach( ex => {
+        it('upon accepting the users response to the question, it should respond appropriately' , async () => {
+            const response2 = await request(app)
+                .post('/session/dialog')
+                .send({
+                    message: ex.inputAnswer,
+                    turn: ex.turn
+                });
 
-        expect(response2.body).to.have.property('dialog');
-        console.log('response from API is ' + response2.body.dialog);
+            expect(response2.body).to.have.property('dialog');
+            console.log('OpenTutor says:  ' + response2.body.dialog);
+        });
     });
+
 
     // it('should read the user\'s initial response and respond appropriately', async () => {
     //   const response = await request(app)

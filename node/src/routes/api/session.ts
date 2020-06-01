@@ -6,10 +6,12 @@ const router = express.Router({ mergeParams: true });
 
 //This is the array that has hardcoded dialogs
 var dialogs = [
-    'q1',
-    'q2',
-    'q3'
+    'What are the challenges to demonstrating integrity in a group?',
+    'OK. Consider this. How can it affect you when you correct someone\'s behavior?',
+    'Good. Peer pressure can push you to allow and participate in inappropriate behavior. When you correct somone\'s behavior, you may get them in trouble or negatively impact your relationship with them.\n However, integrity means speaking out even when it is unpopular.\n'
 ];
+
+
 
 router.post('/', (req: Request, res: Response) => {
 
@@ -38,6 +40,9 @@ router.post('/', (req: Request, res: Response) => {
 
     // var ato = new AutoTutorOutput();
 
+    //reset the turn when new session is started
+    //currentTurn = 0;
+
     res.send({
         status: 'ok',
         "data": atd.convertToJson(),
@@ -46,6 +51,10 @@ router.post('/', (req: Request, res: Response) => {
     });
 });
 
+// TODO: session history needs to be implemented
+// currently using a variable to track the turn instead
+// var currentTurn = 0;
+
 router.post('/dialog', (req: Request, res: Response) => {
     //if there is no turn number, send error.
     if(req.body['turn'] == null) {
@@ -53,12 +62,12 @@ router.post('/dialog', (req: Request, res: Response) => {
             .send();
         return;
     }
-    console.log('message was ' + req.body['message'])
+    console.log('User says:  ' + req.body['message'])
     var turn = req.body['turn'];
     res.send({
         status: 'ok',
-        'dialog': dialogs[turn+1],
-        'turn': turn+1
+        'dialog': dialogs[turn],
+        'turn': turn
     });
 });
 
