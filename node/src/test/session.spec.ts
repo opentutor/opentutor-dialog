@@ -11,7 +11,6 @@ describe('session', () => {
   });
 
   describe('POST', () => {
-
     it('responds with a 400 error when no session info passed', async () => {
       const response = await request(app)
         .post('/session')
@@ -19,57 +18,59 @@ describe('session', () => {
       expect(response.status).to.equal(400);
     });
 
-    it("should send a question to the user to initiate dialog when session is started", async () => {
-          const response = await request(app)
-              .post('/session')
-              .send({
-                  Id: '1',
-                  User: 'rush',
-                  UseDB: true,
-                  ScriptXML: null,
-                  LSASpaceName: "English_TASA",
-                  ScriptURL: null
-              });
-          expect(response.status).to.equal(200);
-          // console.log(response.body.data);
-          var data = JSON.parse(response.body.data);
-          expect(data).to.have.property('questionText');
-          console.log('OpenTutor says:  ' + response.body.dialog);
+    it('should send a question to the user to initiate dialog when session is started', async () => {
+      const response = await request(app)
+        .post('/session')
+        .send({
+          Id: '1',
+          User: 'rush',
+          UseDB: true,
+          ScriptXML: null,
+          LSASpaceName: 'English_TASA',
+          ScriptURL: null,
+        });
+      expect(response.status).to.equal(200);
+      // console.log(response.body.data);
+      var data = JSON.parse(response.body.data);
+      expect(data).to.have.property('questionText');
+      console.log('OpenTutor says:  ' + response.body.dialog);
     });
 
     var turn = 0;
     [
-        {
-          inputAnswer: 'Peer pressure',
-            turn: 1,
-            expectedResponse: 'How can it affect you when you correct someone\'s behavior?'
-        },
-        {
-            inputAnswer: 'Enforcing the rules can make you unpopular.',
-            turn: 2,
-            expectedResponse: 'How can it affect someone when you correct their behavior?'
-        },
-        {
-          inputAnswer: 'If you correct someone\'s behavior, you may get them in trouble or it may be harder to work with them.',
-            turn: 3,
-            expectedResponse: 'Peer pressure can push you to allow and participate in inappropriate behavior.\nWhen you correct somone\'s behavior, you may get them in trouble or negatively impact your relationship with them.\nHowever, integrity means speaking out even when it is unpopular.\n AutoTutor has terminated the session. Re-open the chat window to start a new test.'
+      {
+        inputAnswer: 'Peer pressure',
+        turn: 1,
+        expectedResponse:
+          "How can it affect you when you correct someone's behavior?",
+      },
+      {
+        inputAnswer: 'Enforcing the rules can make you unpopular.',
+        turn: 2,
+        expectedResponse:
+          'How can it affect someone when you correct their behavior?',
+      },
+      {
+        inputAnswer:
+          "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+        turn: 3,
+        expectedResponse:
+          "Peer pressure can push you to allow and participate in inappropriate behavior.\nWhen you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.\nHowever, integrity means speaking out even when it is unpopular.\n AutoTutor has terminated the session. Re-open the chat window to start a new test.",
+      },
+    ].forEach(ex => {
+      it('upon accepting the users response to the question, it should respond appropriately', async () => {
+        const response2 = await request(app)
+          .post('/session/dialog')
+          .send({
+            message: ex.inputAnswer,
+            turn: ex.turn,
+          });
 
-        }
-    ].forEach( ex => {
-        it('upon accepting the users response to the question, it should respond appropriately' , async () => {
-            const response2 = await request(app)
-                .post('/session/dialog')
-                .send({
-                    message: ex.inputAnswer,
-                    turn: ex.turn
-                });
-
-            expect(response2.body).to.have.property('dialog');
-            expect(response2.body.dialog).to.have.string(ex.expectedResponse);
-            console.log('OpenTutor says:  ' + response2.body.dialog);
-        });
+        expect(response2.body).to.have.property('dialog');
+        expect(response2.body.dialog).to.have.string(ex.expectedResponse);
+        console.log('OpenTutor says:  ' + response2.body.dialog);
+      });
     });
-
 
     // it('should read the user\'s initial response and respond appropriately', async () => {
     //   const response = await request(app)
@@ -84,7 +85,6 @@ describe('session', () => {
     //       });
     //   expect(response.body.data).to.have.property('promptMessage');
     // });
-
 
     //   //reference text given by Larry on fixtures
     //   [
@@ -116,8 +116,5 @@ describe('session', () => {
     //     );
     //   });
     // });
-
-
-
   });
 });
