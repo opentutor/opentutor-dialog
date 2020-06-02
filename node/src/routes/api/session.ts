@@ -53,8 +53,6 @@ router.post('/', (req: Request, res: Response) => {
 });
 
 // TODO: session history needs to be implemented
-// currently using a variable to track the turn instead
-// var currentTurn = 0;
 
 router.post('/dialog', (req: Request, res: Response) => {
     //if there is no turn number, send error.

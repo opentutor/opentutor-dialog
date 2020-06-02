@@ -1,6 +1,6 @@
 export default class AutoTutorData
 {
-    rootExpectationId = 0;
+    rootExpectationId : number = 0;
     expectations = [
         'Peer pressure can cause you to allow inappropriate behavior.',
         'If you correct someone\'s behavior, you may get them in trouble or it may be harder to work with them.',
@@ -14,13 +14,13 @@ export default class AutoTutorData
         'However, integrity means speaking out even when it is unpopular.'
     ];
 
-    positiveFeedback = {};
-    negativeFeedback = {};
-    neutralFeedback = {};
-    promptStart = {};
-    hintStart = {};
-    pump = {};
-    pumpBlank = {};
+    positiveFeedback :string[];
+    negativeFeedback :string[];
+    neutralFeedback :string[];
+    promptStart :string[];
+    hintStart :string[];
+    pump :string[];
+    pumpBlank :string[];
 
     media = {};
     originalXml = '';
