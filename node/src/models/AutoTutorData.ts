@@ -1,6 +1,6 @@
 export default class AutoTutorData
 {
-    rootExpectationId : number = 0;
+    rootExpectationId :number = 0;
     expectations = [
         'Peer pressure can cause you to allow inappropriate behavior.',
         'If you correct someone\'s behavior, you may get them in trouble or it may be harder to work with them.',
