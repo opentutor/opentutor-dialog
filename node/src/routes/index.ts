@@ -9,4 +9,3 @@ router.get('/ping', (req: Request, res: Response) => {
 router.use('/session', dialog);
 
 export default router;
-
