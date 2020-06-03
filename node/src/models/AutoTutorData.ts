@@ -13,7 +13,6 @@ export default class AutoTutorData {
     "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
     'However, integrity means speaking out even when it is unpopular.',
   ];
-
   positiveFeedback: string[];
   negativeFeedback: string[];
   neutralFeedback: string[];
@@ -21,12 +20,10 @@ export default class AutoTutorData {
   hintStart: string[];
   pump: string[];
   pumpBlank: string[];
-
   media = {};
   originalXml = '';
 
   convertToJson() {
-    const jsonObject = JSON.stringify(this);
-    return jsonObject;
+    return JSON.stringify(this);
   }
 }
