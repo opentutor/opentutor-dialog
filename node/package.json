@@ -4,7 +4,7 @@
   "description": "open-tutor project backend setup",
   "main": "dist/app.js",
   "scripts": {
-    "build": "tsc && cp -R src/views dist/views",
+    "build": "tsc",
     "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
     "lint:fix": "eslint src --ext ts --ext js --fix",
     "start:dev": "export NODE_PATH=$(pwd)/src && export NODE_ENV=dev && export ENV=dev && ts-node src/server.ts",
