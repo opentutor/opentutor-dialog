@@ -9,16 +9,56 @@ aliases:
     tags:
       ignore: /.*/
 orbs:
-  docker: circleci/docker@0.5.20
+  docker: circleci/docker@1.2.1
   environment:
     DOCKER_BUILDKIT: 1
 executors:
   node:
     docker:
-      - image: circleci/node:13.2
+      - image: circleci/node:12.18
         environment:
           DOCKER_BUILDKIT: 1
 jobs:
+  build-and-push:
+    parameters:
+      is-release-tag:
+        type: boolean
+        default: false
+    executor: docker/docker
+    steps:
+      - unless:
+          condition: <<parameters.is-release-tag>>
+          steps:
+            - run:
+                name: "set image tag to commit sha"
+                command: |
+                  echo 'export IMAGE_TAG="$CIRCLE_SHA1"' >> $BASH_ENV
+      - when:
+          condition: <<parameters.is-release-tag>>
+          steps:
+            - run:
+                name: "override image tag to release tag"
+                command: |
+                  echo 'export IMAGE_TAG="$CIRCLE_TAG"' >> $BASH_ENV
+      - run:
+          name: report tag
+          command: echo "building tag uscictdocker/opentutor-api:${IMAGE_TAG}..."
+      - checkout
+      - setup_remote_docker:
+          version: 18.09.3
+          docker_layer_caching: true
+      - docker/check
+      - docker/build:
+          image: uscictdocker/opentutor-api
+          docker-context: node
+          path: node
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: uscictdocker/opentutor-api
+          tag: "${IMAGE_TAG}"
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
   test-audit:
     executor: node
     steps:
@@ -68,7 +108,7 @@ jobs:
           command:
             cd node && make test
 workflows:
-  test:
+  test-build-publish:
     jobs:
       - test-format:
           filters: *only-untagged
@@ -80,5 +120,38 @@ workflows:
           filters: *only-untagged
       - test:
           filters: *only-untagged
-
-  
+      - approve-build-and-push:
+          filters: *only-untagged
+          type: approval
+          requires:
+            - test-format
+            - test-audit
+            - test-lint
+            - test-types
+            - test
+      - build-and-push:
+          is-release-tag: false
+          filters: *only-untagged
+          requires:
+            - approve-build-and-push
+  test-build-deploy-release:
+    jobs:
+      - test-format:
+          filters: *only-tagged-releases
+      - test-audit:
+          filters: *only-tagged-releases
+      - test-lint:
+          filters: *only-tagged-releases
+      - test-types:
+          filters: *only-tagged-releases
+      - test:
+          filters: *only-tagged-releases
+      - build-and-push:
+          is-release-tag: true
+          filters: *only-tagged-releases
+          requires:
+            - test-format
+            - test-audit
+            - test-lint
+            - test-types
+            - test
