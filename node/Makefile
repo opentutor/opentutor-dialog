@@ -1,17 +1,12 @@
-.PHONY: clean-dist
-clean-dist: 
-	rm -rf dist
+DOCKER_IMAGE?=opentutor-api
 
-.PHONY: clean-env
-clean-env: 
-	rm -f .env
-
-.PHONY: clean-install
-clean-install:
-	rm -rf node_modules
-
-.PHONY: clean
-clean: clean-env clean-install clean-dist
+.PHONY: docker-build
+docker-build:
+	DOCKER_BUILDKIT=1 \
+	docker build \
+		--ssh default \
+		-t $(DOCKER_IMAGE) \
+	.
 
 .PHONY: format
 format: node_modules/prettier
@@ -37,7 +32,7 @@ run: node_modules/typescript
 	npm run start:dev
 
 .PHONY: test
-test: clean-env node_modules/mocha
+test: node_modules/mocha
 	export APP_DISABLE_AUTO_START=true \
 	&& export ENV=test \
 	&& export NODE_PATH=$(shell pwd)/src \
