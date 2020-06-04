@@ -1,17 +1,17 @@
-PHONY: clean
-clean:
+PHONY: docker-build
+docker-build:
 	cd node \
-	&& $(MAKE) clean
-
-PHONE: run
-run:
-	cd node \
-	&& $(MAKE) run
+	&& $(MAKE) docker-build
 
 PHONY: format
 format:
 	cd node \
 	&& $(MAKE) format
+
+.PHONY: run
+run:
+	cd node \
+	&& $(MAKE) run
 
 .PHONY: test
 test:
