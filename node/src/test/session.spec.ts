@@ -2,7 +2,7 @@ import createApp from 'app';
 import { expect } from 'chai';
 import { Express } from 'express';
 import request from 'supertest';
-import { ATSessionPacket } from '../models/SessionDataPacket';
+import { ATSessionPacket } from 'models/session-data-packet';
 import logger from 'utils/logging';
 
 describe('session', () => {

@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
-import AutoTutorData from 'models/AutoTutorData';
+import AutoTutorData from 'models/autotutor-data';
 import {
   ATSessionPacket,
   hasHistoryBeenTampered,
-} from 'models/SessionDataPacket';
+} from 'models/session-data-packet';
 // import logger from 'utils/logging';
 
 //import AutoTutorOutput from "models/AutoTutorOutput";
