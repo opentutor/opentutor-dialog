@@ -1,6 +1,9 @@
 import express, { Request, Response } from 'express';
 import AutoTutorData from 'models/AutoTutorData';
-import {ATSessionPacket, hasHistoryBeenTampered} from 'models/sessionDataPacket';
+import {
+  ATSessionPacket,
+  hasHistoryBeenTampered,
+} from 'models/sessionDataPacket';
 import logger from 'utils/logging';
 
 //import AutoTutorOutput from "models/AutoTutorOutput";
@@ -39,8 +42,6 @@ router.post('/', (req: Request, res: Response) => {
   //TODO: add in mechanics to extract prompt question from the script itself
   const atd = new AutoTutorData();
 
-
-
   res.send({
     status: 'ok',
     data: atd.convertToJson(),
@@ -52,18 +53,15 @@ router.post('/', (req: Request, res: Response) => {
 // TODO: session history needs to be implemented
 
 router.post('/dialog', (req: Request, res: Response) => {
-
-
   //load up session data
-    let sessionData : ATSessionPacket = new ATSessionPacket();
-    Object.assign(sessionData, JSON.parse(req.body['sessionInfo']));
-    // let sessionData : ATSessionPacket = JSON.parse(req.body['sessionInfo']) as ATSessionPacket;
-    // console.log(sessionData instanceof ATSessionPacket);
-    // console.log(sessionData);
+  const sessionData: ATSessionPacket = new ATSessionPacket();
+  Object.assign(sessionData, JSON.parse(req.body['sessionInfo']));
+  // let sessionData : ATSessionPacket = JSON.parse(req.body['sessionInfo']) as ATSessionPacket;
+  // console.log(sessionData instanceof ATSessionPacket);
+  // console.log(sessionData);
 
   //check for tampering of history
-  if(hasHistoryBeenTampered(sessionData.sessionHistory, sessionData.hash))
-  {
+  if (hasHistoryBeenTampered(sessionData.sessionHistory, sessionData.hash)) {
     // console.log('history was tampered');
     return res.status(403).send();
   }
@@ -77,14 +75,14 @@ router.post('/dialog', (req: Request, res: Response) => {
   const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
   sessionData.addTutorDialog(msg);
 
-    // console.log('updating hash');
+  // console.log('updating hash');
   //update hash
   sessionData.updateHash();
 
   res.send({
     status: 'ok',
     sessionInfo: sessionData,
-    dialog: msg
+    dialog: msg,
   });
 });
 
