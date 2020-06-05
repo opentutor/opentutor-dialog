@@ -4,7 +4,7 @@ import {
   ATSessionPacket,
   hasHistoryBeenTampered,
 } from 'models/sessionDataPacket';
-import logger from 'utils/logging';
+// import logger from 'utils/logging';
 
 //import AutoTutorOutput from "models/AutoTutorOutput";
 
@@ -25,14 +25,14 @@ router.post('/', (req: Request, res: Response) => {
   }
 
   //session start packet, not used currently
-  const jsonData = {
-    Id: req.body['Id'],
-    User: req.body['User'],
-    UseDB: req.body['UseDB'],
-    ScriptXML: req.body['ScriptXML'],
-    LSASpaceName: req.body['LSASpaceName'],
-    ScriptURL: req.body['ScriptURL'],
-  };
+  // const jsonData = {
+  //   Id: req.body['Id'],
+  //   User: req.body['User'],
+  //   UseDB: req.body['UseDB'],
+  //   ScriptXML: req.body['ScriptXML'],
+  //   LSASpaceName: req.body['LSASpaceName'],
+  //   ScriptURL: req.body['ScriptURL'],
+  // };
 
   //new sessionDataPacket
   const sdp = new ATSessionPacket();
