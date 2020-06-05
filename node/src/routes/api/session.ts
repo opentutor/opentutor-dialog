@@ -3,7 +3,7 @@ import AutoTutorData from 'models/AutoTutorData';
 import {
   ATSessionPacket,
   hasHistoryBeenTampered,
-} from 'models/sessionDataPacket';
+} from 'models/SessionDataPacket';
 // import logger from 'utils/logging';
 
 //import AutoTutorOutput from "models/AutoTutorOutput";
