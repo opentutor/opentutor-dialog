@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import AutoTutorData from 'models/AutoTutorData';
-import {ATSessionPacket, hasHistoryBeenTampered} from 'models/sessionDataPacket'
+import {ATSessionPacket, hasHistoryBeenTampered} from 'models/sessionDataPacket';
+import logger from 'utils/logging';
+
 //import AutoTutorOutput from "models/AutoTutorOutput";
 
 const router = express.Router({ mergeParams: true });
@@ -32,6 +34,7 @@ router.post('/', (req: Request, res: Response) => {
   //new sessionDataPacket
   const sdp = new ATSessionPacket();
   sdp.addTutorDialog(dialogs[0]);
+  sdp.updateHash();
 
   //TODO: add in mechanics to extract prompt question from the script itself
   const atd = new AutoTutorData();
@@ -41,7 +44,7 @@ router.post('/', (req: Request, res: Response) => {
   res.send({
     status: 'ok',
     data: atd.convertToJson(),
-    sessionInfo: sdp,
+    sessionInfo: JSON.stringify(sdp),
     dialog: dialogs[0],
   });
 });
@@ -49,24 +52,32 @@ router.post('/', (req: Request, res: Response) => {
 // TODO: session history needs to be implemented
 
 router.post('/dialog', (req: Request, res: Response) => {
-  
+
+
   //load up session data
-  const sessionData : ATSessionPacket = JSON.parse(req.body['sessionInfo'])
+    let sessionData : ATSessionPacket = new ATSessionPacket();
+    Object.assign(sessionData, JSON.parse(req.body['sessionInfo']));
+    // let sessionData : ATSessionPacket = JSON.parse(req.body['sessionInfo']) as ATSessionPacket;
+    // console.log(sessionData instanceof ATSessionPacket);
+    // console.log(sessionData);
 
   //check for tampering of history
   if(hasHistoryBeenTampered(sessionData.sessionHistory, sessionData.hash))
   {
-    return res.status(400).send();
+    // console.log('history was tampered');
+    return res.status(403).send();
   }
 
   //read user dialog
-  console.log('User says:  ' + req.body['message']);
+  // console.log('User says:  ' + req.body['message']);
   sessionData.addUserDialog(req.body['message']);
 
   //load next system message
+  //   console.log('loading next message');
   const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
   sessionData.addTutorDialog(msg);
 
+    // console.log('updating hash');
   //update hash
   sessionData.updateHash();
 
