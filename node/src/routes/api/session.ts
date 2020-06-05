@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import AutoTutorData from 'models/AutoTutorData';
+import {ATSessionPacket, hasHistoryBeenTampered} from 'models/sessionDataPacket'
 //import AutoTutorOutput from "models/AutoTutorOutput";
 
 const router = express.Router({ mergeParams: true });
@@ -28,37 +29,51 @@ router.post('/', (req: Request, res: Response) => {
     ScriptURL: req.body['ScriptURL'],
   };
 
-  //TODO: add in mechanics to extract prompt question from the script itself
+  //new sessionDataPacket
+  const sdp = new ATSessionPacket();
+  sdp.addTutorDialog(dialogs[0]);
 
+  //TODO: add in mechanics to extract prompt question from the script itself
   const atd = new AutoTutorData();
 
-  // var ato = new AutoTutorOutput();
 
-  //reset the turn when new session is started
-  //currentTurn = 0;
 
   res.send({
     status: 'ok',
     data: atd.convertToJson(),
+    sessionInfo: sdp,
     dialog: dialogs[0],
-    turn: 0,
   });
 });
 
 // TODO: session history needs to be implemented
 
 router.post('/dialog', (req: Request, res: Response) => {
-  //if there is no turn number, send error.
-  if (req.body['turn'] == null) {
-    res.status(400).send();
-    return;
+  
+  //load up session data
+  const sessionData : ATSessionPacket = JSON.parse(req.body['sessionInfo'])
+
+  //check for tampering of history
+  if(hasHistoryBeenTampered(sessionData.sessionHistory, sessionData.hash))
+  {
+    return res.status(400).send();
   }
+
+  //read user dialog
   console.log('User says:  ' + req.body['message']);
-  const turn = req.body['turn'];
+  sessionData.addUserDialog(req.body['message']);
+
+  //load next system message
+  const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
+  sessionData.addTutorDialog(msg);
+
+  //update hash
+  sessionData.updateHash();
+
   res.send({
     status: 'ok',
-    dialog: dialogs[turn],
-    turn: turn,
+    sessionInfo: sessionData,
+    dialog: msg
   });
 });
 
