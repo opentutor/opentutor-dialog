@@ -1,6 +1,8 @@
 import sha256 from 'crypto-js/sha256';
+import { v4 as uuidv4 } from 'uuid';
 
-const SESSION_SECURITY_KEY = 'Pal3KeyICT';
+const SESSION_SECURITY_KEY =
+  process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
 
 export default interface SessionDataPacket {
   sessionID: string;
@@ -16,62 +18,40 @@ export interface SessionHistory {
   systemResponses: string[];
 }
 
-export class ATSessionPacket implements SessionDataPacket {
-  sessionID: string;
-  sessionHistory: SessionHistory;
-  previousUserResponse: string;
-  previousSystemResponse: string;
-  hash: string;
+export function addUserDialog(sdp: SessionDataPacket, message: string) {
+  sdp.previousUserResponse = message;
+  sdp.sessionHistory.userResponses.push(message);
+  console.log('added user response');
+}
 
-  //creates a new session packet
-  constructor() {
-    this.sessionHistory = {
-      userResponses: new Array<string>(),
-      systemResponses: new Array<string>(),
-      userScores: new Array<number>(),
-    };
-    this.sessionID = this.generateSessionID();
-    this.previousUserResponse = '';
-    this.previousSystemResponse = '';
-    this.updateHash();
-  }
+export function addTutorDialog(sdp: SessionDataPacket, message: string) {
+  sdp.previousSystemResponse = message;
+  sdp.sessionHistory.systemResponses.push(message);
+}
 
-  addUserDialog(message: string) {
-    this.previousUserResponse = message;
-    this.sessionHistory.userResponses.push(message);
-    console.log('added user response');
-  }
+//updates the hash for the object
+export function updateHash(sdp: SessionDataPacket) {
+  // console.log('message is ',JSON.stringify(this.sessionHistory));
+  sdp.hash = getHash(sdp.sessionHistory);
+}
 
-  addTutorDialog(message: string) {
-    this.previousSystemResponse = message;
-    this.sessionHistory.systemResponses.push(message);
-  }
+function getHash(sh: SessionHistory): string {
+  return sha256(JSON.stringify(sh), SESSION_SECURITY_KEY).toString();
+}
 
-  //hashes the session history object and returns the hash
-  updateHash() {
-    // console.log('message is ',JSON.stringify(this.sessionHistory));
-    this.hash = sha256(
-      JSON.stringify(this.sessionHistory),
-      SESSION_SECURITY_KEY
-    ).toString();
-  }
-
-  //generates a random 8 digit session ID, can be alphanumeric
-  generateSessionID() {
-    return this.makeid(8);
-  }
-
-  //generator for the random alphanumeric characters for session ID
-  makeid(length: number) {
-    let result = '';
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  }
+export function newSessionDataPacket(): SessionDataPacket {
+  const sh = {
+    userResponses: new Array<string>(),
+    systemResponses: new Array<string>(),
+    userScores: new Array<number>(),
+  };
+  return {
+    sessionHistory: sh,
+    sessionID: uuidv4(),
+    previousUserResponse: '',
+    previousSystemResponse: '',
+    hash: getHash(sh),
+  };
 }
 
 //returns true if history has been tampered

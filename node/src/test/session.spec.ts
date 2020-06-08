@@ -2,8 +2,8 @@ import createApp from 'app';
 import { expect } from 'chai';
 import { Express } from 'express';
 import request from 'supertest';
-import { ATSessionPacket } from 'models/session-data-packet';
 import logger from 'utils/logging';
+import SessionDataPacket from '../models/session-data-packet';
 
 describe('session', () => {
   let app: Express;
@@ -12,7 +12,7 @@ describe('session', () => {
     app = await createApp();
   });
 
-  let sessionObj: ATSessionPacket;
+  let sessionObj: SessionDataPacket;
   describe('POST', () => {
     it('responds with a 400 error when no session info passed', async () => {
       const response = await request(app)

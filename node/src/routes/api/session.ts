@@ -1,8 +1,11 @@
 import express, { Request, Response } from 'express';
 import AutoTutorData from 'models/autotutor-data';
-import {
-  ATSessionPacket,
+import SessionDataPacket, {
   hasHistoryBeenTampered,
+  newSessionDataPacket,
+  updateHash,
+  addTutorDialog,
+  addUserDialog,
 } from 'models/session-data-packet';
 // import logger from 'utils/logging';
 
@@ -35,9 +38,9 @@ router.post('/', (req: Request, res: Response) => {
   // };
 
   //new sessionDataPacket
-  const sdp = new ATSessionPacket();
-  sdp.addTutorDialog(dialogs[0]);
-  sdp.updateHash();
+  const sdp = newSessionDataPacket();
+  addTutorDialog(sdp, dialogs[0]);
+  updateHash(sdp);
 
   //TODO: add in mechanics to extract prompt question from the script itself
   const atd = new AutoTutorData();
@@ -54,11 +57,7 @@ router.post('/', (req: Request, res: Response) => {
 
 router.post('/dialog', (req: Request, res: Response) => {
   //load up session data
-  const sessionData: ATSessionPacket = new ATSessionPacket();
-  Object.assign(sessionData, JSON.parse(req.body['sessionInfo']));
-  // let sessionData : ATSessionPacket = JSON.parse(req.body['sessionInfo']) as ATSessionPacket;
-  // console.log(sessionData instanceof ATSessionPacket);
-  // console.log(sessionData);
+  const sessionData: SessionDataPacket = JSON.parse(req.body['sessionInfo']);
 
   //check for tampering of history
   if (hasHistoryBeenTampered(sessionData.sessionHistory, sessionData.hash)) {
@@ -68,16 +67,16 @@ router.post('/dialog', (req: Request, res: Response) => {
 
   //read user dialog
   // console.log('User says:  ' + req.body['message']);
-  sessionData.addUserDialog(req.body['message']);
+  addUserDialog(sessionData, req.body['message']);
 
   //load next system message
   //   console.log('loading next message');
   const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
-  sessionData.addTutorDialog(msg);
+  addTutorDialog(sessionData, msg);
 
   // console.log('updating hash');
   //update hash
-  sessionData.updateHash();
+  updateHash(sessionData);
 
   res.send({
     status: 'ok',
