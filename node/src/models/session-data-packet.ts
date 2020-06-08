@@ -21,7 +21,7 @@ export interface SessionHistory {
 export function addUserDialog(sdp: SessionDataPacket, message: string) {
   sdp.previousUserResponse = message;
   sdp.sessionHistory.userResponses.push(message);
-  console.log('added user response');
+  // console.log('added user response');
 }
 
 export function addTutorDialog(sdp: SessionDataPacket, message: string) {

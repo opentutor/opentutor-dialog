@@ -47,8 +47,8 @@ router.post('/', (req: Request, res: Response) => {
 
   res.send({
     status: 'ok',
-    data: atd.convertToJson(),
-    sessionInfo: JSON.stringify(sdp),
+    data: atd,
+    sessionInfo: sdp,
     dialog: dialogs[0],
   });
 });
@@ -57,7 +57,7 @@ router.post('/', (req: Request, res: Response) => {
 
 router.post('/dialog', (req: Request, res: Response) => {
   //load up session data
-  const sessionData: SessionDataPacket = JSON.parse(req.body['sessionInfo']);
+  const sessionData: SessionDataPacket = req.body['sessionInfo'];
 
   //check for tampering of history
   if (hasHistoryBeenTampered(sessionData.sessionHistory, sessionData.hash)) {
