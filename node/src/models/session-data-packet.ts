@@ -5,7 +5,7 @@ const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
 
 export default interface SessionDataPacket {
-  sessionID: string;
+  sessionId: string;
   sessionHistory: SessionHistory;
   previousUserResponse: string;
   previousSystemResponse: string;
@@ -47,7 +47,7 @@ export function newSessionDataPacket(): SessionDataPacket {
   };
   return {
     sessionHistory: sh,
-    sessionID: uuidv4(),
+    sessionId: uuidv4(),
     previousUserResponse: '',
     previousSystemResponse: '',
     hash: getHash(sh),
