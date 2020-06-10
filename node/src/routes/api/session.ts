@@ -23,7 +23,7 @@ const dialogs = [
 
 router.post('/', (req: Request, res: Response) => {
   //if there is no session ID, send error.
-  if (!req.body['Id']) {
+  if (!req.body['id']) {
     return res.status(400).send();
   }
 

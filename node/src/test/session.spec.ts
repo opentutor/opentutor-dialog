@@ -42,7 +42,6 @@ describe('session', () => {
     [
       {
         inputAnswer: 'Peer pressure',
-        turn: 1,
         expectedResponse:
           "How can it affect you when you correct someone's behavior?",
         sessionObj: {
@@ -53,7 +52,7 @@ describe('session', () => {
             ],
             userScores: [],
           },
-          sessionID: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+          sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
           previousUserResponse: '',
           previousSystemResponse:
             'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
@@ -63,7 +62,6 @@ describe('session', () => {
       },
       {
         inputAnswer: 'Enforcing the rules can make you unpopular.',
-        turn: 2,
         expectedResponse:
           'How can it affect someone when you correct their behavior?',
         sessionObj: {
@@ -75,7 +73,7 @@ describe('session', () => {
             ],
             userScores: [],
           },
-          sessionID: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+          sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
           previousUserResponse: 'Peer pressure',
           previousSystemResponse:
             "So. Look at it this way. How can it affect you when you correct someone's behavior?",
@@ -86,7 +84,6 @@ describe('session', () => {
       {
         inputAnswer:
           "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-        turn: 3,
         expectedResponse:
           "Peer pressure can push you to allow and participate in inappropriate behavior.\nWhen you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.\nHowever, integrity means speaking out even when it is unpopular.\n AutoTutor has terminated the session. Re-open the chat window to start a new test.",
         sessionObj: {
@@ -102,7 +99,7 @@ describe('session', () => {
             ],
             userScores: [],
           },
-          sessionID: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+          sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
           previousUserResponse: 'Enforcing the rules can make you unpopular.',
           previousSystemResponse:
             "Yeah, that's right. Let's try this together. How can it affect someone when you correct their behavior?",
@@ -136,7 +133,7 @@ describe('session', () => {
           ],
           userScores: new Array<number>(),
         },
-        sessionID: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+        sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
         previousUserResponse: '',
         previousSystemResponse:
           'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
@@ -185,7 +182,7 @@ describe('session', () => {
     //   it(`responds with good|bad + score when user passes answer: ${ex.inputAnswer}`, async () => {
     //     const response = await request(app)
     //       .post('/session')
-    //       .send({ sessionId: 'nonExistanceSessionId' });
+    //       .send({ sessionId: 'nonExistancesessionId' });
     //     console.log(response.body);
     //
     //     expect(response.status).to.equal(400);
