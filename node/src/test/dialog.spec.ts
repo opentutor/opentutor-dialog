@@ -11,12 +11,12 @@ describe('dialog', () => {
   });
 
   describe('POST', () => {
-    it('responds with a 400 error when no session info passed', async () => {
-      const response = await request(app)
-        .post('/dialog')
-        .send();
-      expect(response.status).to.equal(400);
-    });
+    // it('responds with a 400 error when no session info passed', async () => {
+    //   const response = await request(app)
+    //     .post('/dialog')
+    //     .send();
+    //   expect(response.status).to.equal(400);
+    // });
 
     it('sends the session information when session is started, along with initial dialog', async () => {
       const response = await request(app)
