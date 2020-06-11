@@ -55,7 +55,7 @@ router.post('/', (req: Request, res: Response) => {
 
 // TODO: session history needs to be implemented
 
-router.post('/dialog', (req: Request, res: Response) => {
+router.post('/session', (req: Request, res: Response) => {
   //load up session data
   const sessionData: SessionDataPacket = req.body['sessionInfo'];
 

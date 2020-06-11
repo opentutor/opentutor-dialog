@@ -2,10 +2,8 @@ import createApp from 'app';
 import { expect } from 'chai';
 import { Express } from 'express';
 import request from 'supertest';
-import logger from 'utils/logging';
-import SessionDataPacket from '../models/session-data-packet';
 
-describe('session', () => {
+describe('dialog', () => {
   let app: Express;
 
   beforeEach(async () => {
@@ -15,14 +13,14 @@ describe('session', () => {
   describe('POST', () => {
     it('responds with a 400 error when no session info passed', async () => {
       const response = await request(app)
-        .post('/session')
+        .post('/dialog')
         .send();
       expect(response.status).to.equal(400);
     });
 
     it('sends the session information when session is started, along with initial dialog', async () => {
       const response = await request(app)
-        .post('/session')
+        .post('/dialog')
         .send({
           Id: '1',
           User: 'rush',
@@ -113,7 +111,7 @@ describe('session', () => {
     ].forEach(ex => {
       it('upon accepting the users response to the question, it should respond appropriately', async () => {
         const response2 = await request(app)
-          .post('/session/dialog')
+          .post('/dialog/session')
           .send({
             message: ex.inputAnswer,
             sessionInfo: ex.sessionObj,
@@ -146,7 +144,7 @@ describe('session', () => {
       //tinker with the scores
       sessionObj.sessionHistory.userScores.push(10);
       const response3 = await request(app)
-        .post('/session/dialog')
+        .post('/dialog/session')
         .send({
           message: 'peer pressure',
           sessionInfo: sessionObj,
