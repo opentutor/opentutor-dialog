@@ -1,5 +1,5 @@
 {
-  "name": "opentutor-api",
+  "name": "opentutor-dialog",
   "version": "1.0.0",
   "description": "open-tutor project backend setup",
   "main": "dist/app.js",

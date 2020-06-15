@@ -42,20 +42,20 @@ jobs:
                   echo 'export IMAGE_TAG="$CIRCLE_TAG"' >> $BASH_ENV
       - run:
           name: report tag
-          command: echo "building tag uscictdocker/opentutor-api:${IMAGE_TAG}..."
+          command: echo "building tag uscictdocker/opentutor-dialog:${IMAGE_TAG}..."
       - checkout
       - setup_remote_docker:
           version: 18.09.3
           docker_layer_caching: true
       - docker/check
       - docker/build:
-          image: uscictdocker/opentutor-api
+          image: uscictdocker/opentutor-dialog
           tag: "${IMAGE_TAG}"
           docker-context: node
           path: node
       - docker/push:
           digest-path: /tmp/digest.txt
-          image: uscictdocker/opentutor-api
+          image: uscictdocker/opentutor-dialog
           tag: "${IMAGE_TAG}"
       - run:
           command: |
