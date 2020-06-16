@@ -1,4 +1,4 @@
-DOCKER_IMAGE?=opentutor-api
+DOCKER_IMAGE?=opentutor-dialog
 
 .PHONY: docker-build
 docker-build:
