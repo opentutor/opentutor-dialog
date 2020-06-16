@@ -47,105 +47,135 @@ describe('session', () => {
             author: 'them',
             type: 'text',
             data: {
-              text: "How can it affect you when you correct someone's behavior?"
+              text:
+                "How can it affect you when you correct someone's behavior?",
             },
-          }
+          },
         ],
         sessionObj: {
           sessionHistory: {
             userResponses: [],
             systemResponses: [
-              ['Here is a question about integrity, a key Navy attribute.','What are the challenges to demonstrating integrity in a group?'],
+              [
+                'Here is a question about integrity, a key Navy attribute.',
+                'What are the challenges to demonstrating integrity in a group?',
+              ],
             ],
             userScores: [],
           },
           sessionId: 'dee7c0b4-8383-41ba-bfe8-0767d56afdb0',
           previousUserResponse: '',
-          previousSystemResponse:
-            ['Here is a question about integrity, a key Navy attribute.', 'What are the challenges to demonstrating integrity in a group?'],
+          previousSystemResponse: [
+            'Here is a question about integrity, a key Navy attribute.',
+            'What are the challenges to demonstrating integrity in a group?',
+          ],
           hash:
             'cc22f51cb1562e4a6a86d49a1c1355a362fea6669933e32abe5519eff5095325',
         },
       },
-      // {
-      //   inputAnswer: 'Enforcing the rules can make you unpopular.',
-      //   expectedResponse: [
-      //     {
-      //       author: 'them',
-      //       type: 'text',
-      //       data: {
-      //         text:
-      //           'How can it affect someone when you correct their behavior?',
-      //       },
-      //     },
-      //   ],
-      //   sessionObj: {
-      //     sessionHistory: {
-      //       userResponses: ['Peer pressure'],
-      //       systemResponses: [
-      //         'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-      //         "So. Look at it this way. How can it affect you when you correct someone's behavior?",
-      //       ],
-      //       userScores: [],
-      //     },
-      //     sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      //     previousUserResponse: 'Peer pressure',
-      //     previousSystemResponse:
-      //       "So. Look at it this way. How can it affect you when you correct someone's behavior?",
-      //     hash:
-      //       '06dbd1f6eddcaa54fe4c18249231e2c0c4888d90e9af6e99fd87836687c69e72',
-      //   },
-      // },
-      // {
-      //   inputAnswer:
-      //     "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-      //   expectedResponse: [
-      //     {
-      //       author: 'them',
-      //       type: 'text',
-      //       data: {
-      //         text:
-      //           "Peer pressure can push you to allow and participate in inappropriate behavior.\nWhen you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.\nHowever, integrity means speaking out even when it is unpopular.\n AutoTutor has terminated the session. Re-open the chat window to start a new test.",
-      //       }
-      //     },
-      //     {
-      //         author: 'them',
-      //         type: 'text',
-      //         data: {
-      //           text:
-      //             "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
-      //         },
-      //       },
-      //       {
-      //         author: 'them',
-      //         type: 'text',
-      //         data: {
-      //           text:
-      //           "However, integrity means speaking out even when it is unpopular.",
-      //         }
-      //       },
-      //   ],
-      //   sessionObj: {
-      //     sessionHistory: {
-      //       userResponses: [
-      //         'Peer pressure',
-      //         'Enforcing the rules can make you unpopular.',
-      //       ],
-      //       systemResponses: [
-      //         'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-      //         "So. Look at it this way. How can it affect you when you correct someone's behavior?",
-      //         "Yeah, that's right. Let's try this together. How can it affect someone when you correct their behavior?",
-      //       ],
-      //       userScores: [],
-      //     },
-      //     sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      //     previousUserResponse: 'Enforcing the rules can make you unpopular.',
-      //     previousSystemResponse:
-      //       "Yeah, that's right. Let's try this together. How can it affect someone when you correct their behavior?",
-      //     hash:
-      //       'a5e005a1fd52139495375575c6acf7844c0277880032c9d318cb14d15f113c75',
-      //   },
-      // },
+      {
+        inputAnswer: 'Enforcing the rules can make you unpopular.',
+        expectedResponse: [
+          {
+            author: 'them',
+            type: 'text',
+            data: {
+              text:
+                'How can it affect someone when you correct their behavior?',
+            },
+          },
+        ],
+        sessionObj: {
+          sessionHistory: {
+            userResponses: ['Peer pressure'],
+            systemResponses: [
+              [
+                'Here is a question about integrity, a key Navy attribute.',
+                'What are the challenges to demonstrating integrity in a group?',
+              ],
+              [
+                'So.',
+                'Look at it this way.',
+                "How can it affect you when you correct someone's behavior?",
+              ],
+            ],
+            userScores: [],
+          },
+          sessionId: 'dee7c0b4-8383-41ba-bfe8-0767d56afdb0',
+          previousUserResponse: 'Peer pressure',
+          previousSystemResponse: [
+            'So.',
+            'Look at it this way.',
+            "How can it affect you when you correct someone's behavior?",
+          ],
+          hash:
+            'a1fab68d2ca67b56e4f32a311a7e184762f30400e095528027e7c43b1106be9b',
+        },
+      },
+      {
+        inputAnswer:
+          "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+        expectedResponse: [
+          {
+            author: 'them',
+            type: 'text',
+            data: {
+              text:
+                'Peer pressure can push you to allow and participate in inappropriate behavior.',
+            },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: {
+              text:
+                "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: {
+              text:
+                'However, integrity means speaking out even when it is unpopular.',
+            },
+          },
+        ],
+        sessionObj: {
+          sessionHistory: {
+            userResponses: [
+              'Peer pressure',
+              'Enforcing the rules can make you unpopular.',
+            ],
+            systemResponses: [
+              [
+                'Here is a question about integrity, a key Navy attribute.',
+                'What are the challenges to demonstrating integrity in a group?',
+              ],
+              [
+                'So.',
+                'Look at it this way.',
+                "How can it affect you when you correct someone's behavior?",
+              ],
+              [
+                "Yeah, that's right.",
+                "Let's try this together.",
+                'How can it affect someone when you correct their behavior?',
+              ],
+            ],
+            userScores: [],
+          },
+          sessionId: 'dee7c0b4-8383-41ba-bfe8-0767d56afdb0',
+          previousUserResponse: 'Enforcing the rules can make you unpopular.',
+          previousSystemResponse: [
+            "Yeah, that's right.",
+            "Let's try this together.",
+            'How can it affect someone when you correct their behavior?',
+          ],
+          hash:
+            '9a2d263ac6903c1b49deeb2a48cb4b37700228aff87ed99d156d95a80d81996e',
+        },
+      },
     ].forEach(ex => {
       it('upon accepting the users response to the question, it should respond appropriately', async () => {
         const response2 = await request(app)
@@ -159,7 +189,9 @@ describe('session', () => {
         console.log(sessionObj);
         expect(response2.body).to.have.property('response');
         console.log(response2.body.response);
-        expect(response2.body.response).to.include.members(ex.expectedResponse);
+        expect(response2.body.response).to.deep.include.members(
+          ex.expectedResponse
+        );
         // console.log('OpenTutor says:  ' + response2.body.dialog);
       });
     });

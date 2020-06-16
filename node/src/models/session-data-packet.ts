@@ -1,7 +1,6 @@
 import sha256 from 'crypto-js/sha256';
 import 'models/opentutor-response';
 import { v4 as uuidv4 } from 'uuid';
-import OpenTutorResponse from 'models/opentutor-response';
 
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';

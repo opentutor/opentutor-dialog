@@ -17,10 +17,26 @@ const router = express.Router({ mergeParams: true });
 
 //This is the array that has hardcoded dialogs
 const dialogs = [
-  ['Here is a question about integrity, a key Navy attribute.','What are the challenges to demonstrating integrity in a group?'],
-  ["So.", "Look at it this way.", "How can it affect you when you correct someone's behavior?"],
-  ["Yeah, that's right. Let's try this together. How can it affect someone when you correct their behavior?"],
-  ["Good.", "Peer pressure can push you to allow and participate in inappropriate behavior.", "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.", "However, integrity means speaking out even when it is unpopular."],
+  [
+    'Here is a question about integrity, a key Navy attribute.',
+    'What are the challenges to demonstrating integrity in a group?',
+  ],
+  [
+    'So.',
+    'Look at it this way.',
+    "How can it affect you when you correct someone's behavior?",
+  ],
+  [
+    "Yeah, that's right.",
+    "Let's try this together.",
+    'How can it affect someone when you correct their behavior?',
+  ],
+  [
+    'Good.',
+    'Peer pressure can push you to allow and participate in inappropriate behavior.',
+    "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+    'However, integrity means speaking out even when it is unpopular.',
+  ],
 ];
 
 router.post('/', (req: Request, res: Response) => {
