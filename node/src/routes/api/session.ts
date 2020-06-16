@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import AutoTutorData from 'models/autotutor-data';
+import 'models/opentutor-response';
 import SessionDataPacket, {
   hasHistoryBeenTampered,
   newSessionDataPacket,
@@ -7,6 +8,7 @@ import SessionDataPacket, {
   addTutorDialog,
   addUserDialog,
 } from 'models/session-data-packet';
+import { createTextResponse } from 'models/opentutor-response';
 // import logger from 'utils/logging';
 
 //import AutoTutorOutput from "models/AutoTutorOutput";
@@ -15,10 +17,10 @@ const router = express.Router({ mergeParams: true });
 
 //This is the array that has hardcoded dialogs
 const dialogs = [
-  'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-  "So. Look at it this way. How can it affect you when you correct someone's behavior?",
-  "Yeah, that's right. Let's try this together. How can it affect someone when you correct their behavior?",
-  "Good. Peer pressure can push you to allow and participate in inappropriate behavior.\nWhen you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.\nHowever, integrity means speaking out even when it is unpopular.\n AutoTutor has terminated the session. Re-open the chat window to start a new test.",
+  ['Here is a question about integrity, a key Navy attribute.','What are the challenges to demonstrating integrity in a group?'],
+  ["So.", "Look at it this way.", "How can it affect you when you correct someone's behavior?"],
+  ["Yeah, that's right. Let's try this together. How can it affect someone when you correct their behavior?"],
+  ["Good.", "Peer pressure can push you to allow and participate in inappropriate behavior.", "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.", "However, integrity means speaking out even when it is unpopular."],
 ];
 
 router.post('/', (req: Request, res: Response) => {
@@ -49,7 +51,7 @@ router.post('/', (req: Request, res: Response) => {
     status: 'ok',
     data: atd,
     sessionInfo: sdp,
-    dialog: dialogs[0],
+    response: createTextResponse(dialogs[0]),
   });
 });
 
@@ -81,7 +83,7 @@ router.post('/dialog', (req: Request, res: Response) => {
   res.send({
     status: 'ok',
     sessionInfo: sessionData,
-    dialog: msg,
+    response: createTextResponse(msg),
   });
 });
 

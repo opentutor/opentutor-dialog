@@ -1,5 +1,7 @@
 import sha256 from 'crypto-js/sha256';
+import 'models/opentutor-response';
 import { v4 as uuidv4 } from 'uuid';
+import OpenTutorResponse from 'models/opentutor-response';
 
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
@@ -8,14 +10,14 @@ export default interface SessionDataPacket {
   sessionId: string;
   sessionHistory: SessionHistory;
   previousUserResponse: string;
-  previousSystemResponse: string;
+  previousSystemResponse: string[];
   hash: string;
 }
 
 export interface SessionHistory {
   userResponses: string[];
   userScores: number[];
-  systemResponses: string[];
+  systemResponses: string[][];
 }
 
 export function addUserDialog(sdp: SessionDataPacket, message: string) {
@@ -24,7 +26,7 @@ export function addUserDialog(sdp: SessionDataPacket, message: string) {
   // console.log('added user response');
 }
 
-export function addTutorDialog(sdp: SessionDataPacket, message: string) {
+export function addTutorDialog(sdp: SessionDataPacket, message: string[]) {
   sdp.previousSystemResponse = message;
   sdp.sessionHistory.systemResponses.push(message);
 }
@@ -42,14 +44,14 @@ function getHash(sh: SessionHistory): string {
 export function newSessionDataPacket(): SessionDataPacket {
   const sh = {
     userResponses: new Array<string>(),
-    systemResponses: new Array<string>(),
+    systemResponses: new Array<string[]>(),
     userScores: new Array<number>(),
   };
   return {
     sessionHistory: sh,
     sessionId: uuidv4(),
     previousUserResponse: '',
-    previousSystemResponse: '',
+    previousSystemResponse: [],
     hash: getHash(sh),
   };
 }
