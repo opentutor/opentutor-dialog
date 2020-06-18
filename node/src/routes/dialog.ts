@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import NavyIntegrity from 'models/autotutor-data';
+import { navyIntegrity } from 'models/autotutor-data';
 import 'models/opentutor-response';
 import SessionDataPacket, {
   hasHistoryBeenTampered,
@@ -61,12 +61,12 @@ router.post('/', (req: Request, res: Response) => {
   addTutorDialog(sdp, dialogs[0]);
   updateHash(sdp);
 
-  //TODO: add in mechanics to extract prompt question from the script itself
-  // const atd = navy_integrity;
+  //TODO: add in mechanics to determine script, currently referring to navy integrity
+  const atd = navyIntegrity;
 
   res.send({
     status: 'ok',
-    data: new Array<string>(),
+    data: atd,
     sessionInfo: sdp,
     response: createTextResponse(dialogs[0]),
   });

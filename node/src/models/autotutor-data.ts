@@ -19,7 +19,7 @@ function convertToJson() {
   return JSON.stringify(this);
 }
 
-const NavyIntegrity: AutoTutorData = {
+export const navyIntegrity: AutoTutorData = {
   rootExpectationId: 0,
   expectations: [
     'Peer pressure can cause you to allow inappropriate behavior.',
