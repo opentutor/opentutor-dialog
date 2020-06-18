@@ -2,6 +2,7 @@ import createApp from 'app';
 import { expect } from 'chai';
 import { Express } from 'express';
 import request from 'supertest';
+import { isMainThread } from 'worker_threads';
 
 describe('dialog', () => {
   let app: Express;
@@ -31,10 +32,9 @@ describe('dialog', () => {
         });
       expect(response.status).to.equal(200);
       // console.log(response.body.sessionInfo);
-      const data = response.body.data;
-      expect(data).to.have.property('questionText');
+      expect(response.body).to.have.property('response');
       expect(response.body).to.have.property('sessionInfo');
-      console.log(response.body.sessionInfo);
+      // console.log(response.body.sessionInfo);
     });
 
     [

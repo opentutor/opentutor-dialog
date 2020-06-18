@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import AutoTutorData from 'models/autotutor-data';
+import NavyIntegrity from 'models/autotutor-data';
 import 'models/opentutor-response';
 import SessionDataPacket, {
   hasHistoryBeenTampered,
@@ -32,7 +32,7 @@ const dialogs = [
     'How can it affect someone when you correct their behavior?',
   ],
   [
-    'Good.',
+    'Good',
     'Peer pressure can push you to allow and participate in inappropriate behavior.',
     "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
     'However, integrity means speaking out even when it is unpopular.',
@@ -62,11 +62,11 @@ router.post('/', (req: Request, res: Response) => {
   updateHash(sdp);
 
   //TODO: add in mechanics to extract prompt question from the script itself
-  const atd = new AutoTutorData();
+  // const atd = navy_integrity;
 
   res.send({
     status: 'ok',
-    data: atd,
+    data: new Array<string>(),
     sessionInfo: sdp,
     response: createTextResponse(dialogs[0]),
   });
