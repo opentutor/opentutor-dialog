@@ -7,7 +7,7 @@ import OpenTutorResponse, {
 } from 'models/opentutor-response';
 import SessionDataPacket from 'models/session-data-packet';
 
-var _ = require('lodash');
+// var _ = require('lodash');
 
 const newsessionstate: SessionDataPacket = {
   sessionHistory: {
