@@ -1,6 +1,6 @@
 import createApp from 'app';
-import axios from "axios";
-import MockAxios from "axios-mock-adapter";
+import axios from 'axios';
+import MockAxios from 'axios-mock-adapter';
 import { expect } from 'chai';
 import { Express } from 'express';
 
@@ -249,14 +249,13 @@ describe('dialog', () => {
       let sessionObj = responseStartSession.body.sessionInfo;
       expect(responseStartSession.status).to.equal(200);
 
-      
       for (const reqRes of ex.expectedRequestResponses) {
         mockAxios.reset();
-        mockAxios.onPost("/classifier").reply((config) => {
+        mockAxios.onPost('/classifier').reply(config => {
           return [
             reqRes.mockClassifierResponse.status || 200,
-            reqRes.mockClassifierResponse.data
-          ]
+            reqRes.mockClassifierResponse.data,
+          ];
         });
         const response = await request(app)
           .post('/dialog/session')

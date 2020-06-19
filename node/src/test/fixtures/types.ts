@@ -1,9 +1,9 @@
 import { OpenTutorResponse } from 'models/opentutor-response';
-import { ClassifierResponse } from 'models/classifier'
+import { ClassifierResponse } from 'models/classifier';
 
 interface MockAxiosResponse {
-  status?: number,
-  data: ClassifierResponse
+  status?: number;
+  data: ClassifierResponse;
 }
 
 export interface DialogRequestResponse {
