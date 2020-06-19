@@ -24,7 +24,7 @@ export function processUserResponse(
   //check if user answered MQ completely
   // }
   if (
-    userResponse.match(regexAnswer) ||
+    userResponse.toLowerCase().match(regexAnswer) ||
     userResponse.includes('Peer pressure')
   ) {
     //return response as closing
