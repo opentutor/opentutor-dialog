@@ -8,6 +8,17 @@ export const scenario: DialogScenario = {
     {
       userInput:
         "Peer pressure can cause you to allow inappropriate behavior. If you correct someone's behavior, you may get them in trouble or it may be harder to work with them. Enforcing the rules can make you unpopular.",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: 'Good', score: 1.0 },
+              { evaluation: 'Good', score: 1.0 },
+              { evaluation: 'Good', score: 1.0 },
+            ],
+          },
+        },
+      },
       expectedResponse: [
         {
           author: 'them',
