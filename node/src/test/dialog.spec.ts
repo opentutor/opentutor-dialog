@@ -1,19 +1,25 @@
 import createApp from 'app';
+import axios from "axios";
+import MockAxios from "axios-mock-adapter";
 import { expect } from 'chai';
 import { Express } from 'express';
+
 import request from 'supertest';
 import { all as allScenarios } from 'test/fixtures/scenarios';
-import { isMainThread } from 'worker_threads';
-import OpenTutorResponse from 'models/opentutor-response';
+// import OpenTutorResponse from 'models/opentutor-response';
 
 describe('dialog', () => {
   let app: Express;
+  let mockAxios: MockAxios;
 
   beforeEach(async () => {
     app = await createApp();
+    mockAxios = new MockAxios(axios);
   });
 
-
+  afterEach(() => {
+    mockAxios.reset();
+  });
 
   describe('POST', () => {
     // it('responds with a 400 error when no session info passed', async () => {
@@ -228,7 +234,7 @@ describe('dialog', () => {
   });
 
   allScenarios.forEach(ex => {
-    it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
+    it.only(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       const responseStartSession = await request(app)
         .post('/dialog')
         .send({
@@ -242,7 +248,16 @@ describe('dialog', () => {
         });
       let sessionObj = responseStartSession.body.sessionInfo;
       expect(responseStartSession.status).to.equal(200);
+
+      
       for (const reqRes of ex.expectedRequestResponses) {
+        mockAxios.reset();
+        mockAxios.onPost("/classifier").reply((config) => {
+          return [
+            reqRes.mockClassifierResponse.status || 200,
+            reqRes.mockClassifierResponse.data
+          ]
+        });
         const response = await request(app)
           .post('/dialog/session')
           .send({
@@ -251,7 +266,9 @@ describe('dialog', () => {
           });
         console.log(response.body);
         expect(response.body).to.have.property('response');
-        expect(response.body.response).to.deep.include.members(reqRes.expectedResponse);
+        expect(response.body.response).to.deep.include.members(
+          reqRes.expectedResponse
+        );
         sessionObj = response.body.sessionInfo;
       }
     });

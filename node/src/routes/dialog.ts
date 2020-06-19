@@ -75,7 +75,7 @@ router.post('/', (req: Request, res: Response) => {
 
 // TODO: session history needs to be implemented
 
-router.post('/session', (req: Request, res: Response) => {
+router.post('/session', async (req: Request, res: Response) => {
   //load up session data
   const sessionData: SessionDataPacket = req.body['sessionInfo'];
 
@@ -92,7 +92,7 @@ router.post('/session', (req: Request, res: Response) => {
   //load next system message
   //   console.log('loading next message');
   // const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
-  const msg = processUserResponse(navyIntegrity, sessionData);
+  const msg = await processUserResponse(navyIntegrity, sessionData);
   addTutorDialog(sessionData, msg);
 
   // console.log('updating hash');
