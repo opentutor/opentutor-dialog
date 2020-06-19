@@ -30,13 +30,12 @@ describe('dialog', () => {
         const response = await request(app)
           .post('/dialog/session')
           .send({
-            message: 'peer pressure',
+            message: reqRes.userInput,
             sessionInfo: sessionObj,
           });
-        expect(response.body).to.have.property(
-          'response',
-          reqRes.expectedResponse
-        );
+        console.log(response.body);
+        expect(response.body).to.have.property('response');
+        expect(response.body.response).to.deep.equal(reqRes.expectedResponse);
         sessionObj = response.body.sessionInfo;
       }
     });

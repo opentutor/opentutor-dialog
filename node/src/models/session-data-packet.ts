@@ -11,6 +11,9 @@ export default interface SessionDataPacket {
   previousUserResponse: string;
   previousSystemResponse: string[];
   hash: string;
+  // dialogState: string;
+  //this string represents the state that the dialog system will be in
+  // can be one of: 'MQ' for main question, 'E<number>' for expectation prompted, etc.
 }
 
 export interface SessionHistory {
@@ -52,6 +55,7 @@ export function newSessionDataPacket(): SessionDataPacket {
     previousUserResponse: '',
     previousSystemResponse: [],
     hash: getHash(sh),
+    // dialogState: 'MQ',
   };
 }
 

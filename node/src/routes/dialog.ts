@@ -9,6 +9,7 @@ import SessionDataPacket, {
   addUserDialog,
 } from 'models/session-data-packet';
 import { createTextResponse } from 'models/opentutor-response';
+import { processUserResponse } from 'models/dialog-system';
 // import logger from 'utils/logging';
 
 //import AutoTutorOutput from "models/AutoTutorOutput";
@@ -90,7 +91,8 @@ router.post('/session', (req: Request, res: Response) => {
 
   //load next system message
   //   console.log('loading next message');
-  const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
+  // const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
+  const msg = processUserResponse(navyIntegrity, sessionData);
   addTutorDialog(sessionData, msg);
 
   // console.log('updating hash');

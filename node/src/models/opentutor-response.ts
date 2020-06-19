@@ -15,7 +15,7 @@ interface ImageData {
 
 // type OpenTutorResponseData = TextData | ImageData; // look up union types
 
-export function createTextResponse(messages: string[]) {
+export function createTextResponse(messages: string[]): OpenTutorResponse[] {
   const response: OpenTutorResponse[] = [];
   messages.forEach(msg => {
     response.push({ author: 'them', type: 'text', data: { text: msg } });
