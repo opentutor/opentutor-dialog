@@ -7,8 +7,8 @@ import { Session } from 'inspector';
 import { evaluate, Evaluation } from 'models/classifier';
 
 //this should begin by sending the question prompt
-export function beginDialog(atd: AutoTutorData): OpenTutorResponse[] {
-  return createTextResponse([atd.questionIntro, atd.questionText]);
+export function beginDialog(atd: AutoTutorData): string[] {
+  return [atd.questionIntro, atd.questionText];
 }
 
 export async function processUserResponse(
@@ -23,39 +23,48 @@ export async function processUserResponse(
   if (expectationResults.every(x => x.evaluation === Evaluation.Good)) {
     return atd.recapText;
   }
-  // const regexAnswer =
-  //   "\b(group|peer|leader|commander) (pressure|influence)\b\bin trouble\b|\bcaptain's mast\b|\bhard(er)? to work with\b|\bembarrass(ed|ing)?\b|\bdefensive\b|\bangry\b|\bupset\b\bunpopular\b|\bhated?\b|\bunliked\b|\bnot popular\b";
-  // const regexBadAnswer = 'bad';
-  // const userResponse = sdp.previousUserResponse;
+  if(expectationResults.every(x => x.evaluation === Evaluation.Bad))
+  {
+      //answer did not match any expectation, guide user through expectations
 
-  // // if(sdp.dialogState == 'MQ'){
-  // //main question
-  // //check if user answered MQ completely
-  // // }
-  // if (
-  //   userResponse.toLowerCase().match(regexAnswer) ||
-  //   userResponse.includes('Peer pressure')
-  // ) {
-  //   //return response as closing
-  //   return atd.recapText;
-  // }
-
-  // if (userResponse.match(regexBadAnswer)) {
-  //   //pick an unanswered expectation and return return a prompt
-  //   return atd.promptStart;
-  // }
-  return ['no answer'];
+  }
+  if(expectationResults.find( x=> x.evaluation === Evaluation.Good)){
+    const expectationId = expectationResults.indexOf(expectationResults.find( x=> x.evaluation === Evaluation.Good));
+    sdp.dialogState.expectationsCompleted[expectationId] = true;
+    return processExpectationResponse(atd, sdp, expectationId);
+  }
+  return ['this path has not been implemented yet.'];
 }
 
 export function processExpectationResponse(
   atd: AutoTutorData,
-  sdp: SessionDataPacket
+  sdp: SessionDataPacket,
+  expectationId: number
 ) {
-  console.log('Not Implemented.');
+
+    //give positive feedback, and ask next expectation question
+    let answer: string[] = [];
+    answer.push(atd.positiveFeedback[0]);
+    console.log(sdp.dialogState.expectationsCompleted);
+    if(sdp.dialogState.expectationsCompleted.indexOf(false)!=-1)
+    {
+        answer.push(atd.hintStart[sdp.dialogState.expectationsCompleted.indexOf(false)]);
+    }
+    else
+    {
+        //all expectations completed
+        answer = answer.concat(atd.recapText);
+    }
+    return answer;
 }
 
 // checks the session history to find out if user has met the expectations
 // and returns the set of unanswered expectations
 function getUnansweredExpectations(atd: AutoTutorData, sdp: Session): string[] {
-  return [];
+  const results: string[]= [];
+//   sdp.sessionHistory .forEach(element => {
+      
+//   });
+  return results;
+
 }

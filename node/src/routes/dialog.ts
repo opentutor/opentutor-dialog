@@ -9,36 +9,12 @@ import SessionDataPacket, {
   addUserDialog,
 } from 'models/session-data-packet';
 import { createTextResponse } from 'models/opentutor-response';
-import { processUserResponse } from 'models/dialog-system';
+import { processUserResponse, beginDialog } from 'models/dialog-system';
 // import logger from 'utils/logging';
 
 //import AutoTutorOutput from "models/AutoTutorOutput";
 
 const router = express.Router({ mergeParams: true });
-
-//This is the array that has hardcoded dialogs
-const dialogs = [
-  [
-    'Here is a question about integrity, a key Navy attribute.',
-    'What are the challenges to demonstrating integrity in a group?',
-  ],
-  [
-    'So.',
-    'Look at it this way.',
-    "How can it affect you when you correct someone's behavior?",
-  ],
-  [
-    "Yeah, that's right.",
-    "Let's try this together.",
-    'How can it affect someone when you correct their behavior?',
-  ],
-  [
-    'Good',
-    'Peer pressure can push you to allow and participate in inappropriate behavior.',
-    "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
-    'However, integrity means speaking out even when it is unpopular.',
-  ],
-];
 
 router.post('/', (req: Request, res: Response) => {
   //if there is no session ID, send error.
@@ -57,19 +33,21 @@ router.post('/', (req: Request, res: Response) => {
   //   ScriptURL: req.body['ScriptURL'],
   // };
 
-  //new sessionDataPacket
-  const sdp = newSessionDataPacket();
-  addTutorDialog(sdp, dialogs[0]);
-  updateHash(sdp);
-
   //TODO: add in mechanics to determine script, currently referring to navy integrity
   const atd = navyIntegrity;
+
+  //new sessionDataPacket
+  const sdp = newSessionDataPacket(atd);
+  addTutorDialog(sdp, beginDialog(atd));
+  updateHash(sdp);
+
+  
 
   res.send({
     status: 'ok',
     data: atd,
     sessionInfo: sdp,
-    response: createTextResponse(dialogs[0]),
+    response: createTextResponse(beginDialog(atd)),
   });
 });
 

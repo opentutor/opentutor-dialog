@@ -234,7 +234,7 @@ describe('dialog', () => {
   });
 
   allScenarios.forEach(ex => {
-    it.only(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
+    it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       const responseStartSession = await request(app)
         .post('/dialog')
         .send({

@@ -6,20 +6,58 @@ export const scenario: DialogScenario = {
   expectedRequestResponses: [
     {
       userInput: 'Peer pressure',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: 'Good', score: 1.0 },
+              { evaluation: 'Bad', score: 0.0 },
+              { evaluation: 'Bad', score: 0.0 },
+            ],
+          },
+        },
+      },
       expectedResponse: [
+        {
+            author: 'them',
+            type: 'text',
+            data: {
+              text:
+                'Great',
+            },
+          },
         {
           author: 'them',
           type: 'text',
           data: {
-            text: "How can it affect you when you correct someone's behavior?",
+            text: "How can it affect you when you correct their behavior?",
           },
         },
       ],
     },
     {
       userInput: 'Enforcing the rules can make you unpopular.',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: 'Bad', score: 0.0 },
+              { evaluation: 'Good', score: 1.0 },
+              { evaluation: 'Bad', score: 0.0 },
+            ],
+          },
+        },
+      },
       expectedResponse: [
         {
+            author: 'them',
+            type: 'text',
+            data: {
+              text:
+                'Great',
+            },
+          },
+          {
           author: 'them',
           type: 'text',
           data: {
@@ -31,8 +69,27 @@ export const scenario: DialogScenario = {
     {
       userInput:
         "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+        mockClassifierResponse: {
+            data: {
+              output: {
+                expectationResults: [
+                  { evaluation: 'Bad', score: 0.0 },
+                  { evaluation: 'Bad', score: 0.0 },
+                  { evaluation: 'Good', score: 1.0 },
+                ],
+              },
+            },
+          },
       expectedResponse: [
         {
+            author: 'them',
+            type: 'text',
+            data: {
+              text:
+                'Great',
+            },
+          },
+          {
           author: 'them',
           type: 'text',
           data: {

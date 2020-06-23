@@ -1,6 +1,7 @@
 import sha256 from 'crypto-js/sha256';
 import 'models/opentutor-response';
 import { v4 as uuidv4 } from 'uuid';
+import AutoTutorData from './autotutor-data';
 
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
@@ -10,10 +11,14 @@ export default interface SessionDataPacket {
   sessionHistory: SessionHistory;
   previousUserResponse: string;
   previousSystemResponse: string[];
+  dialogState: DialogState;
   hash: string;
-  // dialogState: string;
-  //this string represents the state that the dialog system will be in
-  // can be one of: 'MQ' for main question, 'E<number>' for expectation prompted, etc.
+  
+}
+
+export interface DialogState {
+  expectationsCompleted: boolean[];
+  hints: boolean;
 }
 
 export interface SessionHistory {
@@ -43,7 +48,7 @@ function getHash(sh: SessionHistory): string {
   return sha256(JSON.stringify(sh), SESSION_SECURITY_KEY).toString();
 }
 
-export function newSessionDataPacket(): SessionDataPacket {
+export function newSessionDataPacket(atd: AutoTutorData): SessionDataPacket {
   const sh = {
     userResponses: new Array<string>(),
     systemResponses: new Array<string[]>(),
@@ -54,6 +59,7 @@ export function newSessionDataPacket(): SessionDataPacket {
     sessionId: uuidv4(),
     previousUserResponse: '',
     previousSystemResponse: [],
+    dialogState: {expectationsCompleted: atd.expectations.map(x=> false), hints: false},
     hash: getHash(sh),
     // dialogState: 'MQ',
   };
