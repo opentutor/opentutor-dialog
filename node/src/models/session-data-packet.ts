@@ -13,7 +13,6 @@ export default interface SessionDataPacket {
   previousSystemResponse: string[];
   dialogState: DialogState;
   hash: string;
-  
 }
 
 export interface DialogState {
@@ -59,7 +58,10 @@ export function newSessionDataPacket(atd: AutoTutorData): SessionDataPacket {
     sessionId: uuidv4(),
     previousUserResponse: '',
     previousSystemResponse: [],
-    dialogState: {expectationsCompleted: atd.expectations.map(x=> false), hints: false},
+    dialogState: {
+      expectationsCompleted: atd.expectations.map(x => false),
+      hints: false,
+    },
     hash: getHash(sh),
     // dialogState: 'MQ',
   };

@@ -38,7 +38,11 @@ export const navyIntegrity: AutoTutorData = {
   negativeFeedback: ["No that's not how it works"],
   neutralFeedback: ['OK'],
   promptStart: ['Prompt1', 'Prompt2', 'Prompt3'],
-  hintStart: ["Hint1", "How can it affect you when you correct their behavior?", "How can it affect someone when you correct their behavior?"],
+  hintStart: [
+    'Hint1',
+    'How can it affect you when you correct their behavior?',
+    'How can it affect someone when you correct their behavior?',
+  ],
   pump: [],
   pumpBlank: [],
   media: {},

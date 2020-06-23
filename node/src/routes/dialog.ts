@@ -41,8 +41,6 @@ router.post('/', (req: Request, res: Response) => {
   addTutorDialog(sdp, beginDialog(atd));
   updateHash(sdp);
 
-  
-
   res.send({
     status: 'ok',
     data: atd,
