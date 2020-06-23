@@ -5,12 +5,12 @@ export const scenario: DialogScenario = {
   lessonId: 'l1',
   expectedRequestResponses: [
     {
-      userInput: 'Peer pressure',
+      userInput: 'Rules apply differently to the group',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Good', score: 1.0 },
+              { evaluation: 'Bad', score: 1.0 },
               { evaluation: 'Neutral', score: 0.0 },
               { evaluation: 'Neutral', score: 0.0 },
             ],
@@ -22,7 +22,15 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: 'text',
           data: {
-            text: 'Great',
+            text:
+              'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+          },
+        },
+        {
+          author: 'them',
+          type: 'text',
+          data: {
+            text: 'Consider this.',
           },
         },
         {

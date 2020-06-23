@@ -9,6 +9,7 @@ interface ClassfierRequest {
 export enum Evaluation {
   Good = 'Good',
   Bad = 'Bad',
+  Neutral = 'Neutral',
 }
 
 interface ExpectationResult {
