@@ -1,7 +1,7 @@
 import { DialogScenario } from 'test/fixtures/types';
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 2',
+  name: 'lesson1 part 3',
   lessonId: 'l1',
   expectedRequestResponses: [
     {

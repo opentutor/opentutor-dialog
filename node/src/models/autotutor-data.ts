@@ -4,13 +4,15 @@ export default interface AutoTutorData {
   questionIntro: string;
   questionText: string;
   recapText: string[];
+  confusionFeedback: string[];
   positiveFeedback: string[];
   negativeFeedback: string[];
   neutralFeedback: string[];
   promptStart: string[];
-  hintStart: string[];
+  hints: string[];
   pump: string[];
   pumpBlank: string[];
+  hintStart: string[];
   media: object;
   originalXml: string;
 }
@@ -34,16 +36,20 @@ export const navyIntegrity: AutoTutorData = {
     "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
     'However, integrity means speaking out even when it is unpopular.',
   ],
+  confusionFeedback: [
+    'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+  ],
   positiveFeedback: ['Great'],
   negativeFeedback: ["No that's not how it works"],
   neutralFeedback: ['OK'],
   promptStart: ['Prompt1', 'Prompt2', 'Prompt3'],
-  hintStart: [
+  hints: [
     'Hint1',
     'How can it affect you when you correct their behavior?',
     'How can it affect someone when you correct their behavior?',
   ],
-  pump: [],
+  pump: ["Let's work through this together"],
+  hintStart: ['Consider this.'],
   pumpBlank: [],
   media: {},
   originalXml: '',
