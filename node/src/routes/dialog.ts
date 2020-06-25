@@ -69,7 +69,7 @@ router.post('/session', async (req: Request, res: Response) => {
   //   console.log('loading next message');
   // const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
   const msg = await processUserResponse(navyIntegrity, sessionData);
-  console.log('system response was ');
+  // console.log('system response was ');
   console.log(msg);
   addTutorDialog(sessionData, msg);
 

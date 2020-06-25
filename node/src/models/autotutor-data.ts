@@ -18,10 +18,6 @@ export default interface AutoTutorData {
   originalXml: string;
 }
 
-function convertToJson() {
-  return JSON.stringify(this);
-}
-
 export const navyIntegrity: AutoTutorData = {
   rootExpectationId: 0,
   expectations: [
@@ -43,7 +39,19 @@ export const navyIntegrity: AutoTutorData = {
   positiveFeedback: ['Great'],
   negativeFeedback: ["No that's not how it works"],
   neutralFeedback: ['OK'],
-  prompts: [{prompt: 'How can it affect someone emotionally when you correct their behavior?', answer: 'it may be harder to work with them', expectationId: 1}],
+  prompts: [
+    {
+      prompt:
+        'How can it affect someone emotionally when you correct their behavior?',
+      answer: 'it may be harder to work with them',
+      expectationId: 1,
+    },
+    {
+      prompt: 'What might cause you to lower your standards?',
+      answer: 'peer pressure',
+      expectationId: 0,
+    },
+  ],
   hints: [
     'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
     'How can it affect someone when you correct their behavior?',

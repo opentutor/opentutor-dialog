@@ -1,16 +1,16 @@
 import { DialogScenario } from 'test/fixtures/types';
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 2',
+  name: 'lesson1 part 4: this does hints, prompts and assert',
   lessonId: 'l1',
   expectedRequestResponses: [
     {
-      userInput: 'Peer pressure',
+      userInput: 'Rules apply differently to the group',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Good', score: 1.0 },
+              { evaluation: 'Bad', score: 1.0 },
               { evaluation: 'Neutral', score: 0.0 },
               { evaluation: 'Neutral', score: 0.0 },
             ],
@@ -22,7 +22,83 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: 'text',
           data: {
-            text: 'Great',
+            text:
+              'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+          },
+        },
+        {
+          author: 'them',
+          type: 'text',
+          data: {
+            text: 'Consider this.',
+          },
+        },
+        {
+          author: 'them',
+          type: 'text',
+          data: {
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: "I don't know",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: 'Neutral', score: 0.0 },
+              { evaluation: 'Neutral', score: 0.0 },
+              { evaluation: 'Neutral', score: 0.0 },
+            ],
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: 'text',
+          data: {
+            text: 'See if you can get this',
+          },
+        },
+        {
+          author: 'them',
+          type: 'text',
+          data: {
+            text: 'What might cause you to lower your standards?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: 'hurt me?',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: 'Neutral', score: 0.0 },
+              { evaluation: 'Neutral', score: 0.0 },
+              { evaluation: 'Neutral', score: 0.0 },
+            ],
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: 'text',
+          data: {
+            text: 'peer pressure',
+          },
+        },
+        {
+          author: 'them',
+          type: 'text',
+          data: {
+            text: 'Consider this.',
           },
         },
         {
@@ -30,84 +106,6 @@ export const scenario: DialogScenario = {
           type: 'text',
           data: {
             text: 'How can it affect someone when you correct their behavior?',
-          },
-        },
-      ],
-    },
-    {
-      userInput:
-        "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { evaluation: 'Neutral', score: 0.0 },
-              { evaluation: 'Good', score: 1.0 },
-              { evaluation: 'Neutral', score: 0.0 },
-            ],
-          },
-        },
-      },
-      expectedResponse: [
-        {
-          author: 'them',
-          type: 'text',
-          data: {
-            text: 'Great',
-          },
-        },
-        {
-          author: 'them',
-          type: 'text',
-          data: {
-            text: "How can it affect you when you correct someone's behavior?",
-          },
-        },
-      ],
-    },
-    {
-      userInput: 'Enforcing the rules can make you unpopular.',
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { evaluation: 'Neutral', score: 0.0 },
-              { evaluation: 'Neutral', score: 0.0 },
-              { evaluation: 'Good', score: 1.0 },
-            ],
-          },
-        },
-      },
-      expectedResponse: [
-        {
-          author: 'them',
-          type: 'text',
-          data: {
-            text: 'Great',
-          },
-        },
-        {
-          author: 'them',
-          type: 'text',
-          data: {
-            text:
-              'Peer pressure can push you to allow and participate in inappropriate behavior.',
-          },
-        },
-        {
-          author: 'them',
-          type: 'text',
-          data: {
-            text:
-              "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
-          },
-        },
-        {
-          author: 'them',
-          type: 'text',
-          data: {
-            text:
-              'However, integrity means speaking out even when it is unpopular.',
           },
         },
       ],
