@@ -20,8 +20,10 @@ export async function processUserResponse(
   
   //check if response was for a prompt
   const prompt : Prompt[] = atd.prompts.filter(function(n) {
-    return sdp.previousSystemResponse.indexOf(n.prompt) > -1;
+    // console.log(sdp.previousSystemResponse.indexOf(n.prompt) > -1);
+    return (sdp.previousSystemResponse.indexOf(n.prompt) > -1);
   });
+  console.log(prompt);
   if(prompt.length>0)
   {
     //response was to a prompt.
@@ -43,10 +45,13 @@ export async function processUserResponse(
     return sdp.previousSystemResponse.indexOf(n) >-1;
   });
   if(hintText.length > 0) {
+    console.log('inside a hint');
+    console.log(hintText);
     //response is to a hint
     const expectationId : number = atd.hints.indexOf(hintText[0]);
     if(expectationResults[expectationId].evaluation === Evaluation.Good){
       //hint answered successfully
+      sdp.dialogState.expectationsCompleted[expectationId] = true;
       return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
     }
     else {
@@ -92,7 +97,7 @@ export function toNextExpectation(
 ) {
   //give positive feedback, and ask next expectation question
   let answer: string[] = [];
-  console.log(sdp.dialogState.expectationsCompleted);
+  // console.log(sdp.dialogState.expectationsCompleted);
   if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
     sdp.dialogState.hints = true;
     answer.push(

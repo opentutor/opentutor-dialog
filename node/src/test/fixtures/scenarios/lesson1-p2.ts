@@ -29,13 +29,13 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: 'text',
           data: {
-            text: 'How can it affect you when you correct their behavior?',
+            text: 'How can it affect someone when you correct their behavior?',
           },
         },
       ],
     },
     {
-      userInput: 'Enforcing the rules can make you unpopular.',
+      userInput: "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
       mockClassifierResponse: {
         data: {
           output: {
@@ -59,14 +59,14 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: 'text',
           data: {
-            text: 'How can it affect someone when you correct their behavior?',
+            text: "How can it affect you when you correct someone's behavior?",
           },
         },
       ],
     },
     {
       userInput:
-        "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+      'Enforcing the rules can make you unpopular.',
       mockClassifierResponse: {
         data: {
           output: {
