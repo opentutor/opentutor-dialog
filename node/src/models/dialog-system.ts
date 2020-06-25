@@ -80,13 +80,13 @@ export async function processUserResponse(
     );
   }
   if (expectationResults.find(x => x.evaluation === Evaluation.Bad)) {
+    //bad answer. use hint
     const expectationId = expectationResults.indexOf(
       expectationResults.find(x => x.evaluation === Evaluation.Bad)
     );
-    sdp.dialogState.expectationsCompleted[expectationId] = true;
-    return [atd.confusionFeedback[0], atd.hintStart[0]].concat(
-      toNextExpectation(atd, sdp)
-    );
+    sdp.dialogState.hints = true;
+    // sdp.dialogState.expectationsCompleted[expectationId] = true;
+    return [atd.confusionFeedback[0], atd.hintStart[0], atd.hints[expectationId]];
   }
   return ['this path has not been implemented yet.'];
 }
