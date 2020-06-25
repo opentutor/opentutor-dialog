@@ -37,7 +37,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: 'text',
           data: {
-            text: 'How can it affect you when you correct their behavior?',
+            text: 'How can it affect someone when you correct their behavior?',
           },
         },
       ],

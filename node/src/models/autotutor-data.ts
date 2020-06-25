@@ -8,11 +8,12 @@ export default interface AutoTutorData {
   positiveFeedback: string[];
   negativeFeedback: string[];
   neutralFeedback: string[];
-  promptStart: string[];
+  prompts: Prompt[];
   hints: string[];
   pump: string[];
   pumpBlank: string[];
   hintStart: string[];
+  promptStart: string[];
   media: object;
   originalXml: string;
 }
@@ -42,15 +43,22 @@ export const navyIntegrity: AutoTutorData = {
   positiveFeedback: ['Great'],
   negativeFeedback: ["No that's not how it works"],
   neutralFeedback: ['OK'],
-  promptStart: ['Prompt1', 'Prompt2', 'Prompt3'],
+  prompts: [{prompt: 'How can it affect someone emotionally when you correct their behavior?', answer: 'it may be harder to work with them', expectationId: 0}],
   hints: [
-    'Hint1',
+    'How can it affect someone when you correct their behavior?',
     'How can it affect you when you correct their behavior?',
     'How can it affect someone when you correct their behavior?',
   ],
   pump: ["Let's work through this together"],
   hintStart: ['Consider this.'],
+  promptStart: ['See if you can get this'],
   pumpBlank: [],
   media: {},
   originalXml: '',
 };
+
+export interface Prompt {
+  prompt: string;
+  answer: string;
+  expectationId: number;
+}
