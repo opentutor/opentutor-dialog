@@ -6,6 +6,7 @@ import lesson1p3 from './lesson1-p3';
 import lesson1p4 from './lesson1-p4';
 import lesson1p5 from './lesson1-p5';
 import lesson1p6 from './lesson1-p6';
+import lesson2p1 from './lesson2-p1';
 
 export const all: DialogScenario[] = [
   lesson1p1,
@@ -14,5 +15,6 @@ export const all: DialogScenario[] = [
   lesson1p4,
   lesson1p5,
   lesson1p6,
+  lesson2p1,
 ];
 export default all;

@@ -1,5 +1,8 @@
 import express, { Request, Response } from 'express';
-import { navyIntegrity } from 'models/autotutor-data';
+import AutoTutorData, {
+  navyIntegrity,
+  currentFlow,
+} from 'models/autotutor-data';
 import 'models/opentutor-response';
 import SessionDataPacket, {
   hasHistoryBeenTampered,
@@ -34,7 +37,18 @@ router.post('/', (req: Request, res: Response) => {
   // };
 
   //TODO: add in mechanics to determine script, currently referring to navy integrity
-  const atd = navyIntegrity;
+  let atd: AutoTutorData;
+  switch (req.body['lessonId']) {
+    case 'l1':
+      atd = navyIntegrity;
+      break;
+    case 'l2':
+      atd = currentFlow;
+      console.log('switched to current flow');
+      break;
+    default:
+      break;
+  }
 
   //new sessionDataPacket
   const sdp = newSessionDataPacket(atd);
@@ -43,7 +57,7 @@ router.post('/', (req: Request, res: Response) => {
 
   res.send({
     status: 'ok',
-    data: atd,
+    lessonId: req.body['lessonId'],
     sessionInfo: sdp,
     response: createTextResponse(beginDialog(atd)),
   });
@@ -54,6 +68,18 @@ router.post('/', (req: Request, res: Response) => {
 router.post('/session', async (req: Request, res: Response) => {
   //load up session data
   const sessionData: SessionDataPacket = req.body['sessionInfo'];
+  let atd: AutoTutorData;
+  switch (req.body['lessonId']) {
+    case 'l1':
+      atd = navyIntegrity;
+      break;
+    case 'l2':
+      atd = currentFlow;
+      console.log('switched to current flow');
+      break;
+    default:
+      break;
+  }
 
   //check for tampering of history
   if (hasHistoryBeenTampered(sessionData.sessionHistory, sessionData.hash)) {
@@ -68,7 +94,7 @@ router.post('/session', async (req: Request, res: Response) => {
   //load next system message
   //   console.log('loading next message');
   // const msg = dialogs[sessionData.sessionHistory.systemResponses.length];
-  const msg = await processUserResponse(navyIntegrity, sessionData);
+  const msg = await processUserResponse(atd, sessionData);
   // console.log('system response was ');
   console.log(msg);
   addTutorDialog(sessionData, msg);

@@ -33,6 +33,7 @@ describe('dialog', () => {
       const response = await request(app)
         .post('/dialog')
         .send({
+          lessonId: 'l1',
           id: '1',
           user: 'rush',
           UseDB: true,
@@ -105,6 +106,7 @@ describe('dialog', () => {
           .send({
             message: reqRes.userInput,
             sessionInfo: sessionObj,
+            lessonId: ex.lessonId,
           });
         console.log(response.body);
         expect(response.body).to.have.property('response');
