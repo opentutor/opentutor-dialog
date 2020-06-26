@@ -59,7 +59,7 @@ export async function processUserResponse(
       const prompt: Prompt = atd.prompts.find(
         p => p.expectationId == expectationId
       );
-      return [atd.promptStart[0], prompt.prompt];
+      return [atd.confusionFeedback[0], atd.promptStart[0], prompt.prompt];
     }
   }
 
