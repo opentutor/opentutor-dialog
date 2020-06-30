@@ -2,6 +2,7 @@ import AutoTutorData, { Prompt } from 'models/autotutor-data';
 import SessionDataPacket from './session-data-packet';
 import { evaluate, Evaluation } from 'models/classifier';
 
+const threshold: number = Number.parseFloat(process.env.THRESHOLD) || 0.5;
 //this should begin by sending the question prompt
 export function beginDialog(atd: AutoTutorData): string[] {
   return [atd.questionIntro, atd.questionText];
@@ -25,7 +26,9 @@ export async function processUserResponse(
     //response was to a prompt.
     if (
       expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
-        .evaluation === Evaluation.Good
+        .evaluation === Evaluation.Good &&
+      expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
+        .score > threshold
     ) {
       //prompt completed successfully
       sdp.dialogState.expectationsCompleted[
@@ -50,7 +53,10 @@ export async function processUserResponse(
     // console.log(hintText);
     //response is to a hint
     const expectationId: number = atd.hints.indexOf(hintText[0]);
-    if (expectationResults[expectationId].evaluation === Evaluation.Good) {
+    if (
+      expectationResults[expectationId].evaluation === Evaluation.Good &&
+      expectationResults[expectationId].score > threshold
+    ) {
       //hint answered successfully
       sdp.dialogState.expectationsCompleted[expectationId] = true;
       return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
@@ -63,26 +69,42 @@ export async function processUserResponse(
     }
   }
 
-  if (expectationResults.every(x => x.evaluation === Evaluation.Good)) {
+  if (
+    expectationResults.every(
+      x => x.evaluation === Evaluation.Good && x.score > threshold
+    )
+  ) {
     //perfect answer
     return atd.recapText;
   }
-  if (expectationResults.every(x => x.evaluation === Evaluation.Neutral)) {
+  if (expectationResults.every(x => x.score < threshold)) {
     //answer did not match any expectation, guide user through expectations
     return atd.pump.concat(toNextExpectation(atd, sdp));
   }
-  if (expectationResults.find(x => x.evaluation === Evaluation.Good)) {
+  if (
+    expectationResults.find(
+      x => x.evaluation === Evaluation.Good && x.score > threshold
+    )
+  ) {
     //matched one specific expectation
     const expectationId = expectationResults.indexOf(
-      expectationResults.find(x => x.evaluation === Evaluation.Good)
+      expectationResults.find(
+        x => x.evaluation === Evaluation.Good && x.score > threshold
+      )
     );
     sdp.dialogState.expectationsCompleted[expectationId] = true;
     return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
   }
-  if (expectationResults.find(x => x.evaluation === Evaluation.Bad)) {
+  if (
+    expectationResults.find(
+      x => x.evaluation === Evaluation.Bad && x.score > threshold
+    )
+  ) {
     //bad answer. use hint
     const expectationId = expectationResults.indexOf(
-      expectationResults.find(x => x.evaluation === Evaluation.Bad)
+      expectationResults.find(
+        x => x.evaluation === Evaluation.Bad && x.score > threshold
+      )
     );
     sdp.dialogState.hints = true;
     // sdp.dialogState.expectationsCompleted[expectationId] = true;
@@ -112,6 +134,9 @@ export function toNextExpectation(atd: AutoTutorData, sdp: SessionDataPacket) {
   return answer;
 }
 
+// function isGood(eval: ExpectationResult){
+//   if(eval)
+// }
 // checks the session history to find out if user has met the expectations
 // and returns the set of unanswered expectations
 // function getUnansweredExpectations(atd: AutoTutorData, sdp: Session): string[] {

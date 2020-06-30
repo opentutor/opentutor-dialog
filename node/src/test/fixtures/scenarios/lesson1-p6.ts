@@ -12,8 +12,8 @@ export const scenario: DialogScenario = {
           output: {
             expectationResults: [
               { evaluation: 'Good', score: 1.0 },
-              { evaluation: 'Neutral', score: 0.0 },
-              { evaluation: 'Neutral', score: 0.0 },
+              { evaluation: 'Good', score: 0.0 },
+              { evaluation: 'Good', score: 0.0 },
             ],
           },
         },
@@ -48,9 +48,9 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Neutral', score: 0.0 },
-              { evaluation: 'Neutral', score: 0.0 },
-              { evaluation: 'Neutral', score: 0.0 },
+              { evaluation: 'Good', score: 0.0 },
+              { evaluation: 'Good', score: 0.0 },
+              { evaluation: 'Good', score: 0.0 },
             ],
           },
         },
@@ -87,9 +87,9 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Neutral', score: 0.0 },
+              { evaluation: 'Good', score: 0.0 },
               { evaluation: 'Good', score: 1.0 },
-              { evaluation: 'Neutral', score: 0.0 },
+              { evaluation: 'Good', score: 0.0 },
             ],
           },
         },
