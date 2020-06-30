@@ -1,6 +1,6 @@
 import AutoTutorData, { Prompt } from 'models/autotutor-data';
 import SessionDataPacket from './session-data-packet';
-import { evaluate, Evaluation } from 'models/classifier';
+import { evaluate, ClassifierResponse, Evaluation } from 'models/classifier';
 
 const threshold: number = Number.parseFloat(process.env.THRESHOLD) || 0.5;
 //this should begin by sending the question prompt
@@ -9,15 +9,26 @@ export function beginDialog(atd: AutoTutorData): string[] {
 }
 
 export async function processUserResponse(
+  lessonId: string,
   atd: AutoTutorData,
   sdp: SessionDataPacket
 ): Promise<string[]> {
-  const classifierResult = await evaluate({
-    inputSentence: sdp.previousUserResponse,
-    question: 'fixme',
-  });
+  let classifierResult: ClassifierResponse;
+  try {
+    classifierResult = await evaluate({
+      inputSentence: sdp.previousUserResponse,
+      question: lessonId,
+    });
+  } catch (err) {
+    const status =
+      `${err.response && err.response.status}` === '404' ? 404 : 502;
+    const message =
+      status === 404
+        ? `classifier cannot find lesson '${lessonId}'`
+        : err.message;
+    throw Object.assign(err, { status, message });
+  }
   const expectationResults = classifierResult.output.expectationResults;
-
   //check if response was for a prompt
   const prompt: Prompt[] = atd.prompts.filter(function(n) {
     return sdp.previousSystemResponse.indexOf(n.prompt) > -1;

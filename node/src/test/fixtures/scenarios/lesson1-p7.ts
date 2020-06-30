@@ -1,8 +1,9 @@
 import { DialogScenario } from 'test/fixtures/types';
+import { Evaluation } from 'models/classifier';
 
 export const scenario: DialogScenario = {
   name: 'lesson1 part 7: user can answer two expectations at the same time.',
-  lessonId: 'l1',
+  lessonId: 'q1',
   expectedRequestResponses: [
     {
       userInput:
@@ -11,9 +12,9 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Good', score: 1.0 },
-              { evaluation: 'Good', score: 1.0 },
-              { evaluation: 'Good', score: 0.0 },
+              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.0 },
             ],
           },
         },
@@ -41,9 +42,9 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Good', score: 0.0 },
-              { evaluation: 'Good', score: 0.0 },
-              { evaluation: 'Good', score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.0 },
+              { evaluation: Evaluation.Good, score: 0.0 },
+              { evaluation: Evaluation.Good, score: 1.0 },
             ],
           },
         },

@@ -3,111 +3,148 @@ import axios from 'axios';
 import MockAxios from 'axios-mock-adapter';
 import { expect } from 'chai';
 import { Express } from 'express';
-
-import request from 'supertest';
 import { all as allScenarios } from 'test/fixtures/scenarios';
-// import OpenTutorResponse from 'models/opentutor-response';
+import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 
 describe('dialog', () => {
   let app: Express;
   let mockAxios: MockAxios;
 
   beforeEach(async () => {
-    app = await createApp();
-    mockAxios = new MockAxios(axios);
+    if (!MOCKING_DISABLED) {
+      app = await createApp();
+      mockAxios = new MockAxios(axios);
+    }
   });
 
   afterEach(() => {
-    mockAxios.reset();
+    if (mockAxios) {
+      mockAxios.reset();
+    }
   });
 
   describe('POST', () => {
-    // it('responds with a 400 error when no session info passed', async () => {
-    //   const response = await request(app)
-    //     .post('/dialog')
-    //     .send();
-    //   expect(response.status).to.equal(400);
+    it('responds with a 400 error when no session info passed', async () => {
+      const response = await postDialog(app);
+      expect(response.status).to.equal(400);
+      expect(response.body)
+        .to.have.property('message')
+        .eql('"lessonId" is required');
+    });
+
+    const validSessionObj = {
+      sessionHistory: {
+        userResponses: new Array<string>(),
+        systemResponses: [
+          'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+        ],
+        userScores: new Array<number>(),
+      },
+      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+      previousUserResponse: '',
+      previousSystemResponse:
+        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+      hash: '14ba63452d31b62cfadb0f4a869ee17a065d05d15bad01d698d4d1141bfbf01f',
+    };
+
+    it('responds with a 502 error if 500 error calling classifier', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/classifier').reply(_ => {
+          return [500, {}];
+        });
+        const response = await postSession(app, {
+          message: 'peer pressure',
+          sessionInfo: validSessionObj,
+        });
+        expect(response.status).to.equal(502);
+      }
+    });
+
+    it('responds with a 404 error if 404 error calling classifier', async () => {
+      const questionId = 'question123';
+      mockAxios.reset();
+      mockAxios.onPost('/classifier').reply(_ => {
+        return [404, {}];
+      });
+      const response = await postSession(app, {
+        lessonId: questionId,
+        message: 'peer pressure',
+        sessionInfo: validSessionObj,
+      });
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property(
+        'message',
+        `classifier cannot find lesson '${questionId}'`
+      );
+    });
+
+    // it('responds with 405 if method for dialog or dialog session not POST', async () => {
+    //   expect(1).to.eql(2);
     // });
 
     it('sends the session information when session is started, along with initial dialog', async () => {
-      const response = await request(app)
-        .post('/dialog')
-        .send({
-          lessonId: 'l1',
-          id: '1',
-          user: 'rush',
-          UseDB: true,
-          ScriptXML: null,
-          LSASpaceName: 'English_TASA',
-          ScriptURL: null,
-        });
+      const response = await postDialog(app, {
+        lessonId: 'q1',
+        id: '1',
+        user: 'rush',
+        UseDB: true,
+        ScriptXML: null,
+        LSASpaceName: 'English_TASA',
+        ScriptURL: null,
+      });
       expect(response.status).to.equal(200);
-      // console.log(response.body.sessionInfo);
       expect(response.body).to.have.property('response');
       expect(response.body).to.have.property('sessionInfo');
-      // console.log(response.body.sessionInfo);
     });
 
     it('sends an error if user tries to tinker with the session data', async () => {
-      const sessionObj = {
-        sessionHistory: {
-          userResponses: new Array<string>(),
-          systemResponses: [
-            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-          ],
-          userScores: new Array<number>(),
+      const response = await postSession(app, {
+        message: 'peer pressure',
+        sessionInfo: {
+          ...validSessionObj,
+          hash: 'something-wrong',
+          sessionHistory: {
+            ...validSessionObj.sessionHistory,
+            userScores: [...validSessionObj.sessionHistory.userScores, 10],
+          },
         },
-        sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-        previousUserResponse: '',
-        previousSystemResponse:
-          'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-        hash:
-          '14ba63452d31b62cfadb0f4a869ee17a065d05d15bad01d698d4d1141bfbf01f',
-      };
-      //tinker with the scores
-      sessionObj.sessionHistory.userScores.push(10);
-      const response3 = await request(app)
-        .post('/dialog/session')
-        .send({
-          message: 'peer pressure',
-          sessionInfo: sessionObj,
-        });
-      // console.log(response3);
-      expect(response3.status).to.equal(403);
+      });
+      expect(response.status).to.equal(403);
     });
   });
 
   allScenarios.forEach(ex => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
-      const responseStartSession = await request(app)
-        .post('/dialog')
-        .send({
-          lessonId: ex.lessonId,
-          id: '1',
-          user: 'rush',
-          UseDB: true,
-          ScriptXML: null,
-          LSASpaceName: 'English_TASA',
-          ScriptURL: null,
-        });
+      const responseStartSession = await postDialog(app, {
+        lessonId: ex.lessonId,
+        id: '1',
+        user: 'rush',
+        UseDB: true,
+        ScriptXML: null,
+        LSASpaceName: 'English_TASA',
+        ScriptURL: null,
+      });
       let sessionObj = responseStartSession.body.sessionInfo;
       expect(responseStartSession.status).to.equal(200);
-
       for (const reqRes of ex.expectedRequestResponses) {
-        mockAxios.reset();
-        mockAxios.onPost('/classifier').reply(config => {
-          return [
-            reqRes.mockClassifierResponse.status || 200,
-            reqRes.mockClassifierResponse.data,
-          ];
-        });
-        const response = await request(app)
-          .post('/dialog/session')
-          .send({
-            message: reqRes.userInput,
-            sessionInfo: sessionObj,
-            lessonId: ex.lessonId,
+        if (mockAxios) {
+          mockAxios.reset();
+          mockAxios.onPost('/classifier').reply(config => {
+            const reqBody = JSON.parse(config.data);
+            expect(reqBody).to.have.property('question', ex.lessonId);
+            expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
+            return [
+              reqRes.mockClassifierResponse.status || 200,
+              reqRes.mockClassifierResponse.data,
+            ];
           });
+        }
+        const response = await postSession(app, {
+          message: reqRes.userInput,
+          sessionInfo: sessionObj,
+          lessonId: ex.lessonId,
+        });
         console.log(response.body);
         expect(response.body).to.have.property('response');
         expect(response.body.response).to.deep.include.members(

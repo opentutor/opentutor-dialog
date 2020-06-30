@@ -1,16 +1,17 @@
 import { DialogScenario } from 'test/fixtures/types';
+import { Evaluation } from 'models/classifier';
 
 //navy integrity perfect answer
 export const scenario: DialogScenario = {
   name: 'lesson2 part 1',
-  lessonId: 'l2',
+  lessonId: 'q2',
   expectedRequestResponses: [
     {
       userInput: 'Current flows in the same direction as the arrow.',
       mockClassifierResponse: {
         data: {
           output: {
-            expectationResults: [{ evaluation: 'Good', score: 1.0 }],
+            expectationResults: [{ evaluation: Evaluation.Good, score: 1.0 }],
           },
         },
       },

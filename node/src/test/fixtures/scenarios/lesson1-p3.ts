@@ -1,9 +1,10 @@
 import { DialogScenario } from 'test/fixtures/types';
+import { Evaluation } from 'models/classifier';
 
 export const scenario: DialogScenario = {
   name:
     'lesson1 part 3: wrong answer to expectation 1 and then system uses a hint',
-  lessonId: 'l1',
+  lessonId: 'q1',
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',
@@ -11,9 +12,9 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Bad', score: 1.0 },
-              { evaluation: 'Good', score: 0.0 },
-              { evaluation: 'Good', score: 0.0 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.0 },
+              { evaluation: Evaluation.Good, score: 0.0 },
             ],
           },
         },
@@ -50,9 +51,9 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Good', score: 1.0 },
-              { evaluation: 'Good', score: 0.0 },
-              { evaluation: 'Good', score: 0.0 },
+              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.0 },
+              { evaluation: Evaluation.Good, score: 0.0 },
             ],
           },
         },
