@@ -86,13 +86,21 @@ export async function processUserResponse(
       x => x.evaluation === Evaluation.Good && x.score > threshold
     )
   ) {
-    //matched one specific expectation
-    const expectationId = expectationResults.indexOf(
-      expectationResults.find(
-        x => x.evaluation === Evaluation.Good && x.score > threshold
-      )
+    //matched atleast one specific expectation
+    const expectationIds: number[] = [];
+    let i;
+    for (i = 0; i < expectationResults.length; i++) {
+      if (
+        expectationResults[i].evaluation === Evaluation.Good &&
+        expectationResults[i].score > threshold
+      ) {
+        expectationIds.push(i);
+      }
+    }
+    expectationIds.forEach(
+      expectationId =>
+        (sdp.dialogState.expectationsCompleted[expectationId] = true)
     );
-    sdp.dialogState.expectationsCompleted[expectationId] = true;
     return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
   }
   if (
