@@ -1,9 +1,10 @@
 import { DialogScenario } from 'test/fixtures/types';
+import { Evaluation } from 'models/classifier';
 
 //navy integrity perfect answer
 export const scenario: DialogScenario = {
   name: 'lesson1 part 1',
-  lessonId: 'l1',
+  lessonId: 'q1',
   expectedRequestResponses: [
     {
       userInput:
@@ -12,9 +13,9 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { evaluation: 'Good', score: 1.0 },
-              { evaluation: 'Good', score: 1.0 },
-              { evaluation: 'Good', score: 1.0 },
+              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 1.0 },
             ],
           },
         },

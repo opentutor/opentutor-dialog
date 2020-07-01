@@ -1,3 +1,5 @@
+DIALOG_ENDPOINT?="http://localhost/dialog"
+
 PHONY: docker-build
 docker-build:
 	cd node \
@@ -17,6 +19,12 @@ run:
 test:
 	cd node \
 	&& $(MAKE) test
+
+.PHONY: test-endpoint
+test-endpoint:
+	cd node \
+	&& MOCKING_DISABLED=1 DIALOG_ENDPOINT=$(DIALOG_ENDPOINT) $(MAKE) test
+
 
 PHONY: test-all
 test-all:

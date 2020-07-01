@@ -2,6 +2,7 @@ import createApp from 'app';
 import { Express } from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
+import { DIALOG_ENDPOINT } from './helpers';
 
 describe('ping', () => {
   let app: Express;
@@ -12,7 +13,7 @@ describe('ping', () => {
 
   it('responds with a 200 status', async () => {
     const response = await request(app)
-      .get('/ping')
+      .get(`${DIALOG_ENDPOINT}/ping`)
       .send();
     expect(response.status).to.equal(200);
   });
