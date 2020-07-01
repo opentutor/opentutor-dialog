@@ -29,7 +29,6 @@ export interface SessionHistory {
 export function addUserDialog(sdp: SessionDataPacket, message: string) {
   sdp.previousUserResponse = message;
   sdp.sessionHistory.userResponses.push(message);
-  // console.log('added user response');
 }
 
 export function addTutorDialog(sdp: SessionDataPacket, message: string[]) {
@@ -39,7 +38,6 @@ export function addTutorDialog(sdp: SessionDataPacket, message: string[]) {
 
 //updates the hash for the object
 export function updateHash(sdp: SessionDataPacket) {
-  // console.log('message is ',JSON.stringify(this.sessionHistory));
   sdp.hash = getHash(sdp.sessionHistory);
 }
 
@@ -59,20 +57,14 @@ export function newSessionDataPacket(atd: AutoTutorData): SessionDataPacket {
     previousUserResponse: '',
     previousSystemResponse: [],
     dialogState: {
-      expectationsCompleted: atd.expectations.map(x => false),
+      expectationsCompleted: atd.expectations.map(() => false),
       hints: false,
     },
     hash: getHash(sh),
-    // dialogState: 'MQ',
   };
 }
 
-//returns true if history has been tampered
 export function hasHistoryBeenTampered(hist: SessionHistory, hash: string) {
-  // console.log('provided hash is ' + hash);
-  // console.log(hist);
-
   const newhash = sha256(JSON.stringify(hist), SESSION_SECURITY_KEY).toString();
-  // console.log('new hash is ' + newhash);
   return !(newhash == hash);
 }
