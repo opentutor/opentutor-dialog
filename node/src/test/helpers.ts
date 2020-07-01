@@ -13,11 +13,12 @@ interface PostDialogResponse {
 }
 
 export async function postDialog(
+  questionId: string,
   app: Express,
   body = {},
   path = ''
 ): Promise<PostDialogResponse> {
-  const endpoint = `${DIALOG_ENDPOINT}/${path}`;
+  const endpoint = `${DIALOG_ENDPOINT}/${questionId}/${path}`;
   if (MOCKING_DISABLED) {
     // console.log(`MOCKING_DISABLED and endpoint='${endpoint}'`);
     const response = await axios.post<PostDialogResponse>(endpoint, body);
@@ -33,10 +34,11 @@ export async function postDialog(
 }
 
 export async function postSession(
+  questionId: string,
   app: Express,
   body: any
 ): Promise<PostDialogResponse> {
-  return postDialog(app, body, 'session');
+  return postDialog(questionId, app, body, 'session');
 }
 
 export default {
