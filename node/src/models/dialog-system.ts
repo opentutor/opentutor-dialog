@@ -38,6 +38,7 @@ export async function processUserResponse(
     throw Object.assign(err, { status, message });
   }
   const expectationResults = classifierResult.output.expectationResults;
+  // console.log('ex');
   //check if response was for a prompt
   const prompt: Prompt[] = atd.prompts.filter(function(n) {
     return sdp.previousSystemResponse.indexOf(n.prompt) > -1;

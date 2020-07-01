@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { Express } from 'express';
 import { all as allScenarios } from 'test/fixtures/scenarios';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
+import { Evaluation } from 'models/classifier';
 
 describe('dialog', () => {
   let app: Express;
@@ -79,6 +80,41 @@ describe('dialog', () => {
       );
     });
 
+    it('sends the session data to the grader at the end of the dialog', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/classifier').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          console.log('req is ' + JSON.stringify(reqBody, null, 2));
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                ],
+              },
+            },
+          ];
+        });
+        mockAxios.onPost('/grader').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          expect(reqBody).to.have.property('sessionId', validSessionObj.sessionId);
+          // expect(reqBody).to.have.property('userResponses', ['correct answer']);
+          // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
+          return [200, {message: 'success'}];
+        });
+      }
+      const response = await postSession(app, {
+        lessonId: 'q1',
+        message: 'correct answer',
+        sessionInfo: validSessionObj,
+      });
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('sentToGrader');
+    });
     // it('responds with 405 if method for dialog or dialog session not POST', async () => {
     //   expect(1).to.eql(2);
     // });

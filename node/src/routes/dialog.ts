@@ -15,6 +15,7 @@ import SessionDataPacket, {
 } from 'models/session-data-packet';
 import { createTextResponse } from 'models/opentutor-response';
 import { processUserResponse, beginDialog } from 'models/dialog-system';
+import { createGraderObject, sendGraderRequest } from 'models/grader';
 
 const router = express.Router({ mergeParams: true });
 
@@ -107,10 +108,13 @@ router.post(
       //update hash
       updateHash(sessionData);
 
+      //before sending the response, send the grader the message too.
+      const graderResponse = sendGraderRequest(atd, sessionData);
       res.send({
         status: 'ok',
         sessionInfo: sessionData,
         response: createTextResponse(msg),
+        sentToGrader: graderResponse,
       });
     } catch (err) {
       return next(err);

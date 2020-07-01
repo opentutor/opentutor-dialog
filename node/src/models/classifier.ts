@@ -52,5 +52,5 @@ export async function evaluate(
 }
 
 export default {
-  evaluate,
+  evaluate, Evaluation
 };
