@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 const router = express.Router({ mergeParams: true });
 import dialog from './dialog';
 
