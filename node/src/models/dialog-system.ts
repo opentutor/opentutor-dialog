@@ -1,8 +1,17 @@
 import AutoTutorData, { Prompt } from 'models/autotutor-data';
 import SessionDataPacket from './session-data-packet';
-import { evaluate, ClassifierResponse, Evaluation } from 'models/classifier';
+import {
+  evaluate,
+  ClassifierResponse,
+  Evaluation,
+  ExpectationResult,
+} from 'models/classifier';
 
-const threshold: number = Number.parseFloat(process.env.THRESHOLD) || 0.5;
+const upperThreshold: number =
+  Number.parseFloat(process.env.HIGHER_THRESHOLD) || 0.7;
+const lowerThreshold: number =
+  Number.parseFloat(process.env.LOWER_THRESHOLD) || 0.3;
+
 //this should begin by sending the question prompt
 export function beginDialog(atd: AutoTutorData): string[] {
   return [atd.questionIntro, atd.questionText];
@@ -39,7 +48,7 @@ export async function processUserResponse(
       expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
         .evaluation === Evaluation.Good &&
       expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
-        .score > threshold
+        .score > upperThreshold
     ) {
       //prompt completed successfully
       sdp.dialogState.expectationsCompleted[
@@ -60,15 +69,14 @@ export async function processUserResponse(
     return sdp.previousSystemResponse.indexOf(n) > -1;
   });
   if (hintText.length > 0) {
-    // console.log('inside a hint');
-    // console.log(hintText);
     //response is to a hint
     const expectationId: number = atd.hints.indexOf(hintText[0]);
     if (
       expectationResults[expectationId].evaluation === Evaluation.Good &&
-      expectationResults[expectationId].score > threshold
+      expectationResults[expectationId].score > upperThreshold
     ) {
       //hint answered successfully
+      updateCompletedExpectations(expectationResults, sdp);
       sdp.dialogState.expectationsCompleted[expectationId] = true;
       return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
     } else {
@@ -82,47 +90,38 @@ export async function processUserResponse(
 
   if (
     expectationResults.every(
-      x => x.evaluation === Evaluation.Good && x.score > threshold
+      x => x.evaluation === Evaluation.Good && x.score > upperThreshold
     )
   ) {
     //perfect answer
     return atd.recapText;
   }
-  if (expectationResults.every(x => x.score < threshold)) {
+  if (
+    expectationResults.every(
+      x => x.score < upperThreshold && x.score > lowerThreshold
+    )
+  ) {
     //answer did not match any expectation, guide user through expectations
     return atd.pump.concat(toNextExpectation(atd, sdp));
   }
   if (
     expectationResults.find(
-      x => x.evaluation === Evaluation.Good && x.score > threshold
+      x => x.evaluation === Evaluation.Good && x.score > upperThreshold
     )
   ) {
     //matched atleast one specific expectation
-    const expectationIds: number[] = [];
-    let i;
-    for (i = 0; i < expectationResults.length; i++) {
-      if (
-        expectationResults[i].evaluation === Evaluation.Good &&
-        expectationResults[i].score > threshold
-      ) {
-        expectationIds.push(i);
-      }
-    }
-    expectationIds.forEach(
-      expectationId =>
-        (sdp.dialogState.expectationsCompleted[expectationId] = true)
-    );
+    updateCompletedExpectations(expectationResults, sdp);
     return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
   }
   if (
     expectationResults.find(
-      x => x.evaluation === Evaluation.Bad && x.score > threshold
+      x => x.evaluation === Evaluation.Bad && x.score < lowerThreshold
     )
   ) {
     //bad answer. use hint
     const expectationId = expectationResults.indexOf(
       expectationResults.find(
-        x => x.evaluation === Evaluation.Bad && x.score > threshold
+        x => x.evaluation === Evaluation.Bad && x.score < lowerThreshold
       )
     );
     sdp.dialogState.hints = true;
@@ -136,6 +135,26 @@ export async function processUserResponse(
   return ['this path has not been implemented yet.'];
 }
 
+function updateCompletedExpectations(
+  expectationResults: ExpectationResult[],
+  sdp: SessionDataPacket
+) {
+  //this function basically updates the dialog state to denote whichever expectations are met.
+  const expectationIds: number[] = [];
+  let i;
+  for (i = 0; i < expectationResults.length; i++) {
+    if (
+      expectationResults[i].evaluation === Evaluation.Good &&
+      expectationResults[i].score > upperThreshold
+    ) {
+      expectationIds.push(i);
+    }
+  }
+  expectationIds.forEach(
+    expectationId =>
+      (sdp.dialogState.expectationsCompleted[expectationId] = true)
+  );
+}
 export function toNextExpectation(atd: AutoTutorData, sdp: SessionDataPacket) {
   //give positive feedback, and ask next expectation question
   let answer: string[] = [];
