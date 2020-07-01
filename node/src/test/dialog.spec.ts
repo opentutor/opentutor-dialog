@@ -24,13 +24,14 @@ describe('dialog', () => {
   });
 
   describe('POST', () => {
-    it('responds with a 400 error when no session info passed', async () => {
-      const response = await postDialog(app);
-      expect(response.status).to.equal(400);
-      expect(response.body)
-        .to.have.property('message')
-        .eql('"lessonId" is required');
-    });
+    // it('responds with a 400 error when no session info passed', async () => {
+    //   const response = await postDialog(app);
+    //   expect(response.status).to.equal(400);
+    //   expect(response.body)
+    //     .to.have.property('message')
+    //     .eql('"lessonId" is required');
+    // });
+    const lessonId = 'q1';
 
     const validSessionObj = {
       sessionHistory: {
@@ -53,7 +54,7 @@ describe('dialog', () => {
         mockAxios.onPost('/classifier').reply(_ => {
           return [500, {}];
         });
-        const response = await postSession(app, {
+        const response = await postSession(lessonId, app, {
           message: 'peer pressure',
           sessionInfo: validSessionObj,
         });
@@ -62,20 +63,19 @@ describe('dialog', () => {
     });
 
     it('responds with a 404 error if 404 error calling classifier', async () => {
-      const questionId = 'question123';
       mockAxios.reset();
       mockAxios.onPost('/classifier').reply(_ => {
         return [404, {}];
       });
-      const response = await postSession(app, {
-        lessonId: questionId,
+      const response = await postSession(lessonId, app, {
+        lessonId: lessonId,
         message: 'peer pressure',
         sessionInfo: validSessionObj,
       });
       expect(response.status).to.equal(404);
       expect(response.body).to.have.property(
         'message',
-        `classifier cannot find lesson '${questionId}'`
+        `classifier cannot find lesson '${lessonId}'`
       );
     });
 
@@ -84,7 +84,7 @@ describe('dialog', () => {
     // });
 
     it('sends the session information when session is started, along with initial dialog', async () => {
-      const response = await postDialog(app, {
+      const response = await postDialog(lessonId, app, {
         lessonId: 'q1',
         id: '1',
         user: 'rush',
@@ -99,7 +99,7 @@ describe('dialog', () => {
     });
 
     it('sends an error if user tries to tinker with the session data', async () => {
-      const response = await postSession(app, {
+      const response = await postSession(lessonId, app, {
         message: 'peer pressure',
         sessionInfo: {
           ...validSessionObj,
@@ -116,7 +116,7 @@ describe('dialog', () => {
 
   allScenarios.forEach(ex => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
-      const responseStartSession = await postDialog(app, {
+      const responseStartSession = await postDialog(ex.lessonId, app, {
         lessonId: ex.lessonId,
         id: '1',
         user: 'rush',
@@ -140,12 +140,12 @@ describe('dialog', () => {
             ];
           });
         }
-        const response = await postSession(app, {
+        const response = await postSession(ex.lessonId, app, {
           message: reqRes.userInput,
           sessionInfo: sessionObj,
           lessonId: ex.lessonId,
         });
-        console.log(response.body);
+        expect(response.status).to.equal(200);
         expect(response.body).to.have.property('response');
         expect(response.body.response).to.deep.include.members(
           reqRes.expectedResponse
