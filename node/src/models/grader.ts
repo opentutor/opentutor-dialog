@@ -29,7 +29,7 @@ interface Expectation {
   text: string;
 }
 
-const GRADER_ENDPOINT = process.env.GRADER_ENDPOINT || '/grader';
+const GRADER_ENDPOINT = process.env.GRADER_ENDPOINT || '/grading-api';
 
 export function createGraderObject(
   atd: AutoTutorData,
@@ -66,7 +66,16 @@ export async function sendGraderRequest(
   logger.debug(
     `grader request to ${GRADER_ENDPOINT}: ${JSON.stringify(request)}`
   );
-  const response = await axios.post(GRADER_ENDPOINT, request);
+  // const response = await axios.post(GRADER_ENDPOINT, request);
+  const userSession = encodeURI(JSON.stringify(request));
+  const response = await axios.post(GRADER_ENDPOINT, {
+    query: `mutation {
+      updateSession(sessionId: "${request.sessionId}", userSession: "${userSession}") {
+          sessionId
+        }
+      }
+    `,
+  });
 
   //   logger.debug(`grader result: ${JSON.stringify(response.data)}`);
   //   const result = response.data;
