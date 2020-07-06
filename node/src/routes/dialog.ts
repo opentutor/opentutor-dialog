@@ -1,10 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
+import createError from 'http-errors';
 import AutoTutorData, {
   navyIntegrity,
   currentFlow,
 } from 'models/autotutor-data';
-// import createError from 'http-errors';
-// import Joi from '@hapi/joi';
 import 'models/opentutor-response';
 import SessionDataPacket, {
   hasHistoryBeenTampered,
@@ -16,6 +15,7 @@ import SessionDataPacket, {
 import { createTextResponse } from 'models/opentutor-response';
 import { processUserResponse, beginDialog } from 'models/dialog-system';
 import { sendGraderRequest } from 'models/grader';
+import Joi from '@hapi/joi';
 
 const router = express.Router({ mergeParams: true });
 
@@ -23,18 +23,18 @@ router.get('/ping', (req: Request, res: Response) => {
   res.send({ status: 'ok' });
 });
 
-// const dialogSchema = Joi.object({
-//   lessonId: Joi.string().required(),
-// }).unknown(true);
+const dialogSchema = Joi.object({
+  sessionId: Joi.string(),
+}).unknown(true);
 
 router.post('/:lessonId', (req: Request, res: Response, next: NextFunction) => {
   try {
-    // const result = dialogSchema.validate(req.body);
-    // const { value: body, error } = result;
-    // const valid = error == null;
-    // if (!valid) {
-    //   return next(createError(400, error));
-    // }
+    const result = dialogSchema.validate(req.body);
+    const { value: body, error } = result;
+    const valid = error == null;
+    if (!valid) {
+      return next(createError(400, error));
+    }
     const lessonId = req.params['lessonId'];
     let atd: AutoTutorData;
     switch (lessonId) {
@@ -48,7 +48,7 @@ router.post('/:lessonId', (req: Request, res: Response, next: NextFunction) => {
         break;
     }
     //new sessionDataPacket
-    const sdp = newSessionDataPacket(atd);
+    const sdp = newSessionDataPacket(atd, body.sessionId);
     addTutorDialog(sdp, beginDialog(atd));
     updateHash(sdp);
     res.send({
