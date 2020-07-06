@@ -5,7 +5,6 @@ import {
   ClassifierResponse,
   Evaluation,
   ExpectationResult,
-  ClassifierResult,
 } from 'models/classifier';
 
 const upperThreshold: number =
@@ -87,7 +86,11 @@ export async function processUserResponse(
       const prompt: Prompt = atd.prompts.find(
         p => p.expectationId == expectationId
       );
-      return [atd.confusionFeedback[0], atd.promptStart[0], prompt.prompt];
+      return [
+        atd.confusionFeedback[0],
+        atd.promptStart[0],
+        prompt ? prompt.prompt : '[trying to prompt when no prompts left?]',
+      ];
     }
   }
 

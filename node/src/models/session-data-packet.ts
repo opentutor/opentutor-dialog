@@ -57,7 +57,10 @@ function getHash(sh: SessionHistory): string {
   return sha256(JSON.stringify(sh), SESSION_SECURITY_KEY).toString();
 }
 
-export function newSessionDataPacket(atd: AutoTutorData): SessionDataPacket {
+export function newSessionDataPacket(
+  atd: AutoTutorData,
+  sessionId = ''
+): SessionDataPacket {
   const sh = {
     userResponses: new Array<string>(),
     systemResponses: new Array<string[]>(),
@@ -66,7 +69,7 @@ export function newSessionDataPacket(atd: AutoTutorData): SessionDataPacket {
   };
   return {
     sessionHistory: sh,
-    sessionId: uuidv4(),
+    sessionId: sessionId || uuidv4(),
     previousUserResponse: '',
     previousSystemResponse: [],
     dialogState: {
