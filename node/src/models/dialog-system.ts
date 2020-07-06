@@ -40,7 +40,9 @@ export async function processUserResponse(
   }
   const expectationResults = classifierResult.output.expectationResults;
   //add results to the session history
-  addClassifierGrades(sdp, classifierResult.output);
+  addClassifierGrades(sdp, {
+    expectationResults: classifierResult.output.expectationResults,
+  });
   //check if response was for a prompt
   const prompt: Prompt[] = atd.prompts.filter(function(n) {
     return sdp.previousSystemResponse.indexOf(n.prompt) > -1;
