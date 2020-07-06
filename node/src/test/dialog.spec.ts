@@ -137,6 +137,18 @@ describe('dialog', () => {
       expect(response.body).to.have.property('sessionInfo');
     });
 
+    it('accepts and uses a session id passed by user', async () => {
+      const sessionId = 'some-user-generated-session-id';
+      const response = await postDialog(lessonId, app, {
+        sessionId: sessionId,
+      });
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.deep.nested.property(
+        'sessionInfo.sessionId',
+        sessionId
+      );
+    });
+
     it('sends an error if user tries to tinker with the session data', async () => {
       const response = await postSession(lessonId, app, {
         message: 'peer pressure',
