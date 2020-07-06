@@ -62,8 +62,6 @@ router.post('/:lessonId', (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// TODO: session history needs to be implemented
-
 router.post(
   '/:lessonId/session',
   async (req: Request, res: Response, next: NextFunction) => {
@@ -90,7 +88,6 @@ router.post(
       const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);
       updateHash(sessionData);
-
       //before sending the response, send the grader the message too.
       const graderResponse = sendGraderRequest(atd, sessionData);
       res.send({

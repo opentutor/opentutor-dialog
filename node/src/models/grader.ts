@@ -20,6 +20,10 @@ interface ExpectationScore {
   graderGrade: string;
 }
 
+interface ExpectationScores {
+  expectationScore: ExpectationScore[];
+}
+
 export interface Question {
   text: string;
   expectations: Expectation[];
@@ -35,17 +39,28 @@ export function createGraderObject(
   atd: AutoTutorData,
   sdp: SessionDataPacket
 ): GraderRequest {
-  const userResponses: Response[] = sdp.sessionHistory.userResponses.map(r => {
-    return {
-      text: r,
-      expectationScores: [
-        {
-          classifierGrade: 'Good',
-          graderGrade: '',
-        },
-      ],
-    };
-  });
+  const expectationScores: ExpectationScores[] = sdp.sessionHistory.classifierGrades.map(
+    r => {
+      return {
+        expectationScore: r.expectationResults.map(e => {
+          return {
+            classifierGrade: e.evaluation.toString(),
+            graderGrade: '',
+          };
+        }),
+      };
+    }
+  );
+
+  const userResponses: Response[] = sdp.sessionHistory.userResponses.map(
+    (r, index) => {
+      return {
+        text: r,
+        expectationScores: expectationScores[index].expectationScore,
+      };
+    }
+  );
+
   return {
     sessionId: sdp.sessionId,
     username: '',

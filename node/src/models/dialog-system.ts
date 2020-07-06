@@ -1,10 +1,11 @@
 import AutoTutorData, { Prompt } from 'models/autotutor-data';
-import SessionDataPacket from './session-data-packet';
+import SessionDataPacket, { addClassifierGrades } from './session-data-packet';
 import {
   evaluate,
   ClassifierResponse,
   Evaluation,
   ExpectationResult,
+  ClassifierResult,
 } from 'models/classifier';
 
 const upperThreshold: number =
@@ -38,7 +39,8 @@ export async function processUserResponse(
     throw Object.assign(err, { status, message });
   }
   const expectationResults = classifierResult.output.expectationResults;
-  // console.log('ex');
+  //add results to the session history
+  addClassifierGrades(sdp, classifierResult.output);
   //check if response was for a prompt
   const prompt: Prompt[] = atd.prompts.filter(function(n) {
     return sdp.previousSystemResponse.indexOf(n.prompt) > -1;

@@ -2,6 +2,7 @@ import sha256 from 'crypto-js/sha256';
 import 'models/opentutor-response';
 import { v4 as uuidv4 } from 'uuid';
 import AutoTutorData from './autotutor-data';
+import { ClassifierResult } from './classifier';
 
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
@@ -22,6 +23,7 @@ export interface DialogState {
 
 export interface SessionHistory {
   userResponses: string[];
+  classifierGrades: ClassifierResult[];
   userScores: number[];
   systemResponses: string[][];
 }
@@ -34,6 +36,16 @@ export function addUserDialog(sdp: SessionDataPacket, message: string) {
 export function addTutorDialog(sdp: SessionDataPacket, message: string[]) {
   sdp.previousSystemResponse = message;
   sdp.sessionHistory.systemResponses.push(message);
+}
+
+export function addClassifierGrades(
+  sdp: SessionDataPacket,
+  result: ClassifierResult
+) {
+  console.log('adding to session history');
+  console.log(result);
+  sdp.sessionHistory.classifierGrades.push(result);
+  console.log('done');
 }
 
 //updates the hash for the object
@@ -50,6 +62,7 @@ export function newSessionDataPacket(atd: AutoTutorData): SessionDataPacket {
     userResponses: new Array<string>(),
     systemResponses: new Array<string[]>(),
     userScores: new Array<number>(),
+    classifierGrades: new Array<ClassifierResult>(),
   };
   return {
     sessionHistory: sh,
