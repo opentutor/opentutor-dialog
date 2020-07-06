@@ -5,7 +5,6 @@ import {
   ClassifierResponse,
   Evaluation,
   ExpectationResult,
-  ClassifierResult,
 } from 'models/classifier';
 
 const upperThreshold: number =
