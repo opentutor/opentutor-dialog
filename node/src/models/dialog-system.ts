@@ -204,6 +204,9 @@ export function toNextExpectation(
   return answer;
 }
 
+export function calculateScore(sdp: SessionDataPacket, atd: AutoTutorData) : number {
+  return Math.max(0.0, Math.min( 1.0, atd.expectations.length /sdp.sessionHistory.userResponses.length * 1.0))  ;
+}
 // function isGood(eval: ExpectationResult){
 //   if(eval)
 // }
