@@ -12,7 +12,11 @@ import SessionDataPacket, {
   addTutorDialog,
   addUserDialog,
 } from 'models/session-data-packet';
-import { processUserResponse, beginDialog, calculateScore } from 'models/dialog-system';
+import {
+  processUserResponse,
+  beginDialog,
+  calculateScore,
+} from 'models/dialog-system';
 import { sendGraderRequest } from 'models/grader';
 import Joi from '@hapi/joi';
 

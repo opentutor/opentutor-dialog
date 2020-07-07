@@ -85,17 +85,17 @@ describe('dialog', () => {
         mockAxios.reset();
         mockAxios.onPost('/classifier').reply(config => {
           return [
-                    200,
-                    {
-                      output: {
-                        expectationResults: [
-                          { evaluation: Evaluation.Good, score: 1.0 },
-                          { evaluation: Evaluation.Good, score: 1.0 },
-                          { evaluation: Evaluation.Good, score: 1.0 },
-                        ],
-                      },
-                    },
-                  ];
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                ],
+              },
+            },
+          ];
         });
         mockAxios.onPost('/grading-api').reply(config => {
           const reqBody = JSON.parse(config.data);
