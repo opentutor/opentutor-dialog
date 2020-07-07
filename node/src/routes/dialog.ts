@@ -12,7 +12,6 @@ import SessionDataPacket, {
   addTutorDialog,
   addUserDialog,
 } from 'models/session-data-packet';
-import { createTextResponse } from 'models/opentutor-response';
 import { processUserResponse, beginDialog } from 'models/dialog-system';
 import { sendGraderRequest } from 'models/grader';
 import Joi from '@hapi/joi';
@@ -55,7 +54,7 @@ router.post('/:lessonId', (req: Request, res: Response, next: NextFunction) => {
       status: 'ok',
       lessonId: lessonId,
       sessionInfo: sdp,
-      response: createTextResponse(beginDialog(atd)),
+      response: beginDialog(atd),
     });
   } catch (err) {
     return next(err);
@@ -93,7 +92,7 @@ router.post(
       res.send({
         status: 'ok',
         sessionInfo: sessionData,
-        response: createTextResponse(msg),
+        response: msg,
         sentToGrader: graderResponse,
       });
     } catch (err) {

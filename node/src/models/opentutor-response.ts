@@ -4,21 +4,20 @@ export default interface OpenTutorResponse {
   data: TextData | ImageData;
 }
 
-interface TextData {
+export interface TextData {
   text: string;
 }
 
-interface ImageData {
+export interface ImageData {
   url: string;
   path: string;
 }
 
 // type OpenTutorResponseData = TextData | ImageData; // look up union types
 
-export function createTextResponse(messages: string[]): OpenTutorResponse[] {
-  const response: OpenTutorResponse[] = [];
-  messages.forEach(msg => {
-    response.push({ author: 'them', type: 'text', data: { text: msg } });
-  });
-  return response;
+export function createTextResponse(
+  msg: string,
+  type = 'text'
+): OpenTutorResponse {
+  return { author: 'them', type, data: { text: msg } };
 }

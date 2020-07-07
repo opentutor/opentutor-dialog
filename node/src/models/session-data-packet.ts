@@ -3,6 +3,7 @@ import 'models/opentutor-response';
 import { v4 as uuidv4 } from 'uuid';
 import AutoTutorData from './autotutor-data';
 import { ClassifierResult } from './classifier';
+import OpenTutorResponse, { TextData } from 'models/opentutor-response';
 
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
@@ -33,19 +34,22 @@ export function addUserDialog(sdp: SessionDataPacket, message: string) {
   sdp.sessionHistory.userResponses.push(message);
 }
 
-export function addTutorDialog(sdp: SessionDataPacket, message: string[]) {
-  sdp.previousSystemResponse = message;
-  sdp.sessionHistory.systemResponses.push(message);
+export function addTutorDialog(
+  sdp: SessionDataPacket,
+  messages: OpenTutorResponse[]
+) {
+  sdp.previousSystemResponse = messages.map(m => (m.data as TextData).text);
+  sdp.sessionHistory.systemResponses.push(sdp.previousSystemResponse);
 }
 
 export function addClassifierGrades(
   sdp: SessionDataPacket,
   result: ClassifierResult
 ) {
-  console.log('adding to session history');
-  console.log(result);
+  //console.log('adding to session history');
+  // console.log(result);
   sdp.sessionHistory.classifierGrades.push(result);
-  console.log('done');
+  // console.log('done');
 }
 
 //updates the hash for the object

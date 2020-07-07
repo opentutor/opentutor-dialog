@@ -6,6 +6,7 @@ import {
   Evaluation,
   ExpectationResult,
 } from 'models/classifier';
+import OpenTutorResponse, { createTextResponse } from './opentutor-response';
 
 const upperThreshold: number =
   Number.parseFloat(process.env.HIGHER_THRESHOLD) || 0.7;
@@ -13,15 +14,18 @@ const lowerThreshold: number =
   Number.parseFloat(process.env.LOWER_THRESHOLD) || 0.3;
 
 //this should begin by sending the question prompt
-export function beginDialog(atd: AutoTutorData): string[] {
-  return [atd.questionIntro, atd.questionText];
+export function beginDialog(atd: AutoTutorData): OpenTutorResponse[] {
+  return [
+    createTextResponse(atd.questionIntro, 'opening'),
+    createTextResponse(atd.questionText, 'mainQuestion'),
+  ];
 }
 
 export async function processUserResponse(
   lessonId: string,
   atd: AutoTutorData,
   sdp: SessionDataPacket
-): Promise<string[]> {
+): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
   try {
     classifierResult = await evaluate({
@@ -58,13 +62,17 @@ export async function processUserResponse(
       sdp.dialogState.expectationsCompleted[
         sdp.dialogState.expectationsCompleted.indexOf(false)
       ] = true;
-      return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
+      return [
+        createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
+      ].concat(toNextExpectation(atd, sdp));
     } else {
       //prompt not answered correctly, assert
       sdp.dialogState.expectationsCompleted[
         sdp.dialogState.expectationsCompleted.indexOf(false)
       ] = true;
-      return [prompt[0].answer].concat(toNextExpectation(atd, sdp));
+      return [createTextResponse(prompt[0].answer)].concat(
+        toNextExpectation(atd, sdp)
+      );
     }
   }
 
@@ -82,16 +90,20 @@ export async function processUserResponse(
       //hint answered successfully
       updateCompletedExpectations(expectationResults, sdp);
       sdp.dialogState.expectationsCompleted[expectationId] = true;
-      return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
+      return [
+        createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
+      ].concat(toNextExpectation(atd, sdp));
     } else {
       //hint not answered correctly, send prompt
       const prompt: Prompt = atd.prompts.find(
         p => p.expectationId == expectationId
       );
       return [
-        atd.confusionFeedback[0],
-        atd.promptStart[0],
-        prompt ? prompt.prompt : '[trying to prompt when no prompts left?]',
+        createTextResponse(atd.confusionFeedback[0]),
+        createTextResponse(atd.promptStart[0]),
+        prompt
+          ? createTextResponse(prompt.prompt, 'prompt')
+          : createTextResponse('trying to prompt when no prompts left?'),
       ];
     }
   }
@@ -102,7 +114,7 @@ export async function processUserResponse(
     )
   ) {
     //perfect answer
-    return atd.recapText;
+    return atd.recapText.map(rt => createTextResponse(rt, 'closing'));
   }
   if (
     expectationResults.every(
@@ -110,7 +122,9 @@ export async function processUserResponse(
     )
   ) {
     //answer did not match any expectation, guide user through expectations
-    return atd.pump.concat(toNextExpectation(atd, sdp));
+    return [createTextResponse(atd.pump[0])].concat(
+      toNextExpectation(atd, sdp)
+    );
   }
   if (
     expectationResults.find(
@@ -119,7 +133,9 @@ export async function processUserResponse(
   ) {
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp);
-    return [atd.positiveFeedback[0]].concat(toNextExpectation(atd, sdp));
+    return [
+      createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
+    ].concat(toNextExpectation(atd, sdp));
   }
   if (
     expectationResults.find(
@@ -135,12 +151,12 @@ export async function processUserResponse(
     sdp.dialogState.hints = true;
     // sdp.dialogState.expectationsCompleted[expectationId] = true;
     return [
-      atd.confusionFeedback[0],
-      atd.hintStart[0],
-      atd.hints[expectationId],
+      createTextResponse(atd.confusionFeedback[0], 'feedbackNegative'),
+      createTextResponse(atd.hintStart[0]),
+      createTextResponse(atd.hints[expectationId], 'hint'),
     ];
   }
-  return ['this path has not been implemented yet.'];
+  return [createTextResponse('this path has not been implemented yet.')];
 }
 
 function updateCompletedExpectations(
@@ -163,19 +179,27 @@ function updateCompletedExpectations(
       (sdp.dialogState.expectationsCompleted[expectationId] = true)
   );
 }
-export function toNextExpectation(atd: AutoTutorData, sdp: SessionDataPacket) {
+export function toNextExpectation(
+  atd: AutoTutorData,
+  sdp: SessionDataPacket
+): OpenTutorResponse[] {
   //give positive feedback, and ask next expectation question
-  let answer: string[] = [];
+  let answer: OpenTutorResponse[] = [];
   // console.log(sdp.dialogState.expectationsCompleted);
   if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
     sdp.dialogState.hints = true;
-    answer.push(atd.hintStart[0]);
+    answer.push(createTextResponse(atd.hintStart[0]));
     answer.push(
-      atd.hints[sdp.dialogState.expectationsCompleted.indexOf(false)]
+      createTextResponse(
+        atd.hints[sdp.dialogState.expectationsCompleted.indexOf(false)],
+        'hint'
+      )
     );
   } else {
     //all expectations completed
-    answer = answer.concat(atd.recapText);
+    answer = answer.concat(
+      atd.recapText.map(rt => createTextResponse(rt, 'closing'))
+    );
   }
   return answer;
 }

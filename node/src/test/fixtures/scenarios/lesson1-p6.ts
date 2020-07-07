@@ -22,7 +22,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'text',
+          type: 'feedbackPositive',
           data: {
             text: 'Great',
           },
@@ -36,7 +36,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: 'text',
+          type: 'hint',
           data: {
             text: 'How can it affect someone when you correct their behavior?',
           },
@@ -74,7 +74,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: 'text',
+          type: 'prompt',
           data: {
             text:
               'How can it affect someone emotionally when you correct their behavior?',
@@ -98,7 +98,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'text',
+          type: 'feedbackPositive',
           data: {
             text: 'Great',
           },
@@ -112,7 +112,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: 'text',
+          type: 'hint',
           data: {
             text: "How can it affect you when you correct someone's behavior?",
           },
