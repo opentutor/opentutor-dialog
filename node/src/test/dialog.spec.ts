@@ -3,9 +3,11 @@ import axios from 'axios';
 import MockAxios from 'axios-mock-adapter';
 import { expect } from 'chai';
 import { Express } from 'express';
+import { dataToDto, SessionData, SessionDto } from 'models/session-data';
+import { ClassifierResult, Evaluation } from 'models/classifier';
 import { all as allScenarios } from 'test/fixtures/scenarios';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
-import { Evaluation } from 'models/classifier';
+import { describe, it } from 'mocha';
 
 describe('dialog', () => {
   let app: Express;
@@ -34,20 +36,29 @@ describe('dialog', () => {
     // });
     const lessonId = 'q1';
 
-    const validSessionObj = {
+    const validSessionData: SessionData = {
+      dialogState: {
+        expectationsCompleted: [false],
+        hints: false,
+      },
       sessionHistory: {
-        userResponses: new Array<string>(),
+        classifierGrades: new Array<ClassifierResult>(),
         systemResponses: [
-          'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+          [
+            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+          ],
         ],
+        userResponses: new Array<string>(),
         userScores: new Array<number>(),
       },
       sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
       previousUserResponse: '',
-      previousSystemResponse:
+      previousSystemResponse: [
         'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-      hash: '14ba63452d31b62cfadb0f4a869ee17a065d05d15bad01d698d4d1141bfbf01f',
+      ],
     };
+
+    const validSessionDto = dataToDto(validSessionData);
 
     it('responds with a 502 error if 500 error calling classifier', async () => {
       if (mockAxios) {
@@ -57,7 +68,7 @@ describe('dialog', () => {
         });
         const response = await postSession(lessonId, app, {
           message: 'peer pressure',
-          sessionInfo: validSessionObj,
+          sessionInfo: validSessionDto,
         });
         expect(response.status).to.equal(502);
       }
@@ -71,7 +82,7 @@ describe('dialog', () => {
       const response = await postSession(lessonId, app, {
         lessonId: lessonId,
         message: 'peer pressure',
-        sessionInfo: validSessionObj,
+        sessionInfo: validSessionDto,
       });
       expect(response.status).to.equal(404);
       expect(response.body).to.have.property(
@@ -195,17 +206,18 @@ describe('dialog', () => {
       );
     });
 
-    it('sends an error if user tries to tinker with the session data', async () => {
+    it('sends an error if user tries to tamper with the session data', async () => {
+      const tampered: SessionDto = dataToDto({
+        ...validSessionData,
+        sessionHistory: {
+          ...validSessionData.sessionHistory,
+          userScores: [...validSessionData.sessionHistory.userScores, 10],
+        },
+      });
+      tampered.hash = validSessionDto.hash;
       const response = await postSession(lessonId, app, {
         message: 'peer pressure',
-        sessionInfo: {
-          ...validSessionObj,
-          hash: 'something-wrong',
-          sessionHistory: {
-            ...validSessionObj.sessionHistory,
-            userScores: [...validSessionObj.sessionHistory.userScores, 10],
-          },
-        },
+        sessionInfo: tampered,
       });
       expect(response.status).to.equal(403);
     });

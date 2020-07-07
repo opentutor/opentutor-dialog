@@ -5,18 +5,20 @@ import AutoTutorData, {
   currentFlow,
 } from 'models/autotutor-data';
 import 'models/opentutor-response';
-import SessionDataPacket, {
-  hasHistoryBeenTampered,
-  newSessionDataPacket,
-  updateHash,
-  addTutorDialog,
-  addUserDialog,
-} from 'models/session-data-packet';
 import {
-  processUserResponse,
   beginDialog,
   calculateScore,
+  processUserResponse,
 } from 'models/dialog-system';
+import {
+  addTutorDialog,
+  addUserDialog,
+  dtoToData,
+  dataToDto,
+  hasHistoryBeenTampered,
+  newSession,
+  SessionData,
+} from 'models/session-data';
 import { sendGraderRequest } from 'models/grader';
 import Joi from '@hapi/joi';
 
@@ -51,16 +53,16 @@ router.post('/:lessonId', (req: Request, res: Response, next: NextFunction) => {
         break;
     }
     //new sessionDataPacket
-    const sdp = newSessionDataPacket(atd, body.sessionId);
+    const sdp = newSession(atd, body.sessionId);
     addTutorDialog(sdp, beginDialog(atd));
-    updateHash(sdp);
     res.send({
       status: 'ok',
       lessonId: lessonId,
-      sessionInfo: sdp,
+      sessionInfo: dataToDto(sdp),
       response: beginDialog(atd),
     });
   } catch (err) {
+    console.error(err);
     return next(err);
   }
 });
@@ -70,7 +72,11 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const lessonId = req.params['lessonId'];
-      const sessionData: SessionDataPacket = req.body['sessionInfo'];
+      const sessionDto = req.body['sessionInfo'];
+      if (hasHistoryBeenTampered(sessionDto.sessionHistory, sessionDto.hash)) {
+        return res.status(403).send();
+      }
+      const sessionData: SessionData = dtoToData(sessionDto);
       let atd: AutoTutorData;
       switch (lessonId) {
         case 'q1':
@@ -82,25 +88,19 @@ router.post(
         default:
           break;
       }
-      if (
-        hasHistoryBeenTampered(sessionData.sessionHistory, sessionData.hash)
-      ) {
-        return res.status(403).send();
-      }
       addUserDialog(sessionData, req.body['message']);
       const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);
-      updateHash(sessionData);
-      //before sending the response, send the grader the message too.
       const graderResponse = sendGraderRequest(atd, sessionData);
       res.send({
         status: 'ok',
-        sessionInfo: sessionData,
+        sessionInfo: dataToDto(sessionData),
         response: msg,
         sentToGrader: graderResponse,
         score: calculateScore(sessionData, atd),
       });
     } catch (err) {
+      console.error(err);
       return next(err);
     }
   }
