@@ -80,6 +80,52 @@ describe('dialog', () => {
       );
     });
 
+    it('returns a score between 0 and 1', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/classifier').reply(config => {
+          return [
+                    200,
+                    {
+                      output: {
+                        expectationResults: [
+                          { evaluation: Evaluation.Good, score: 1.0 },
+                          { evaluation: Evaluation.Good, score: 1.0 },
+                          { evaluation: Evaluation.Good, score: 1.0 },
+                        ],
+                      },
+                    },
+                  ];
+        });
+        mockAxios.onPost('/grading-api').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
+          // expect(reqBody).to.have.property('userResponses', ['correct answer']);
+          // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
+          return [200, { message: 'success' }];
+        });
+      }
+      const responseStartSession = await postDialog('q1', app, {
+        lessonId: 'q1',
+        id: '1',
+        user: 'rush',
+        UseDB: true,
+        ScriptXML: null,
+        LSASpaceName: 'English_TASA',
+        ScriptURL: null,
+      });
+      let sessionObj = responseStartSession.body.sessionInfo;
+      const response = await postSession(lessonId, app, {
+        lessonId: 'q1',
+        message: 'peer pressure',
+        sessionInfo: sessionObj,
+      });
+
+      expect(response.body).to.have.property('score');
+      expect(response.body.score).to.be.at.least(0.0);
+      expect(response.body.score).to.be.at.most(1.0);
+    });
+
     // it('sends the session data to the grader at the end of the dialog', async () => {
     //   if (mockAxios) {
     //     mockAxios.reset();
