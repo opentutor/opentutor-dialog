@@ -99,7 +99,7 @@ export async function processUserResponse(
         p => p.expectationId == expectationId
       );
       return [
-        createTextResponse(atd.confusionFeedback[0]),
+        createTextResponse(atd.confusionFeedback[0], 'feedbackNegative'),
         createTextResponse(atd.promptStart[0]),
         prompt
           ? createTextResponse(prompt.prompt, 'prompt')

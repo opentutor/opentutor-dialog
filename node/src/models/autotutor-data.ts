@@ -51,6 +51,11 @@ export const navyIntegrity: AutoTutorData = {
       answer: 'peer pressure',
       expectationId: 0,
     },
+    {
+      prompt: 'Integrity means doing the right thing even when it is _____ ?',
+      answer: 'unpopular',
+      expectationId: 2,
+    },
   ],
   hints: [
     'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',

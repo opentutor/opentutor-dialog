@@ -59,7 +59,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'text',
+          type: 'feedbackNegative',
           data: {
             text:
               'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',

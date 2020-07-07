@@ -125,6 +125,7 @@ describe('dialog', () => {
         LSASpaceName: 'English_TASA',
         ScriptURL: null,
       });
+      console.log(responseStartSession.body);
       let sessionObj = responseStartSession.body.sessionInfo;
       const response = await postSession(lessonId, app, {
         lessonId: 'q1',
