@@ -1,5 +1,5 @@
 import AutoTutorData, { Prompt } from 'models/autotutor-data';
-import SessionDataPacket, { addClassifierGrades } from './session-data-packet';
+import SessionData, { addClassifierGrades } from './session-data';
 import {
   evaluate,
   ClassifierResponse,
@@ -20,7 +20,7 @@ export function beginDialog(atd: AutoTutorData): string[] {
 export async function processUserResponse(
   lessonId: string,
   atd: AutoTutorData,
-  sdp: SessionDataPacket
+  sdp: SessionData
 ): Promise<string[]> {
   let classifierResult: ClassifierResponse;
   try {
@@ -145,7 +145,7 @@ export async function processUserResponse(
 
 function updateCompletedExpectations(
   expectationResults: ExpectationResult[],
-  sdp: SessionDataPacket
+  sdp: SessionData
 ) {
   //this function basically updates the dialog state to denote whichever expectations are met.
   const expectationIds: number[] = [];
@@ -163,7 +163,7 @@ function updateCompletedExpectations(
       (sdp.dialogState.expectationsCompleted[expectationId] = true)
   );
 }
-export function toNextExpectation(atd: AutoTutorData, sdp: SessionDataPacket) {
+export function toNextExpectation(atd: AutoTutorData, sdp: SessionData) {
   //give positive feedback, and ask next expectation question
   let answer: string[] = [];
   // console.log(sdp.dialogState.expectationsCompleted);

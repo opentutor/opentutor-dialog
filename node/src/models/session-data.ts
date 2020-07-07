@@ -7,9 +7,17 @@ import { ClassifierResult } from './classifier';
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
 
-export default interface SessionDataPacket {
+export interface SessionData {
   sessionId: string;
   sessionHistory: SessionHistory;
+  previousUserResponse: string;
+  previousSystemResponse: string[];
+  dialogState: DialogState;
+}
+
+export interface SessionDto {
+  sessionId: string;
+  sessionHistory: string;
   previousUserResponse: string;
   previousSystemResponse: string[];
   dialogState: DialogState;
@@ -28,39 +36,50 @@ export interface SessionHistory {
   systemResponses: string[][];
 }
 
-export function addUserDialog(sdp: SessionDataPacket, message: string) {
+export function dtoToData(d: SessionDto): SessionData {
+  return {
+    sessionId: d.sessionId,
+    sessionHistory: JSON.parse(d.sessionHistory) as SessionHistory,
+    previousUserResponse: d.previousUserResponse,
+    previousSystemResponse: d.previousSystemResponse,
+    dialogState: d.dialogState,
+  };
+}
+
+export function dataToDto(d: SessionData): SessionDto {
+  const sh = JSON.stringify(d.sessionHistory);
+  return {
+    sessionId: d.sessionId,
+    sessionHistory: sh,
+    previousUserResponse: d.previousUserResponse,
+    previousSystemResponse: d.previousSystemResponse,
+    dialogState: d.dialogState,
+    hash: getHash(sh),
+  };
+}
+
+export function addUserDialog(sdp: SessionData, message: string) {
   sdp.previousUserResponse = message;
   sdp.sessionHistory.userResponses.push(message);
 }
 
-export function addTutorDialog(sdp: SessionDataPacket, message: string[]) {
+export function addTutorDialog(sdp: SessionData, message: string[]) {
   sdp.previousSystemResponse = message;
   sdp.sessionHistory.systemResponses.push(message);
 }
 
 export function addClassifierGrades(
-  sdp: SessionDataPacket,
+  sdp: SessionData,
   result: ClassifierResult
 ) {
-  console.log('adding to session history');
-  console.log(result);
   sdp.sessionHistory.classifierGrades.push(result);
-  console.log('done');
 }
 
-//updates the hash for the object
-export function updateHash(sdp: SessionDataPacket) {
-  sdp.hash = getHash(sdp.sessionHistory);
-}
-
-function getHash(sh: SessionHistory): string {
+function getHash(sh: string): string {
   return sha256(JSON.stringify(sh), SESSION_SECURITY_KEY).toString();
 }
 
-export function newSessionDataPacket(
-  atd: AutoTutorData,
-  sessionId = ''
-): SessionDataPacket {
+export function newSession(atd: AutoTutorData, sessionId = ''): SessionData {
   const sh = {
     userResponses: new Array<string>(),
     systemResponses: new Array<string[]>(),
@@ -76,7 +95,6 @@ export function newSessionDataPacket(
       expectationsCompleted: atd.expectations.map(() => false),
       hints: false,
     },
-    hash: getHash(sh),
   };
 }
 
@@ -84,3 +102,5 @@ export function hasHistoryBeenTampered(hist: SessionHistory, hash: string) {
   const newhash = sha256(JSON.stringify(hist), SESSION_SECURITY_KEY).toString();
   return !(newhash == hash);
 }
+
+export default SessionData;

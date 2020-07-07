@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { logger } from 'utils/logging';
 import AutoTutorData from './autotutor-data';
-import SessionDataPacket from './session-data-packet';
+import SessionData from './session-data';
 
 export interface GraderRequest {
   sessionId: string;
@@ -37,7 +37,7 @@ const GRADER_ENDPOINT = process.env.GRADER_ENDPOINT || '/grading-api';
 
 export function createGraderObject(
   atd: AutoTutorData,
-  sdp: SessionDataPacket
+  sdp: SessionData
 ): GraderRequest {
   const expectationScores: ExpectationScores[] = sdp.sessionHistory.classifierGrades.map(
     r => {
@@ -75,7 +75,7 @@ export function createGraderObject(
 }
 export async function sendGraderRequest(
   atd: AutoTutorData,
-  sdp: SessionDataPacket
+  sdp: SessionData
 ): Promise<string> {
   const request: GraderRequest = createGraderObject(atd, sdp);
   logger.debug(
