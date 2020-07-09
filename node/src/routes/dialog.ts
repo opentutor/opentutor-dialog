@@ -50,6 +50,7 @@ router.post('/:lessonId', (req: Request, res: Response, next: NextFunction) => {
         atd = currentFlow;
         break;
       default:
+        return res.status(404).send();
         break;
     }
     //new sessionDataPacket
@@ -86,6 +87,7 @@ router.post(
           atd = currentFlow;
           break;
         default:
+          return res.status(404).send();
           break;
       }
       addUserDialog(sessionData, req.body['message']);

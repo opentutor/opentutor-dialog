@@ -60,6 +60,13 @@ describe('dialog', () => {
 
     const validSessionDto = dataToDto(validSessionData);
 
+    it('responds with a 404 error if lesson Id passed does not corrospond to a valid lesson', async () => {
+      const response = await postDialog('q3', app, {
+        lessonId: 'q3'
+      });
+      expect(response.status).to.equal(404);
+    });
+
     it('responds with a 502 error if 500 error calling classifier', async () => {
       if (mockAxios) {
         mockAxios.reset();
