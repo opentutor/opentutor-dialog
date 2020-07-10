@@ -21,6 +21,7 @@ import {
 } from 'models/session-data';
 import { sendGraderRequest } from 'models/grader';
 import Joi from '@hapi/joi';
+import logger from 'utils/logging';
 
 const router = express.Router({ mergeParams: true });
 
@@ -102,7 +103,7 @@ router.post(
         score: calculateScore(sessionData, atd),
       });
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       return next(err);
     }
   }
