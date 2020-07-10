@@ -83,6 +83,21 @@ export async function processUserResponse(
   if (hintText.length > 0) {
     //response is to a hint
     const expectationId: number = atd.hints.indexOf(hintText[0]);
+    const finalResponses: Array<OpenTutorResponse> = [];
+    //check if any other expectations were met
+    expectationResults.forEach((e, id) => {
+      if (
+        e.evaluation === Evaluation.Good &&
+        e.score > upperThreshold &&
+        id != expectationId
+      ) {
+        //meets ANOTHER expectation
+        //add some neutral response
+        const neutralResponse = 'Good point! But lets focus on this part.';
+        finalResponses.push(createTextResponse(neutralResponse));
+        updateCompletedExpectations(expectationResults, sdp);
+      }
+    });
     if (
       expectationResults[expectationId].evaluation === Evaluation.Good &&
       expectationResults[expectationId].score > upperThreshold
@@ -90,21 +105,25 @@ export async function processUserResponse(
       //hint answered successfully
       updateCompletedExpectations(expectationResults, sdp);
       sdp.dialogState.expectationsCompleted[expectationId] = true;
-      return [
-        createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
-      ].concat(toNextExpectation(atd, sdp));
+      finalResponses.push(
+        createTextResponse(atd.positiveFeedback[0], 'feedbackPositive')
+      );
+      return finalResponses.concat(toNextExpectation(atd, sdp));
     } else {
       //hint not answered correctly, send prompt
       const prompt: Prompt = atd.prompts.find(
         p => p.expectationId == expectationId
       );
-      return [
-        createTextResponse(atd.confusionFeedback[0], 'feedbackNegative'),
-        createTextResponse(atd.promptStart[0]),
+      finalResponses.push(
+        createTextResponse(atd.confusionFeedback[0], 'feedbackNegative')
+      );
+      finalResponses.push(createTextResponse(atd.promptStart[0]));
+      finalResponses.push(
         prompt
           ? createTextResponse(prompt.prompt, 'prompt')
-          : createTextResponse('trying to prompt when no prompts left?'),
-      ];
+          : createTextResponse('trying to prompt when no prompts left?')
+      );
+      return finalResponses;
     }
   }
 
