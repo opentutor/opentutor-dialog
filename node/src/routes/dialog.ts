@@ -77,7 +77,13 @@ router.post(
       if (hasHistoryBeenTampered(sessionDto.sessionHistory, sessionDto.hash)) {
         return res.status(403).send();
       }
+
       const sessionData: SessionData = dtoToData(sessionDto);
+      //if last system message was a closing, send error
+      if(sessionData.dialogState.expectationsCompleted.every(v=> v==true)){
+        return res.status(410).send();
+      }
+
       let atd: AutoTutorData;
       switch (lessonId) {
         case 'q1':
@@ -94,6 +100,7 @@ router.post(
       const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);
       const graderResponse = sendGraderRequest(atd, sessionData);
+      // console.log(JSON.stringify(sessionData));
       res.send({
         status: 'ok',
         sessionInfo: dataToDto(sessionData),

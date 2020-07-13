@@ -58,6 +58,28 @@ describe('dialog', () => {
       ],
     };
 
+    const completedSessionData: SessionData = {
+      dialogState: {
+        expectationsCompleted: [true],
+        hints: false,
+      },
+      sessionHistory: {
+        classifierGrades: new Array<ClassifierResult>(),
+        systemResponses: [
+          [
+            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+          ],
+        ],
+        userResponses: new Array<string>(),
+        userScores: new Array<number>(),
+      },
+      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+      previousUserResponse: '',
+      previousSystemResponse: [
+        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+      ],
+    }
+
     const validSessionDto = dataToDto(validSessionData);
 
     it('responds with a 404 error if lesson Id passed does not corrospond to a valid lesson', async () => {
@@ -229,7 +251,42 @@ describe('dialog', () => {
       });
       expect(response.status).to.equal(403);
     });
+
+    it('sends an error if client sends dialog when the session is complete.', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/classifier').reply(config => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                ],
+              },
+            },
+          ];
+        });
+        mockAxios.onPost('/grading-api').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
+          // expect(reqBody).to.have.property('userResponses', ['correct answer']);
+          // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
+          return [200, { message: 'success' }];
+        });
+      }
+      const completedSession: SessionDto = dataToDto(completedSessionData);
+      const response = await postSession(lessonId, app, {
+        message: 'another message',
+        sessionInfo: completedSession,
+      });
+      expect(response.status).to.equal(410);
+    });
   });
+
+  
 
   allScenarios.forEach(ex => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
