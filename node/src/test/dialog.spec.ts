@@ -284,7 +284,18 @@ describe('dialog', () => {
       });
       expect(response.status).to.equal(410);
     });
+
+
+  it('successfully sends a request to the graphql endpoint for data', async () => {
+    const responseStartSession  = await postDialog('navyIntegrity', app, {
+      lessonId: 'navyIntegrity',
+    });
+    expect(responseStartSession.status).to.equal(200);
+    expect(responseStartSession.body).to.have.property('response');
   });
+
+  });
+
 
   allScenarios.forEach(ex => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {

@@ -1,3 +1,5 @@
+import { LessonResponse } from "./graphql";
+
 export default interface AutoTutorData {
   rootExpectationId: number;
   expectations: string[];
@@ -16,6 +18,43 @@ export default interface AutoTutorData {
   promptStart: string[];
   media: object;
   originalXml: string;
+}
+
+export function convertLessonDataToATData(lessonData: LessonResponse) {
+   const defaultData: AutoTutorData = {
+    rootExpectationId: 0,
+    expectations: [
+    ],
+    questionIntro: "",
+    questionText:
+      '',
+    recapText: [
+    ],
+    confusionFeedback: [
+      'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+    ],
+    positiveFeedback: ['Great'],
+    negativeFeedback: ["No that's not how it works"],
+    neutralFeedback: ['OK'],
+    prompts: [
+    ],
+    hints: [
+    ],
+    pump: ["Let's work through this together"],
+    hintStart: ['Consider this.'],
+    promptStart: ['See if you can get this'],
+    pumpBlank: [],
+    media: {},
+    originalXml: '',
+  };
+
+  defaultData.hints = lessonData.expectations.map(e => e.hints[0].hint);
+  defaultData.questionIntro = lessonData.intro;
+  defaultData.questionText = lessonData.mainQuestion;
+  defaultData.recapText = lessonData.conclusion;
+  defaultData.expectations = lessonData.expectations.map(e => e.expectation);
+
+  return defaultData;
 }
 
 export const navyIntegrity: AutoTutorData = {
@@ -104,6 +143,9 @@ export const currentFlow: AutoTutorData = {
   media: {},
   originalXml: '',
 };
+
+
+
 
 export interface Prompt {
   prompt: string;
