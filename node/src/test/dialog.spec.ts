@@ -78,7 +78,7 @@ describe('dialog', () => {
       previousSystemResponse: [
         'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
       ],
-    }
+    };
 
     const validSessionDto = dataToDto(validSessionData);
 
@@ -285,8 +285,6 @@ describe('dialog', () => {
       expect(response.status).to.equal(410);
     });
   });
-
-  
 
   allScenarios.forEach(ex => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {

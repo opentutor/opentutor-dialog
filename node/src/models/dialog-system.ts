@@ -133,7 +133,9 @@ export async function processUserResponse(
     )
   ) {
     //perfect answer
-    return atd.recapText.map(rt => createTextResponse(rt, 'closing'));
+    return [
+      createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
+    ].concat(atd.recapText.map(rt => createTextResponse(rt, 'closing')));
   }
   if (
     expectationResults.every(

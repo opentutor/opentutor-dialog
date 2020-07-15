@@ -81,7 +81,7 @@ router.post(
 
       const sessionData: SessionData = dtoToData(sessionDto);
       //if last system message was a closing, send error
-      if(sessionData.dialogState.expectationsCompleted.every(v=> v==true)){
+      if (sessionData.dialogState.expectationsCompleted.every(v => v == true)) {
         return res.status(410).send();
       }
 

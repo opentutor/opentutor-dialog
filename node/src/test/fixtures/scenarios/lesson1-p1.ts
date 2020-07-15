@@ -23,6 +23,13 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
+          type: 'feedbackPositive',
+          data: {
+            text: 'Great',
+          },
+        },
+        {
+          author: 'them',
           type: 'closing',
           data: {
             text:
