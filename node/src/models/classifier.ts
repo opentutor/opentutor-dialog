@@ -2,11 +2,20 @@ import axios from 'axios';
 import { logger } from 'utils/logging';
 
 export interface ClassfierRequest {
-  question: string;
-  inputSentence: string;
+  lesson: string;
+  input: string;
+  config: ClassifierConfig;
   expectation?: number;
 }
 
+export interface ClassifierConfig {
+  question: string;
+  expectations: Expectation[];
+}
+
+export interface Expectation {
+  ideal: string;
+}
 export enum Evaluation {
   Good = 'Good',
   Bad = 'Bad',

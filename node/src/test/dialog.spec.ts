@@ -150,10 +150,6 @@ describe('dialog', () => {
           ];
         });
         mockAxios.onPost('/grading-api').reply(config => {
-          const reqBody = JSON.parse(config.data);
-          //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
-          // expect(reqBody).to.have.property('userResponses', ['correct answer']);
-          // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
           return [200, { message: 'success' }];
         });
       }
@@ -283,9 +279,6 @@ describe('dialog', () => {
         });
         mockAxios.onPost('/grading-api').reply(config => {
           const reqBody = JSON.parse(config.data);
-          //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
-          // expect(reqBody).to.have.property('userResponses', ['correct answer']);
-          // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
           return [200, { message: 'success' }];
         });
       }
@@ -333,8 +326,9 @@ describe('dialog', () => {
           mockAxios.reset();
           mockAxios.onPost('/classifier').reply(config => {
             const reqBody = JSON.parse(config.data);
-            expect(reqBody).to.have.property('question', ex.lessonId);
-            expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
+            expect(reqBody).to.have.property('lesson', ex.lessonId);
+            expect(reqBody).to.have.property('input', reqRes.userInput);
+            expect(reqBody).to.have.property('config');
             return [
               reqRes.mockClassifierResponse.status || 200,
               reqRes.mockClassifierResponse.data,
@@ -359,7 +353,6 @@ describe('dialog', () => {
           reqRes.expectedResponse
         );
         expect(response.body).to.have.property('completed');
-        console.log(response.body.completed);
         sessionObj = response.body.sessionInfo;
       }
     });
