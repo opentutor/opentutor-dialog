@@ -67,7 +67,7 @@ export function createGraderObject(
     question: {
       text: atd.questionText,
       expectations: atd.expectations.map(e => {
-        return { text: e } as Expectation;
+        return { text: e.expectation } as Expectation;
       }),
     },
     userResponses: userResponses,

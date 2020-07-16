@@ -1,4 +1,4 @@
-import AutoTutorData, { Prompt } from 'models/autotutor-data';
+import AutoTutorData, { Prompt, Expectation } from 'models/autotutor-data';
 import SessionData, { addClassifierGrades } from './session-data';
 import {
   evaluate,
@@ -47,10 +47,13 @@ export async function processUserResponse(
     expectationResults: classifierResult.output.expectationResults,
   });
   //check if response was for a prompt
-  const prompt: Prompt[] = atd.prompts.filter(function(n) {
-    return sdp.previousSystemResponse.indexOf(n.prompt) > -1;
+  let p: Prompt;
+  let e: Expectation = atd.expectations.find(function(e) {
+    p = e.prompts.find(p => sdp.previousSystemResponse.indexOf(p.prompt) > -1);
+    if (p) return true;
+    else return false;
   });
-  if (prompt.length > 0) {
+  if (e && p) {
     //response was to a prompt.
     if (
       expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
@@ -66,24 +69,26 @@ export async function processUserResponse(
         createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
       ].concat(toNextExpectation(atd, sdp));
     } else {
-      //prompt not answered correctly, assert
+      //prompt not answered correctly. Assert.
       sdp.dialogState.expectationsCompleted[
         sdp.dialogState.expectationsCompleted.indexOf(false)
       ] = true;
-      return [createTextResponse(prompt[0].answer)].concat(
-        toNextExpectation(atd, sdp)
-      );
+      return [createTextResponse(p.answer)].concat(toNextExpectation(atd, sdp));
     }
   }
 
   //check if response was to a hint
-  const hintText: string[] = atd.hints.filter(function(n) {
-    return sdp.previousSystemResponse.indexOf(n) > -1;
+  let h: string;
+  e = atd.expectations.find(function(e) {
+    h = e.hints.find(n => sdp.previousSystemResponse.indexOf(n) > -1);
+    if (h) return true;
+    else return false;
   });
-  if (hintText.length > 0) {
+  if (e && h) {
     //response is to a hint
-    const expectationId: number = atd.hints.indexOf(hintText[0]);
+    const expectationId: number = atd.expectations.indexOf(e);
     const finalResponses: Array<OpenTutorResponse> = [];
+
     //check if any other expectations were met
     expectationResults.forEach((e, id) => {
       if (
@@ -110,20 +115,22 @@ export async function processUserResponse(
       );
       return finalResponses.concat(toNextExpectation(atd, sdp));
     } else {
-      //hint not answered correctly, send prompt
-      const prompt: Prompt = atd.prompts.find(
-        p => p.expectationId == expectationId
-      );
-      finalResponses.push(
-        createTextResponse(atd.confusionFeedback[0], 'feedbackNegative')
-      );
-      finalResponses.push(createTextResponse(atd.promptStart[0]));
-      finalResponses.push(
-        prompt
-          ? createTextResponse(prompt.prompt, 'prompt')
-          : createTextResponse('trying to prompt when no prompts left?')
-      );
-      return finalResponses;
+      //hint not answered correctly, send prompt if exists
+
+      const prompt: Prompt = e.prompts[0];
+      if (prompt) {
+        finalResponses.push(
+          createTextResponse(atd.confusionFeedback[0], 'feedbackNegative')
+        );
+        finalResponses.push(createTextResponse(atd.promptStart[0]));
+        finalResponses.push(createTextResponse(prompt.prompt, 'prompt'));
+        return finalResponses;
+      } else {
+        finalResponses.push(
+          createTextResponse('trying to prompt when no prompts left?')
+        );
+        return finalResponses;
+      }
     }
   }
 
@@ -174,7 +181,7 @@ export async function processUserResponse(
     return [
       createTextResponse(atd.confusionFeedback[0], 'feedbackNegative'),
       createTextResponse(atd.hintStart[0]),
-      createTextResponse(atd.hints[expectationId], 'hint'),
+      createTextResponse(atd.expectations[expectationId].hints[0], 'hint'),
     ];
   }
   return [createTextResponse('this path has not been implemented yet.')];
@@ -212,7 +219,8 @@ export function toNextExpectation(
     answer.push(createTextResponse(atd.hintStart[0]));
     answer.push(
       createTextResponse(
-        atd.hints[sdp.dialogState.expectationsCompleted.indexOf(false)],
+        atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
+          .hints[0],
         'hint'
       )
     );
@@ -234,15 +242,3 @@ export function calculateScore(sdp: SessionData, atd: AutoTutorData): number {
     )
   );
 }
-// function isGood(eval: ExpectationResult){
-//   if(eval)
-// }
-// checks the session history to find out if user has met the expectations
-// and returns the set of unanswered expectations
-// function getUnansweredExpectations(atd: AutoTutorData, sdp: Session): string[] {
-//   const results: string[] = [];
-//   //   sdp.sessionHistory .forEach(element => {
-
-//   //   });
-//   return results;
-// }

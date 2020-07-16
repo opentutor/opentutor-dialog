@@ -2,7 +2,7 @@ import { LessonResponse } from './graphql';
 
 export default interface AutoTutorData {
   rootExpectationId: number;
-  expectations: string[];
+  expectations: Expectation[];
   questionIntro: string;
   questionText: string;
   recapText: string[];
@@ -10,14 +10,23 @@ export default interface AutoTutorData {
   positiveFeedback: string[];
   negativeFeedback: string[];
   neutralFeedback: string[];
-  prompts: Prompt[];
-  hints: string[];
   pump: string[];
   pumpBlank: string[];
   hintStart: string[];
   promptStart: string[];
   media: object;
   originalXml: string;
+}
+
+export interface Prompt {
+  prompt: string;
+  answer: string;
+}
+
+export interface Expectation {
+  expectation: string;
+  hints: string[];
+  prompts: Prompt[];
 }
 
 export function convertLessonDataToATData(lessonData: LessonResponse) {
@@ -33,8 +42,6 @@ export function convertLessonDataToATData(lessonData: LessonResponse) {
     positiveFeedback: ['Great'],
     negativeFeedback: ["No that's not how it works"],
     neutralFeedback: ['OK'],
-    prompts: [],
-    hints: [],
     pump: ["Let's work through this together"],
     hintStart: ['Consider this.'],
     promptStart: ['See if you can get this'],
@@ -43,11 +50,16 @@ export function convertLessonDataToATData(lessonData: LessonResponse) {
     originalXml: '',
   };
 
-  defaultData.hints = lessonData.expectations.map(e => e.hints[0].hint);
   defaultData.questionIntro = lessonData.intro;
   defaultData.questionText = lessonData.mainQuestion;
   defaultData.recapText = lessonData.conclusion;
-  defaultData.expectations = lessonData.expectations.map(e => e.expectation);
+  defaultData.expectations = lessonData.expectations.map(exp => {
+    return {
+      expectation: exp.expectation,
+      hints: exp.hints.map(h => h.hint),
+      prompts: [],
+    };
+  });
 
   return defaultData;
 }
@@ -55,10 +67,44 @@ export function convertLessonDataToATData(lessonData: LessonResponse) {
 export const navyIntegrity: AutoTutorData = {
   rootExpectationId: 0,
   expectations: [
-    'Peer pressure can cause you to allow inappropriate behavior.',
-    "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-    'Enforcing the rules can make you unpopular.',
+    {
+      expectation:
+        'Peer pressure can cause you to allow inappropriate behavior.',
+      hints: [
+        'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+      ],
+      prompts: [
+        {
+          prompt: 'What might cause you to lower your standards?',
+          answer: 'peer pressure',
+        },
+      ],
+    },
+    {
+      expectation:
+        "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+      hints: ['How can it affect someone when you correct their behavior?'],
+      prompts: [
+        {
+          prompt:
+            'How can it affect someone emotionally when you correct their behavior?',
+          answer: 'it may be harder to work with them',
+        },
+      ],
+    },
+    {
+      expectation: 'Enforcing the rules can make you unpopular.',
+      hints: ["How can it affect you when you correct someone's behavior?"],
+      prompts: [
+        {
+          prompt:
+            'Integrity means doing the right thing even when it is _____ ?',
+          answer: 'unpopular',
+        },
+      ],
+    },
   ],
+
   questionIntro: 'Here is a question about integrity, a key Navy attribute.',
   questionText:
     'What are the challenges to demonstrating integrity in a group?',
@@ -73,29 +119,6 @@ export const navyIntegrity: AutoTutorData = {
   positiveFeedback: ['Great'],
   negativeFeedback: ["No that's not how it works"],
   neutralFeedback: ['OK'],
-  prompts: [
-    {
-      prompt:
-        'How can it affect someone emotionally when you correct their behavior?',
-      answer: 'it may be harder to work with them',
-      expectationId: 1,
-    },
-    {
-      prompt: 'What might cause you to lower your standards?',
-      answer: 'peer pressure',
-      expectationId: 0,
-    },
-    {
-      prompt: 'Integrity means doing the right thing even when it is _____ ?',
-      answer: 'unpopular',
-      expectationId: 2,
-    },
-  ],
-  hints: [
-    'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-    'How can it affect someone when you correct their behavior?',
-    "How can it affect you when you correct someone's behavior?",
-  ],
   pump: ["Let's work through this together"],
   hintStart: ['Consider this.'],
   promptStart: ['See if you can get this'],
@@ -106,7 +129,20 @@ export const navyIntegrity: AutoTutorData = {
 
 export const currentFlow: AutoTutorData = {
   rootExpectationId: 0,
-  expectations: ['Current flows in the same direction as the arrow.'],
+  expectations: [
+    {
+      expectation: 'Current flows in the same direction as the arrow.',
+      hints: [
+        'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+      ],
+      prompts: [
+        {
+          prompt: 'What might cause you to lower your standards?',
+          answer: 'peer pressure',
+        },
+      ],
+    },
+  ],
   questionIntro:
     '_user_, this is a warm up question on the behavior of P-N junction diodes.',
   questionText:
@@ -121,16 +157,6 @@ export const currentFlow: AutoTutorData = {
   positiveFeedback: ['Great'],
   negativeFeedback: ["No that's not how it works"],
   neutralFeedback: ['OK'],
-  prompts: [
-    {
-      prompt: 'What might cause you to lower your standards?',
-      answer: 'peer pressure',
-      expectationId: 0,
-    },
-  ],
-  hints: [
-    'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-  ],
   pump: ["Let's work through this together"],
   hintStart: ['Consider this.'],
   promptStart: ['See if you can get this'],
@@ -138,9 +164,3 @@ export const currentFlow: AutoTutorData = {
   media: {},
   originalXml: '',
 };
-
-export interface Prompt {
-  prompt: string;
-  answer: string;
-  expectationId: number;
-}
