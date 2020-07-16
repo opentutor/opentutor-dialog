@@ -358,6 +358,8 @@ describe('dialog', () => {
         expect(response.body.response).to.deep.include.members(
           reqRes.expectedResponse
         );
+        expect(response.body).to.have.property('completed');
+        console.log(response.body.completed);
         sessionObj = response.body.sessionInfo;
       }
     });

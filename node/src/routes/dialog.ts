@@ -117,13 +117,15 @@ router.post(
       addUserDialog(sessionData, req.body['message']);
       const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);
-      const graderResponse = sendGraderRequest(atd, sessionData);
+      const graderResponse = sendGraderRequest(atd, sessionData) ? true : false;
+
       // console.log(JSON.stringify(sessionData));
       res.send({
         status: 'ok',
         sessionInfo: dataToDto(sessionData),
         response: msg,
         sentToGrader: graderResponse,
+        completed: msg.find(m => m.type === 'closing') ? true : false,
         score: calculateScore(sessionData, atd),
       });
     } catch (err) {
