@@ -30,7 +30,7 @@ export interface LessonResponse {
   updatedAt: string;
 }
 
-const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
+const GRAPHQL_ENDPOINT = process.env.GRADER_ENDPOINT || '/graphql';
 
 export async function getLessonData(lessonId: string): Promise<LessonResponse> {
   // const request: GraderRequest = createGraderObject(atd, sdp);
