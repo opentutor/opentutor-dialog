@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { Express } from 'express';
 import { dataToDto, SessionData, SessionDto } from 'models/session-data';
 import { ClassifierResult, Evaluation } from 'models/classifier';
+import { LessonResponse } from 'models/graphql';
 import { all as allScenarios } from 'test/fixtures/scenarios';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
@@ -35,6 +36,17 @@ describe('dialog', () => {
     //     .eql('"lessonId" is required');
     // });
     const lessonId = 'q1';
+
+    const lessonData: LessonResponse = {
+      lessonName: 'navyIntegrity',
+      lessonId: 'navyIntegrity',
+      intro: '',
+      mainQuestion: '',
+      expectations: [],
+      conclusion: ['a'],
+      createdAt: 'affadsas',
+      updatedAt: 'fdasasdf',
+    };
 
     const validSessionData: SessionData = {
       dialogState: {
@@ -285,17 +297,23 @@ describe('dialog', () => {
       expect(response.status).to.equal(410);
     });
 
-
-  it('successfully sends a request to the graphql endpoint for data', async () => {
-    const responseStartSession  = await postDialog('navyIntegrity', app, {
-      lessonId: 'navyIntegrity',
+    it('successfully sends a request to the graphql endpoint for data', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          // console.log(reqBody);
+          // expect(reqBody).to.have.property('lessonId', 'navyIntegrity');
+          return [200, lessonData];
+        });
+      }
+      const responseStartSession = await postDialog('navyIntegrity', app, {
+        lessonId: 'navyIntegrity',
+      });
+      expect(responseStartSession.status).to.equal(200);
+      expect(responseStartSession.body).to.have.property('response');
     });
-    expect(responseStartSession.status).to.equal(200);
-    expect(responseStartSession.body).to.have.property('response');
   });
-
-  });
-
 
   allScenarios.forEach(ex => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {

@@ -1,0 +1,67 @@
+import axios from 'axios';
+import { logger } from 'utils/logging';
+
+export interface Hint {
+  hint: string;
+}
+
+export interface LessonExpectation {
+  expectation: string;
+  hints: Hint[];
+}
+
+export interface Lesson {
+  lessonName: string;
+  lessonId: string;
+  intro: string;
+  mainQuestion: string;
+  expectations: LessonExpectation[];
+  conclusion: string[];
+}
+
+export interface LessonResponse {
+  lessonName: string;
+  lessonId: string;
+  intro: string;
+  mainQuestion: string;
+  expectations: LessonExpectation[];
+  conclusion: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
+
+export async function getLessonData(lessonId: string): Promise<LessonResponse> {
+  // const request: GraderRequest = createGraderObject(atd, sdp);
+  // logger.debug(
+  //   `grader request to ${GRADER_ENDPOINT}: ${JSON.stringify(request)}`
+  // );
+  // const response = await axios.post(GRADER_ENDPOINT, request);
+  //const userSession = encodeURI(JSON.stringify(request));
+  const response = await axios.post(GRAPHQL_ENDPOINT, {
+    query: `{
+        lesson(lessonId: "${lessonId}") {
+          id
+          lessonId
+          intro
+          question
+          conclusion
+          expectations {
+            expectation
+            hints {
+              text
+            }
+          }
+          createdAt
+          updatedAt
+        }
+      }
+      `,
+  });
+  return response.data;
+}
+
+export default {
+  getLessonData,
+};

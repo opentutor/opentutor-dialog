@@ -3,6 +3,7 @@ import createError from 'http-errors';
 import AutoTutorData, {
   navyIntegrity,
   currentFlow,
+  convertLessonDataToATData,
 } from 'models/autotutor-data';
 import 'models/opentutor-response';
 import {
@@ -22,6 +23,7 @@ import {
 import { sendGraderRequest } from 'models/grader';
 import Joi from '@hapi/joi';
 import logger from 'utils/logging';
+import { getLessonData } from 'models/graphql';
 
 const router = express.Router({ mergeParams: true });
 
@@ -33,41 +35,56 @@ const dialogSchema = Joi.object({
   sessionId: Joi.string(),
 }).unknown(true);
 
-router.post('/:lessonId', (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = dialogSchema.validate(req.body);
-    const { value: body, error } = result;
-    const valid = error == null;
-    if (!valid) {
-      return next(createError(400, error));
+router.post(
+  '/:lessonId',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = dialogSchema.validate(req.body);
+      const { value: body, error } = result;
+      const valid = error == null;
+      if (!valid) {
+        return next(createError(400, error));
+      }
+      const lessonId = req.params['lessonId'];
+      let atd: AutoTutorData;
+      switch (lessonId) {
+        case 'q1':
+          atd = navyIntegrity;
+          break;
+        case 'q2':
+          atd = currentFlow;
+          break;
+        default:
+          //request graphQL for data.
+          try {
+            atd = convertLessonDataToATData(await getLessonData(lessonId));
+          } catch (err) {
+            const status =
+              `${err.response && err.response.status}` === '404' ? 404 : 502;
+            const message =
+              status === 404
+                ? `classifier cannot find lesson '${lessonId}'`
+                : err.message;
+            throw Object.assign(err, { status, message });
+            return res.status(404).send();
+          }
+          break;
+      }
+      //new sessionDataPacket
+      const sdp = newSession(atd, body.sessionId);
+      addTutorDialog(sdp, beginDialog(atd));
+      res.send({
+        status: 'ok',
+        lessonId: lessonId,
+        sessionInfo: dataToDto(sdp),
+        response: beginDialog(atd),
+      });
+    } catch (err) {
+      console.error(err);
+      return next(err);
     }
-    const lessonId = req.params['lessonId'];
-    let atd: AutoTutorData;
-    switch (lessonId) {
-      case 'q1':
-        atd = navyIntegrity;
-        break;
-      case 'q2':
-        atd = currentFlow;
-        break;
-      default:
-        return res.status(404).send();
-        break;
-    }
-    //new sessionDataPacket
-    const sdp = newSession(atd, body.sessionId);
-    addTutorDialog(sdp, beginDialog(atd));
-    res.send({
-      status: 'ok',
-      lessonId: lessonId,
-      sessionInfo: dataToDto(sdp),
-      response: beginDialog(atd),
-    });
-  } catch (err) {
-    console.error(err);
-    return next(err);
   }
-});
+);
 
 router.post(
   '/:lessonId/session',
