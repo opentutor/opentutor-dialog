@@ -59,7 +59,7 @@ export async function getLessonData(lessonId: string): Promise<LessonResponse> {
       }
       `,
   });
-  return response.data;
+  return response.data.data.lesson;
 }
 
 export default {
