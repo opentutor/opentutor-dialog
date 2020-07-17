@@ -72,18 +72,31 @@ export async function processUserResponse(
         .score > upperThreshold
     ) {
       //prompt completed successfully
-      sdp.dialogState.expectationsCompleted[
-        sdp.dialogState.expectationsCompleted.indexOf(false)
-      ] = true;
+      const index = sdp.dialogState.expectationsCompleted.indexOf(false);
+      sdp.dialogState.expectationsCompleted[index] = true;
+      sdp.dialogState.expectationData[index].ideal =
+        atd.expectations[index].expectation;
+      sdp.dialogState.expectationData[index].satisfied = true;
+      sdp.dialogState.expectationData[index].score =
+        expectationResults[index].score;
+      sdp.dialogState.expectationData[index].status = 'complete';
+
       return [
         createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
       ].concat(toNextExpectation(atd, sdp));
     } else {
       //prompt not answered correctly. Assert.
-      sdp.dialogState.expectationsCompleted[
-        sdp.dialogState.expectationsCompleted.indexOf(false)
-      ] = true;
-      return [createTextResponse(p.answer)].concat(toNextExpectation(atd, sdp));
+      const index = sdp.dialogState.expectationsCompleted.indexOf(false);
+      sdp.dialogState.expectationsCompleted[index] = true;
+      sdp.dialogState.expectationData[index].ideal =
+        atd.expectations[index].expectation;
+      sdp.dialogState.expectationData[index].satisfied = false;
+      sdp.dialogState.expectationData[index].score =
+        expectationResults[index].score;
+      sdp.dialogState.expectationData[index].status = 'complete';
+      return [createTextResponse(p.answer, 'text')].concat(
+        toNextExpectation(atd, sdp)
+      );
     }
   }
 
@@ -110,7 +123,7 @@ export async function processUserResponse(
         //add some neutral response
         const neutralResponse = 'Good point! But lets focus on this part.';
         finalResponses.push(createTextResponse(neutralResponse));
-        updateCompletedExpectations(expectationResults, sdp);
+        updateCompletedExpectations(expectationResults, sdp, atd);
       }
     });
     if (
@@ -118,8 +131,14 @@ export async function processUserResponse(
       expectationResults[expectationId].score > upperThreshold
     ) {
       //hint answered successfully
-      updateCompletedExpectations(expectationResults, sdp);
+      updateCompletedExpectations(expectationResults, sdp, atd);
       sdp.dialogState.expectationsCompleted[expectationId] = true;
+      sdp.dialogState.expectationData[expectationId].ideal =
+        atd.expectations[expectationId].expectation;
+      sdp.dialogState.expectationData[expectationId].satisfied = true;
+      sdp.dialogState.expectationData[expectationId].score =
+        expectationResults[expectationId].score;
+      sdp.dialogState.expectationData[expectationId].status = 'complete';
       finalResponses.push(
         createTextResponse(atd.positiveFeedback[0], 'feedbackPositive')
       );
@@ -150,6 +169,7 @@ export async function processUserResponse(
     )
   ) {
     //perfect answer
+    updateCompletedExpectations(expectationResults, sdp, atd);
     return [
       createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
     ].concat(atd.recapText.map(rt => createTextResponse(rt, 'closing')));
@@ -170,7 +190,7 @@ export async function processUserResponse(
     )
   ) {
     //matched atleast one specific expectation
-    updateCompletedExpectations(expectationResults, sdp);
+    updateCompletedExpectations(expectationResults, sdp, atd);
     return [
       createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
     ].concat(toNextExpectation(atd, sdp));
@@ -187,6 +207,7 @@ export async function processUserResponse(
       )
     );
     sdp.dialogState.hints = true;
+    sdp.dialogState.expectationData[expectationId].status = 'active';
     // sdp.dialogState.expectationsCompleted[expectationId] = true;
     return [
       createTextResponse(atd.confusionFeedback[0], 'feedbackNegative'),
@@ -199,7 +220,8 @@ export async function processUserResponse(
 
 function updateCompletedExpectations(
   expectationResults: ExpectationResult[],
-  sdp: SessionData
+  sdp: SessionData,
+  atd: AutoTutorData
 ) {
   //this function basically updates the dialog state to denote whichever expectations are met.
   const expectationIds: number[] = [];
@@ -212,10 +234,15 @@ function updateCompletedExpectations(
       expectationIds.push(i);
     }
   }
-  expectationIds.forEach(
-    expectationId =>
-      (sdp.dialogState.expectationsCompleted[expectationId] = true)
-  );
+  expectationIds.forEach(expectationId => {
+    sdp.dialogState.expectationsCompleted[expectationId] = true;
+    sdp.dialogState.expectationData[expectationId].ideal =
+      atd.expectations[expectationId].expectation;
+    sdp.dialogState.expectationData[expectationId].status = 'complete';
+    sdp.dialogState.expectationData[expectationId].score =
+      expectationResults[expectationId].score;
+    sdp.dialogState.expectationData[expectationId].satisfied = true;
+  });
 }
 export function toNextExpectation(
   atd: AutoTutorData,
@@ -226,6 +253,9 @@ export function toNextExpectation(
   // console.log(sdp.dialogState.expectationsCompleted);
   if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
     sdp.dialogState.hints = true;
+    sdp.dialogState.expectationData[
+      sdp.dialogState.expectationsCompleted.indexOf(false)
+    ].status = 'active';
     answer.push(createTextResponse(atd.hintStart[0]));
     answer.push(
       createTextResponse(

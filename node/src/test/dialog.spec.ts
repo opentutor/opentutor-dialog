@@ -52,6 +52,7 @@ describe('dialog', () => {
       dialogState: {
         expectationsCompleted: [false],
         hints: false,
+        expectationData: [],
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -74,6 +75,7 @@ describe('dialog', () => {
       dialogState: {
         expectationsCompleted: [true],
         hints: false,
+        expectationData: [],
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -208,7 +210,7 @@ describe('dialog', () => {
     //   const response = await postSession(lessonId, app, {
     //     lessonId: 'q1',
     //     message: 'correct answer',
-    //     sessionInfo: validSessionObj,
+    //     sessionInfo: validSessionDto,
     //   });
     //   expect(response.status).to.equal(200);
     //   expect(response.body).to.have.property('sentToGrader');

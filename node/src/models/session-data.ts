@@ -27,7 +27,15 @@ export interface SessionDto {
 
 export interface DialogState {
   expectationsCompleted: boolean[];
+  expectationData: ExpectationData[];
   hints: boolean;
+}
+
+export interface ExpectationData {
+  ideal: string;
+  score: number;
+  satisfied: boolean;
+  status: string;
 }
 
 export interface SessionHistory {
@@ -97,9 +105,21 @@ export function newSession(atd: AutoTutorData, sessionId = ''): SessionData {
     previousSystemResponse: [],
     dialogState: {
       expectationsCompleted: atd.expectations.map(() => false),
+      expectationData: newExpectationData(atd),
       hints: false,
     },
   };
+}
+
+export function newExpectationData(atd: AutoTutorData): ExpectationData[] {
+  return atd.expectations.map((exp, ind) => {
+    return {
+      ideal: '',
+      score: 0,
+      satisfied: false,
+      status: 'none',
+    };
+  });
 }
 
 export function hasHistoryBeenTampered(hist: SessionHistory, hash: string) {

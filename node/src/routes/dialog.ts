@@ -19,6 +19,7 @@ import {
   hasHistoryBeenTampered,
   newSession,
   SessionData,
+  ExpectationData,
 } from 'models/session-data';
 import { sendGraderRequest } from 'models/grader';
 import Joi from '@hapi/joi';
@@ -118,8 +119,12 @@ router.post(
       const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);
       const graderResponse = sendGraderRequest(atd, sessionData) ? true : false;
+      const currentExpectation = sessionData.dialogState.expectationData.findIndex(
+        e => e.status === 'active'
+      );
 
-      // console.log(JSON.stringify(sessionData));
+      console.log(sessionData);
+      console.log(sessionData.dialogState.expectationData);
       res.send({
         status: 'ok',
         sessionInfo: dataToDto(sessionData),
@@ -127,6 +132,7 @@ router.post(
         sentToGrader: graderResponse,
         completed: msg.find(m => m.type === 'closing') ? true : false,
         score: calculateScore(sessionData, atd),
+        expectationActive: currentExpectation,
       });
     } catch (err) {
       logger.error(err);
