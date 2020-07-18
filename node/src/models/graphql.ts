@@ -17,22 +17,21 @@ export interface Lesson {
   mainQuestion: string;
   expectations: LessonExpectation[];
   conclusion: string[];
-}
-
-export interface LessonResponse {
-  lessonName: string;
-  lessonId: string;
-  intro: string;
-  mainQuestion: string;
-  expectations: LessonExpectation[];
-  conclusion: string[];
   createdAt: string;
   updatedAt: string;
 }
 
+export interface LessonWrapper {
+    lesson: Lesson;
+}
+
+export interface LessonResponse {
+    data: LessonWrapper;
+}
+
 const GRAPHQL_ENDPOINT = process.env.GRADER_ENDPOINT || '/graphql';
 
-export async function getLessonData(lessonId: string): Promise<LessonResponse> {
+export async function getLessonData(lessonId: string): Promise<Lesson> {
   // const request: GraderRequest = createGraderObject(atd, sdp);
   // logger.debug(
   //   `grader request to ${GRADER_ENDPOINT}: ${JSON.stringify(request)}`

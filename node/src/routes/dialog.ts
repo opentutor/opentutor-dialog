@@ -33,7 +33,7 @@ router.get('/ping', (req: Request, res: Response) => {
 });
 
 const dialogSchema = Joi.object({
-  sessionId: Joi.string(),
+  lessonId: Joi.string(),
 }).unknown(true);
 
 router.post(
@@ -146,6 +146,7 @@ router.post(
         expectationActive: currentExpectation,
       });
     } catch (err) {
+      console.log(err);
       logger.error(err);
       return next(err);
     }

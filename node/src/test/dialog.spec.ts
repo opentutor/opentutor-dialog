@@ -29,30 +29,54 @@ describe('dialog', () => {
 
   describe('POST', () => {
     // it('responds with a 400 error when no session info passed', async () => {
-    //   const response = await postDialog(app);
+    //   const response = await postDialog('q1', app);
     //   expect(response.status).to.equal(400);
     //   expect(response.body)
     //     .to.have.property('message')
-    //     .eql('"lessonId" is required');
+    //     .eql('lessonId is required');
     // });
+
     const lessonId = 'q1';
 
     const lessonData: LessonResponse = {
-      lessonName: 'navyIntegrity',
-      lessonId: 'navyIntegrity',
-      intro: '',
-      mainQuestion: '',
-      expectations: [],
-      conclusion: ['a'],
-      createdAt: 'affadsas',
-      updatedAt: 'fdasasdf',
+      data: {
+        lesson: {
+          lessonName: 'navyIntegrity',
+          lessonId: 'navyIntegrity',
+          intro: '',
+          mainQuestion: '',
+          expectations: [],
+          conclusion: ['a'],
+          createdAt: 'affadsas',
+          updatedAt: 'fdasasdf',
+        }
+      }
     };
 
     const validSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [false],
+        expectationData: [
+          {
+              ideal: "",
+              score: 0,
+              satisfied: false,
+              status: "none"
+          },
+          {
+            ideal: "",
+            score: 0,
+            satisfied: false,
+            status: "none"
+          },
+          {
+            ideal: "",
+            score: 0,
+            satisfied: false,
+            status: "none"
+        },
+        ],
         hints: false,
-        expectationData: [],
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -177,44 +201,43 @@ describe('dialog', () => {
       expect(response.body.score).to.be.at.most(1.0);
     });
 
-    // it('sends the session data to the grader at the end of the dialog', async () => {
-    //   if (mockAxios) {
-    //     mockAxios.reset();
-    //     mockAxios.onPost('/classifier').reply(config => {
-    //       const reqBody = JSON.parse(config.data);
-    //       console.log('req is ' + JSON.stringify(reqBody, null, 2));
-    //       return [
-    //         200,
-    //         {
-    //           output: {
-    //             expectationResults: [
-    //               { evaluation: Evaluation.Good, score: 1.0 },
-    //               { evaluation: Evaluation.Good, score: 1.0 },
-    //               { evaluation: Evaluation.Good, score: 1.0 },
-    //             ],
-    //           },
-    //         },
-    //       ];
-    //     });
-    //     mockAxios.onPost('/grading-api').reply(config => {
-    //       //const reqBody = JSON.parse(config.data);
-    //       // expect(reqBody).to.have.property(
-    //       //   'sessionId',
-    //       //   validSessionObj.sessionId
-    //       // );
-    //       // expect(reqBody).to.have.property('userResponses', ['correct answer']);
-    //       // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
-    //       return [200, { message: 'success' }];
-    //     });
-    //   }
-    //   const response = await postSession(lessonId, app, {
-    //     lessonId: 'q1',
-    //     message: 'correct answer',
-    //     sessionInfo: validSessionDto,
-    //   });
-    //   expect(response.status).to.equal(200);
-    //   expect(response.body).to.have.property('sentToGrader');
-    // });
+    it('sends the session data to the grader at the end of the dialog', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/classifier').reply(config => {
+          //const reqBody = JSON.parse(config.data);
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                ],
+              },
+            },
+          ];
+        });
+        mockAxios.onPost('/grading-api').reply(config => {
+          //const reqBody = JSON.parse(config.data);
+          // expect(reqBody).to.have.property(
+          //   'sessionId',
+          //   validSessionObj.sessionId
+          // );
+          // expect(reqBody).to.have.property('userResponses', ['correct answer']);
+          // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
+          return [200, { message: 'success' }];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        lessonId: 'q1',
+        message: 'correct answer',
+        sessionInfo: dataToDto(validSessionData),
+      });
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('sentToGrader', true);
+    });
     // it('responds with 405 if method for dialog or dialog session not POST', async () => {
     //   expect(1).to.eql(2);
     // });
@@ -292,22 +315,22 @@ describe('dialog', () => {
       expect(response.status).to.equal(410);
     });
 
-    //   it('successfully sends a request to the graphql endpoint for data', async () => {
-    //     if (mockAxios) {
-    //       mockAxios.reset();
-    //       mockAxios.onPost('/graphql').reply(config => {
-    //         const reqBody = JSON.parse(config.data);
-    //         // console.log(reqBody);
-    //         // expect(reqBody).to.have.property('lessonId', 'navyIntegrity');
-    //         return [200, lessonData];
-    //       });
-    //     }
-    //     const responseStartSession = await postDialog('navyIntegrity', app, {
-    //       lessonId: 'navyIntegrity',
-    //     });
-    //     expect(responseStartSession.status).to.equal(200);
-    //     expect(responseStartSession.body).to.have.property('response');
-    //   });
+    it('successfully sends a request to the graphql endpoint for data', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          // console.log(reqBody);
+          // expect(reqBody).to.have.property('lessonId', 'navyIntegrity');
+          return [200, lessonData];
+        });
+      }
+      const responseStartSession = await postDialog('navyIntegrity', app, {
+        lessonId: 'navyIntegrity',
+      });
+      expect(responseStartSession.status).to.equal(200);
+      expect(responseStartSession.body).to.have.property('response');
+    });
   });
 
   allScenarios.forEach(ex => {

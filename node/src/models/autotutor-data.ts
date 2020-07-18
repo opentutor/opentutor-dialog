@@ -1,4 +1,4 @@
-import { LessonResponse } from './graphql';
+import { Lesson } from './graphql';
 
 export default interface AutoTutorData {
   rootExpectationId: number;
@@ -29,7 +29,7 @@ export interface Expectation {
   prompts: Prompt[];
 }
 
-export function convertLessonDataToATData(lessonData: LessonResponse) {
+export function convertLessonDataToATData(lessonData: Lesson) {
   const defaultData: AutoTutorData = {
     rootExpectationId: 0,
     expectations: [],
