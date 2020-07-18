@@ -29,18 +29,18 @@ export async function processUserResponse(
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
   try {
-    const expectations: CExpectation[] = atd.expectations.map(exp => {
-      return {
-        ideal: exp.expectation,
-      } as CExpectation;
-    });
+    // const expectations: CExpectation[] = atd.expectations.map(exp => {
+    //   return {
+    //     ideal: exp.expectation,
+    //   } as CExpectation;
+    // });
     classifierResult = await evaluate({
-      input: sdp.previousUserResponse,
-      lesson: lessonId,
-      config: {
-        question: atd.questionText,
-        expectations: expectations,
-      },
+      inputSentence: sdp.previousUserResponse,
+      question: lessonId,
+      // config: {
+      //   question: atd.questionText,
+      //   expectations: expectations,
+      // },
     });
   } catch (err) {
     const status =
