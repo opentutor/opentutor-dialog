@@ -22,11 +22,11 @@ export interface Lesson {
 }
 
 export interface LessonWrapper {
-    lesson: Lesson;
+  lesson: Lesson;
 }
 
 export interface LessonResponse {
-    data: LessonWrapper;
+  data: LessonWrapper;
 }
 
 const GRAPHQL_ENDPOINT = process.env.GRADER_ENDPOINT || '/graphql';

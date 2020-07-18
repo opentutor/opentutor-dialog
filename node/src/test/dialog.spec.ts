@@ -49,8 +49,8 @@ describe('dialog', () => {
           conclusion: ['a'],
           createdAt: 'affadsas',
           updatedAt: 'fdasasdf',
-        }
-      }
+        },
+      },
     };
 
     const validSessionData: SessionData = {
@@ -58,23 +58,23 @@ describe('dialog', () => {
         expectationsCompleted: [false],
         expectationData: [
           {
-              ideal: "",
-              score: 0,
-              satisfied: false,
-              status: "none"
-          },
-          {
-            ideal: "",
+            ideal: '',
             score: 0,
             satisfied: false,
-            status: "none"
+            status: 'none',
           },
           {
-            ideal: "",
+            ideal: '',
             score: 0,
             satisfied: false,
-            status: "none"
-        },
+            status: 'none',
+          },
+          {
+            ideal: '',
+            score: 0,
+            satisfied: false,
+            status: 'none',
+          },
         ],
         hints: false,
       },
