@@ -2,9 +2,9 @@ import axios from 'axios';
 import { logger } from 'utils/logging';
 
 export interface ClassfierRequest {
-  question: string;
-  inputSentence: string;
-  // config: ClassifierConfig;
+  lesson: string;
+  input: string;
+  config: ClassifierConfig;
   expectation?: number;
 }
 
