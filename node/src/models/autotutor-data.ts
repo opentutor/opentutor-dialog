@@ -51,7 +51,7 @@ export function convertLessonDataToATData(lessonData: Lesson) {
   };
 
   defaultData.questionIntro = lessonData.intro;
-  defaultData.questionText = lessonData.mainQuestion;
+  defaultData.questionText = lessonData.question;
   defaultData.recapText = lessonData.conclusion;
   defaultData.expectations = lessonData.expectations.map(exp => {
     return {

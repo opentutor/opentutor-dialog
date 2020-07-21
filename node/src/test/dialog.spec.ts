@@ -4,6 +4,7 @@ import MockAxios from 'axios-mock-adapter';
 import { expect } from 'chai';
 import { Express } from 'express';
 import { dataToDto, SessionData, SessionDto } from 'models/session-data';
+import OpenTutorResponse from 'models/opentutor-response';
 import { ClassifierResult, Evaluation } from 'models/classifier';
 import { LessonResponse } from 'models/graphql';
 import { all as allScenarios } from 'test/fixtures/scenarios';
@@ -43,8 +44,8 @@ describe('dialog', () => {
         lesson: {
           lessonName: 'navyIntegrity',
           lessonId: 'navyIntegrity',
-          intro: '',
-          mainQuestion: '',
+          intro: 'intro',
+          mainQuestion: 'main',
           expectations: [],
           conclusion: ['a'],
           createdAt: 'affadsas',
@@ -330,6 +331,7 @@ describe('dialog', () => {
       });
       expect(responseStartSession.status).to.equal(200);
       expect(responseStartSession.body).to.have.property('response');
+      expect((responseStartSession.body.response as OpenTutorResponse[]).map(m => m.data)).to.eql([{text: 'intro'},{text: 'main'}]);
     });
   });
 

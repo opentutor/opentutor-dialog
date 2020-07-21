@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { logger } from 'utils/logging';
+import logger from 'utils/logging';
 
 export interface Hint {
   hint: string;
@@ -14,7 +14,7 @@ export interface Lesson {
   lessonName: string;
   lessonId: string;
   intro: string;
-  mainQuestion: string;
+  question: string;
   expectations: LessonExpectation[];
   conclusion: string[];
   createdAt: string;
