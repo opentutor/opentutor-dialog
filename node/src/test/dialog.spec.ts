@@ -45,7 +45,7 @@ describe('dialog', () => {
           lessonName: 'navyIntegrity',
           lessonId: 'navyIntegrity',
           intro: 'intro',
-          mainQuestion: 'main',
+          question: 'main',
           expectations: [],
           conclusion: ['a'],
           createdAt: 'affadsas',
@@ -331,7 +331,11 @@ describe('dialog', () => {
       });
       expect(responseStartSession.status).to.equal(200);
       expect(responseStartSession.body).to.have.property('response');
-      expect((responseStartSession.body.response as OpenTutorResponse[]).map(m => m.data)).to.eql([{text: 'intro'},{text: 'main'}]);
+      expect(
+        (responseStartSession.body.response as OpenTutorResponse[]).map(
+          m => m.data
+        )
+      ).to.eql([{ text: 'intro' }, { text: 'main' }]);
     });
   });
 
