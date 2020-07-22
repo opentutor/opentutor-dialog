@@ -146,18 +146,27 @@ export async function processUserResponse(
     } else {
       //hint not answered correctly, send prompt if exists
 
-      const prompt: Prompt = e.prompts[0];
-      if (prompt) {
+      if (e.prompts[0]) {
         finalResponses.push(
           createTextResponse(atd.confusionFeedback[0], 'feedbackNegative')
         );
         finalResponses.push(createTextResponse(atd.promptStart[0]));
-        finalResponses.push(createTextResponse(prompt.prompt, 'prompt'));
+        finalResponses.push(createTextResponse(e.prompts[0].prompt, 'prompt'));
         return finalResponses;
       } else {
-        finalResponses.push(
-          createTextResponse('trying to prompt when no prompts left?')
-        );
+        //if no prompt, assert
+        const index = sdp.dialogState.expectationsCompleted.indexOf(false);
+        sdp.dialogState.expectationsCompleted[index] = true;
+        sdp.dialogState.expectationData[index].ideal =
+          atd.expectations[index].expectation;
+        sdp.dialogState.expectationData[index].satisfied = false;
+        sdp.dialogState.expectationData[index].score =
+          expectationResults[index].score;
+        sdp.dialogState.expectationData[index].status = 'complete';
+        return [
+          createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
+          createTextResponse(e.expectation, 'text'),
+        ].concat(toNextExpectation(atd, sdp));
         return finalResponses;
       }
     }
@@ -257,13 +266,18 @@ export function toNextExpectation(
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = 'active';
     answer.push(createTextResponse(atd.hintStart[0]));
-    answer.push(
-      createTextResponse(
-        atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
-          .hints[0],
-        'hint'
-      )
-    );
+    if (
+      atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
+        .hints[0]
+    ) {
+      answer.push(
+        createTextResponse(
+          atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
+            .hints[0],
+          'hint'
+        )
+      );
+    } else answer.push(createTextResponse('Think about the answer!', 'hint'));
   } else {
     //all expectations completed
     answer = answer.concat(
