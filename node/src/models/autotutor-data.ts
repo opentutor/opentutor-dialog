@@ -52,11 +52,16 @@ export function convertLessonDataToATData(lessonData: Lesson) {
 
   defaultData.questionIntro = lessonData.intro;
   defaultData.questionText = lessonData.question;
-  defaultData.recapText = lessonData.conclusion;
+  defaultData.recapText = Array.isArray(lessonData.conclusion)
+    ? lessonData.conclusion
+    : lessonData.conclusion
+    ? [`${lessonData.conclusion}`]
+    : [];
+
   defaultData.expectations = lessonData.expectations.map(exp => {
     return {
       expectation: exp.expectation,
-      hints: exp.hints.map(h => h.hint),
+      hints: exp.hints.map(h => h.text),
       prompts: [],
     };
   });

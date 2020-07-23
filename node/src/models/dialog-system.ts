@@ -8,6 +8,7 @@ import {
   Expectation as CExpectation,
 } from 'models/classifier';
 import OpenTutorResponse, { createTextResponse } from './opentutor-response';
+import logger from 'utils/logging';
 
 const upperThreshold: number =
   Number.parseFloat(process.env.HIGHER_THRESHOLD) || 0.7;
@@ -51,6 +52,7 @@ export async function processUserResponse(
         : err.message;
     throw Object.assign(err, { status, message });
   }
+  logger.warn(JSON.stringify(atd));
   const expectationResults = classifierResult.output.expectationResults;
   //add results to the session history
   addClassifierGrades(sdp, {
@@ -163,10 +165,19 @@ export async function processUserResponse(
         sdp.dialogState.expectationData[index].score =
           expectationResults[index].score;
         sdp.dialogState.expectationData[index].status = 'complete';
-        return [
-          createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
-          createTextResponse(e.expectation, 'text'),
-        ].concat(toNextExpectation(atd, sdp));
+        if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
+          // there are still incomplete expectations
+          return [
+            createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
+            createTextResponse(e.expectation, 'text'),
+          ].concat(toNextExpectation(atd, sdp));
+        } else {
+          //no more incomplete expectations
+          return [
+            createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
+          ].concat(toNextExpectation(atd, sdp));
+        }
+
         return finalResponses;
       }
     }

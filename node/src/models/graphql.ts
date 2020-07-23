@@ -2,7 +2,7 @@ import axios from 'axios';
 import logger from 'utils/logging';
 
 export interface Hint {
-  hint: string;
+  text: string;
 }
 
 export interface LessonExpectation {
@@ -16,7 +16,7 @@ export interface Lesson {
   intro: string;
   question: string;
   expectations: LessonExpectation[];
-  conclusion: string[];
+  conclusion: string[] | string;
   createdAt: string;
   updatedAt: string;
 }
@@ -58,6 +58,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
       }
       `,
   });
+  // logger.info(JSON.stringify(response.data.data.lesson));
   return response.data.data.lesson;
 }
 

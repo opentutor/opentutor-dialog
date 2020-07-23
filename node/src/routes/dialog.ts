@@ -135,7 +135,7 @@ router.post(
       );
 
       console.log(sessionData);
-      console.log(sessionData.dialogState.expectationData);
+      logger.info(sessionData);
       res.send({
         status: 'ok',
         sessionInfo: dataToDto(sessionData),
