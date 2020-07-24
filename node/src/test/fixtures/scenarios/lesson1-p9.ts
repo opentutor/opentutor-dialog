@@ -3,7 +3,7 @@ import { Evaluation } from 'models/classifier';
 
 export const scenario: DialogScenario = {
   name:
-    'lesson1 part 8: this tests that if a user answers another expectation while in a hint for a different expectation, system handles it well.',
+    'lesson1 part 9: this tests that if a user answers another expectation while in a hint for a different expectation, system handles it well.',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -24,8 +24,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: 'feedbackNegative',
           data: {
-            text:
-              'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+            text: 'Not really.',
           },
         },
         {
@@ -137,8 +136,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: 'feedbackNegative',
           data: {
-            text:
-              'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+            text: 'Not really.',
           },
         },
         {

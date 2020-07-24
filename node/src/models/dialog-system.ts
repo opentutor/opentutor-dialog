@@ -146,11 +146,22 @@ export async function processUserResponse(
       );
       return finalResponses.concat(toNextExpectation(atd, sdp));
     } else {
-      //hint not answered correctly, send prompt if exists
+      //hint not answered correctly, send other hint if exists
+      // or send prompt if exists
 
-      if (e.prompts[0]) {
+      if (e.hints.indexOf(h) < e.hints.length - 1) {
+        //another hint exists, use that.
         finalResponses.push(
-          createTextResponse(atd.confusionFeedback[0], 'feedbackNegative')
+          createTextResponse(atd.neutralFeedback[0], 'feedbackNeutral')
+        );
+        finalResponses.push(createTextResponse(atd.hintStart[0]));
+        finalResponses.push(
+          createTextResponse(e.hints[e.hints.indexOf(h) + 1], 'hint')
+        );
+        return finalResponses;
+      } else if (e.prompts[0]) {
+        finalResponses.push(
+          createTextResponse(atd.negativeFeedback[0], 'feedbackNegative')
         );
         finalResponses.push(createTextResponse(atd.promptStart[0]));
         finalResponses.push(createTextResponse(e.prompts[0].prompt, 'prompt'));
@@ -230,7 +241,7 @@ export async function processUserResponse(
     sdp.dialogState.expectationData[expectationId].status = 'active';
     // sdp.dialogState.expectationsCompleted[expectationId] = true;
     return [
-      createTextResponse(atd.confusionFeedback[0], 'feedbackNegative'),
+      createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
       createTextResponse(atd.hintStart[0]),
       createTextResponse(atd.expectations[expectationId].hints[0], 'hint'),
     ];
