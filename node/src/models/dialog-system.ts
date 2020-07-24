@@ -10,10 +10,10 @@ import {
 import OpenTutorResponse, { createTextResponse } from './opentutor-response';
 import logger from 'utils/logging';
 
-const upperThreshold: number =
-  Number.parseFloat(process.env.HIGHER_THRESHOLD) || 0.7;
-const lowerThreshold: number =
-  Number.parseFloat(process.env.LOWER_THRESHOLD) || 0.3;
+const goodThreshold: number =
+  Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
+const badThreshold: number =
+  Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
 
 //this should begin by sending the question prompt
 export function beginDialog(atd: AutoTutorData): OpenTutorResponse[] {
@@ -71,7 +71,7 @@ export async function processUserResponse(
       expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
         .evaluation === Evaluation.Good &&
       expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
-        .score > upperThreshold
+        .score > goodThreshold
     ) {
       //prompt completed successfully
       const index = sdp.dialogState.expectationsCompleted.indexOf(false);
@@ -118,7 +118,7 @@ export async function processUserResponse(
     expectationResults.forEach((e, id) => {
       if (
         e.evaluation === Evaluation.Good &&
-        e.score > upperThreshold &&
+        e.score > goodThreshold &&
         id != expectationId
       ) {
         //meets ANOTHER expectation
@@ -130,7 +130,7 @@ export async function processUserResponse(
     });
     if (
       expectationResults[expectationId].evaluation === Evaluation.Good &&
-      expectationResults[expectationId].score > upperThreshold
+      expectationResults[expectationId].score > goodThreshold
     ) {
       //hint answered successfully
       updateCompletedExpectations(expectationResults, sdp, atd);
@@ -196,7 +196,7 @@ export async function processUserResponse(
 
   if (
     expectationResults.every(
-      x => x.evaluation === Evaluation.Good && x.score > upperThreshold
+      x => x.evaluation === Evaluation.Good && x.score > goodThreshold
     )
   ) {
     //perfect answer
@@ -207,7 +207,9 @@ export async function processUserResponse(
   }
   if (
     expectationResults.every(
-      x => x.score < upperThreshold && x.score > lowerThreshold
+      x =>
+        (x.score < goodThreshold && x.evaluation == Evaluation.Good) ||
+        (x.score < badThreshold && x.evaluation == Evaluation.Bad)
     )
   ) {
     //answer did not match any expectation, guide user through expectations
@@ -217,7 +219,7 @@ export async function processUserResponse(
   }
   if (
     expectationResults.find(
-      x => x.evaluation === Evaluation.Good && x.score > upperThreshold
+      x => x.evaluation === Evaluation.Good && x.score > goodThreshold
     )
   ) {
     //matched atleast one specific expectation
@@ -228,13 +230,13 @@ export async function processUserResponse(
   }
   if (
     expectationResults.find(
-      x => x.evaluation === Evaluation.Bad && x.score < lowerThreshold
+      x => x.evaluation === Evaluation.Bad && x.score > badThreshold
     )
   ) {
     //bad answer. use hint
     const expectationId = expectationResults.indexOf(
       expectationResults.find(
-        x => x.evaluation === Evaluation.Bad && x.score < lowerThreshold
+        x => x.evaluation === Evaluation.Bad && x.score > badThreshold
       )
     );
     sdp.dialogState.hints = true;
@@ -260,7 +262,7 @@ function updateCompletedExpectations(
   for (i = 0; i < expectationResults.length; i++) {
     if (
       expectationResults[i].evaluation === Evaluation.Good &&
-      expectationResults[i].score > upperThreshold
+      expectationResults[i].score > goodThreshold
     ) {
       expectationIds.push(i);
     }
