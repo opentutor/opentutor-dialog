@@ -5,6 +5,7 @@ import SessionData from './session-data';
 
 export interface GraderRequest {
   sessionId: string;
+  lessonId: string;
   username: string;
   question: Question;
   userResponses: Response[];
@@ -64,6 +65,7 @@ export function createGraderObject(
   return {
     sessionId: sdp.sessionId,
     username: '',
+    lessonId: atd.lessonId,
     question: {
       text: atd.questionText,
       expectations: atd.expectations.map(e => {

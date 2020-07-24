@@ -2,6 +2,7 @@ import { Lesson } from './graphql';
 
 export default interface AutoTutorData {
   rootExpectationId: number;
+  lessonId: string;
   expectations: Expectation[];
   questionIntro: string;
   questionText: string;
@@ -31,6 +32,7 @@ export interface Expectation {
 
 export function convertLessonDataToATData(lessonData: Lesson) {
   const defaultData: AutoTutorData = {
+    lessonId: '',
     rootExpectationId: 0,
     expectations: [],
     questionIntro: '',
@@ -50,13 +52,18 @@ export function convertLessonDataToATData(lessonData: Lesson) {
     originalXml: '',
   };
 
-  defaultData.questionIntro = lessonData.intro;
-  defaultData.questionText = lessonData.question;
-  defaultData.recapText = Array.isArray(lessonData.conclusion)
-    ? lessonData.conclusion
-    : lessonData.conclusion
-    ? [`${lessonData.conclusion}`]
-    : [];
+  try {
+    defaultData.questionIntro = lessonData.intro;
+    defaultData.questionText = lessonData.question;
+    defaultData.lessonId = lessonData.lessonId;
+    defaultData.recapText = Array.isArray(lessonData.conclusion)
+      ? lessonData.conclusion
+      : lessonData.conclusion
+      ? [`${lessonData.conclusion}`]
+      : [];
+  } catch (err) {
+    throw { status: '404', message: 'lesson data not found' };
+  }
 
   defaultData.expectations = lessonData.expectations.map(exp => {
     return {
@@ -71,6 +78,7 @@ export function convertLessonDataToATData(lessonData: Lesson) {
 
 export const navyIntegrity: AutoTutorData = {
   rootExpectationId: 0,
+  lessonId: 'q1',
   expectations: [
     {
       expectation:
@@ -134,6 +142,7 @@ export const navyIntegrity: AutoTutorData = {
 
 export const currentFlow: AutoTutorData = {
   rootExpectationId: 0,
+  lessonId: 'q2',
   expectations: [
     {
       expectation: 'Current flows in the same direction as the arrow.',

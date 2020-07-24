@@ -75,7 +75,7 @@ router.post(
       const sdp = newSession(atd, body.sessionId);
       addTutorDialog(sdp, beginDialog(atd));
       res.send({
-        status: 'ok',
+        status: 200,
         lessonId: lessonId,
         sessionInfo: dataToDto(sdp),
         response: beginDialog(atd),
@@ -137,7 +137,7 @@ router.post(
       console.log(sessionData);
       logger.info(sessionData);
       res.send({
-        status: 'ok',
+        status: 200,
         sessionInfo: dataToDto(sessionData),
         response: msg,
         sentToGrader: graderResponse,
