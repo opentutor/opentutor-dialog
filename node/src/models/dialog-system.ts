@@ -6,6 +6,7 @@ import {
   Evaluation,
   ExpectationResult,
   Expectation as CExpectation,
+  ClassifierResult,
 } from 'models/classifier';
 import OpenTutorResponse, { createTextResponse } from './opentutor-response';
 import logger from 'utils/logging';
@@ -79,8 +80,9 @@ export async function processUserResponse(
       sdp.dialogState.expectationData[index].ideal =
         atd.expectations[index].expectation;
       sdp.dialogState.expectationData[index].satisfied = true;
-      sdp.dialogState.expectationData[index].score =
-        expectationResults[index].score;
+      sdp.dialogState.expectationData[index].score = normalizeScores(
+        expectationResults[index]
+      );
       sdp.dialogState.expectationData[index].status = 'complete';
 
       return [
@@ -93,8 +95,9 @@ export async function processUserResponse(
       sdp.dialogState.expectationData[index].ideal =
         atd.expectations[index].expectation;
       sdp.dialogState.expectationData[index].satisfied = false;
-      sdp.dialogState.expectationData[index].score =
-        expectationResults[index].score;
+      sdp.dialogState.expectationData[index].score = normalizeScores(
+        expectationResults[index]
+      );
       sdp.dialogState.expectationData[index].status = 'complete';
       return [createTextResponse(p.answer, 'text')].concat(
         toNextExpectation(atd, sdp)
@@ -138,8 +141,9 @@ export async function processUserResponse(
       sdp.dialogState.expectationData[expectationId].ideal =
         atd.expectations[expectationId].expectation;
       sdp.dialogState.expectationData[expectationId].satisfied = true;
-      sdp.dialogState.expectationData[expectationId].score =
-        expectationResults[expectationId].score;
+      sdp.dialogState.expectationData[expectationId].score = normalizeScores(
+        expectationResults[expectationId]
+      );
       sdp.dialogState.expectationData[expectationId].status = 'complete';
       finalResponses.push(
         createTextResponse(atd.positiveFeedback[0], 'feedbackPositive')
@@ -173,8 +177,9 @@ export async function processUserResponse(
         sdp.dialogState.expectationData[index].ideal =
           atd.expectations[index].expectation;
         sdp.dialogState.expectationData[index].satisfied = false;
-        sdp.dialogState.expectationData[index].score =
-          expectationResults[index].score;
+        sdp.dialogState.expectationData[index].score = normalizeScores(
+          expectationResults[index]
+        );
         sdp.dialogState.expectationData[index].status = 'complete';
         if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
           // there are still incomplete expectations
@@ -272,8 +277,9 @@ function updateCompletedExpectations(
     sdp.dialogState.expectationData[expectationId].ideal =
       atd.expectations[expectationId].expectation;
     sdp.dialogState.expectationData[expectationId].status = 'complete';
-    sdp.dialogState.expectationData[expectationId].score =
-      expectationResults[expectationId].score;
+    sdp.dialogState.expectationData[expectationId].score = normalizeScores(
+      expectationResults[expectationId]
+    );
     sdp.dialogState.expectationData[expectationId].satisfied = true;
   });
 }
@@ -319,4 +325,9 @@ export function calculateScore(sdp: SessionData, atd: AutoTutorData): number {
       (atd.expectations.length / sdp.sessionHistory.userResponses.length) * 1.0
     )
   );
+}
+
+function normalizeScores(er: ExpectationResult) {
+  if (er.evaluation == Evaluation.Bad) return 1 - er.score;
+  else return er.score;
 }
