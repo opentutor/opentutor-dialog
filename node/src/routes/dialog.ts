@@ -112,18 +112,9 @@ router.post(
           atd = currentFlow;
           break;
         default:
-          try {
-            atd = convertLessonDataToATData(await getLessonData(lessonId));
-          } catch (err) {
-            const status =
-              `${err.response && err.response.status}` === '404' ? 404 : 502;
-            const message =
-              status === 404
-                ? `classifier cannot find lesson '${lessonId}'`
-                : err.message;
-            throw Object.assign(err, { status, message });
+          atd = convertLessonDataToATData(await getLessonData(lessonId));
+          if(!atd)
             return res.status(404).send();
-          }
           break;
       }
       addUserDialog(sessionData, req.body['message']);

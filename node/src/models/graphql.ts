@@ -29,6 +29,12 @@ export interface LessonResponse {
   data: LessonWrapper;
 }
 
+export interface LResponseObject {
+  data: { 
+    lesson: LessonResponse;
+  }
+}
+
 const GRAPHQL_ENDPOINT = process.env.GRADER_ENDPOINT || '/graphql';
 
 export async function getLessonData(lessonId: string): Promise<Lesson> {
@@ -38,7 +44,6 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
   // );
   // const response = await axios.post(GRADER_ENDPOINT, request);
   //const userSession = encodeURI(JSON.stringify(request));
-  try {
     const response = await axios.post(GRAPHQL_ENDPOINT, {
       query: `{
         lesson(lessonId: "${lessonId}") {
@@ -59,14 +64,9 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
       }
       `,
     });
+    if(response.data.data.lesson == null)
+      throw {status: '404', message: `graphql cannot find lesson '${lessonId}'`};
     return response.data.data.lesson;
-  } catch (err) {
-    const status =
-      `${err.response && err.response.status}` === '404' ? 404 : 502;
-    const message =
-      status === 404 ? `graphql cannot find lesson '${lessonId}'` : err.message;
-    throw Object.assign(err, { status, message });
-  }
 }
 
 export default {

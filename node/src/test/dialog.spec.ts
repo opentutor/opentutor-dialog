@@ -6,7 +6,7 @@ import { Express } from 'express';
 import { dataToDto, SessionData, SessionDto } from 'models/session-data';
 import OpenTutorResponse from 'models/opentutor-response';
 import { ClassifierResult, Evaluation } from 'models/classifier';
-import { LessonResponse } from 'models/graphql';
+import { LessonResponse, LResponseObject } from 'models/graphql';
 import { all as allScenarios } from 'test/fixtures/scenarios';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
@@ -158,6 +158,33 @@ describe('dialog', () => {
         `classifier cannot find lesson '${lessonId}'`
       );
     });
+
+    it('responds with a 404 error if graphql cannot find lesson', async () => { 
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          //const reqBody = JSON.parse(config.data);
+          // console.log(reqBody);
+          // expect(reqBody).to.have.property('lessonId', 'navyIntegrity');
+          const errData  : LResponseObject = {
+            data: {
+                lesson: null
+            }
+        }
+          return [200, errData];
+        });
+      }
+      const response = await postSession('q3', app, {
+        lessonId: lessonId,
+        message: 'peer pressure',
+        sessionInfo: validSessionDto,
+      });
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property(
+        'message',
+        `graphql cannot find lesson 'q3'`
+      );
+    })
 
     it('returns a score between 0 and 1', async () => {
       if (mockAxios) {
