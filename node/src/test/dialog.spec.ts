@@ -6,7 +6,7 @@ import { Express } from 'express';
 import { dataToDto, SessionData, SessionDto } from 'models/session-data';
 import OpenTutorResponse from 'models/opentutor-response';
 import { ClassifierResult, Evaluation } from 'models/classifier';
-import { LessonResponse, LResponseObject } from 'models/graphql';
+import { LessonResponse, LResponseObject, Lesson } from 'models/graphql';
 import { all as allScenarios } from 'test/fixtures/scenarios';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
@@ -27,6 +27,105 @@ describe('dialog', () => {
       mockAxios.reset();
     }
   });
+
+  const currentFlowLesson: Lesson = {
+    lessonName: 'Current Flow',
+    lessonId: 'q2',
+    intro:
+      '_user_, this is a warm up question on the behavior of P-N junction diodes.',
+    question:
+      'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
+    expectations: [
+      {
+        expectation: 'Current flows in the same direction as the arrow.',
+        hints: [
+          {
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          },
+        ],
+      },
+    ],
+    conclusion: [
+      'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
+      "Let's try a different problem.",
+    ],
+    createdAt: 'asdasdffas',
+    updatedAt: 'asfasdfasdf',
+  };
+
+  const navyIntegrityLesson: Lesson = {
+    lessonName: 'Current Flow',
+    lessonId: 'q1',
+    intro: 'Here is a question about integrity, a key Navy attribute.',
+    question: 'What are the challenges to demonstrating integrity in a group?',
+    expectations: [
+      {
+        expectation:
+          'Peer pressure can cause you to allow inappropriate behavior.',
+        hints: [
+          {
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          },
+        ],
+        prompts: [
+          {
+            prompt: 'What might cause you to lower your standards?',
+            answer: 'peer pressure',
+          },
+        ],
+      },
+      {
+        expectation:
+          "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+        hints: [
+          {
+            text: 'How can it affect someone when you correct their behavior?',
+          },
+        ],
+        prompts: [
+          {
+            prompt:
+              'How can it affect someone emotionally when you correct their behavior?',
+            answer: 'it may be harder to work with them',
+          },
+        ],
+      },
+      {
+        expectation: 'Enforcing the rules can make you unpopular.',
+        hints: [
+          {
+            text: "How can it affect you when you correct someone's behavior?",
+          },
+        ],
+        prompts: [
+          {
+            prompt:
+              'Integrity means doing the right thing even when it is _____ ?',
+            answer: 'unpopular',
+          },
+        ],
+      },
+    ],
+    conclusion: [
+      'Peer pressure can push you to allow and participate in inappropriate behavior.',
+      "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+      'However, integrity means speaking out even when it is unpopular.',
+    ],
+    createdAt: 'asdasdffas',
+    updatedAt: 'asfasdfasdf',
+  };
+
+  const currentFlowResponse: LResponseObject = {
+    data: {
+      lesson: {
+        data: {
+          lesson: currentFlowLesson,
+        },
+      },
+    },
+  };
 
   describe('POST', () => {
     // it('responds with a 400 error when no session info passed', async () => {
@@ -159,18 +258,19 @@ describe('dialog', () => {
       );
     });
 
-    it('responds with a 404 error if graphql cannot find lesson', async () => { 
+    it('responds with a 404 error if graphql cannot find lesson', async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/graphql').reply(config => {
+          console.log('in graphql');
           //const reqBody = JSON.parse(config.data);
           // console.log(reqBody);
           // expect(reqBody).to.have.property('lessonId', 'navyIntegrity');
-          const errData  : LResponseObject = {
+          const errData: LResponseObject = {
             data: {
-                lesson: null
-            }
-        }
+              lesson: null,
+            },
+          };
           return [200, errData];
         });
       }
@@ -184,7 +284,7 @@ describe('dialog', () => {
         'message',
         `graphql cannot find lesson 'q3'`
       );
-    })
+    });
 
     it('returns a score between 0 and 1', async () => {
       if (mockAxios) {
@@ -347,7 +447,7 @@ describe('dialog', () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/graphql').reply(config => {
-          const reqBody = JSON.parse(config.data);
+          // const reqBody = JSON.parse(config.data);
           // console.log(reqBody);
           // expect(reqBody).to.have.property('lessonId', 'navyIntegrity');
           return [200, lessonData];
@@ -367,7 +467,7 @@ describe('dialog', () => {
   });
 
   allScenarios.forEach(ex => {
-    it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
+    it.only(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       const responseStartSession = await postDialog(ex.lessonId, app, {
         lessonId: ex.lessonId,
         id: '1',
@@ -382,8 +482,22 @@ describe('dialog', () => {
       for (const reqRes of ex.expectedRequestResponses) {
         if (mockAxios) {
           mockAxios.reset();
+          mockAxios.onPost('/graphql').reply(config => {
+            console.log('in graphql');
+            // const reqBody = JSON.parse(config);
+            // console.log(reqBody);
+            // expect(reqBody).to.have.property('lessonId', 'navyIntegrity');
+            //   const errData  : LResponseObject = {
+            //     data: {
+            //         lesson: cur
+            //     }
+            // }
+            return [200, { message: 'success' }];
+          });
           mockAxios.onPost('/classifier').reply(config => {
             const reqBody = JSON.parse(config.data);
+            console.log('in classifier');
+            console.log(reqBody);
             expect(reqBody).to.have.property('lesson', ex.lessonId);
             expect(reqBody).to.have.property('input', reqRes.userInput);
             expect(reqBody).to.have.property('config');
@@ -393,7 +507,7 @@ describe('dialog', () => {
             ];
           });
           mockAxios.onPost('/grading-api').reply(config => {
-            const reqBody = JSON.parse(config.data);
+            // const reqBody = JSON.parse(config.data);
             //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
             // expect(reqBody).to.have.property('userResponses', ['correct answer']);
             // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);

@@ -1,8 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import AutoTutorData, {
-  navyIntegrity,
-  currentFlow,
   convertLessonDataToATData,
 } from 'models/autotutor-data';
 import 'models/opentutor-response';
@@ -49,27 +47,15 @@ router.post(
       const lessonId = req.params['lessonId'];
       let atd: AutoTutorData;
       switch (lessonId) {
-        case 'q1':
-          atd = navyIntegrity;
-          break;
-        case 'q2':
-          atd = currentFlow;
-          break;
+        // case 'q1':
+        //   atd = navyIntegrity;
+        //   break;
+        // case 'q2':
+        //   atd = currentFlow;
+        //   break;
         default:
           //request graphQL for data.
-          try {
-            atd = convertLessonDataToATData(await getLessonData(lessonId));
-          } catch (err) {
-            const status =
-              `${err.response && err.response.status}` === '404' ? 404 : 502;
-            const message =
-              status === 404
-                ? `classifier cannot find lesson '${lessonId}'`
-                : err.message;
-            throw Object.assign(err, { status, message });
-            return res.status(404).send();
-          }
-          break;
+          atd = convertLessonDataToATData(await getLessonData(lessonId));
       }
       //new sessionDataPacket
       const sdp = newSession(atd, body.sessionId);
@@ -105,16 +91,15 @@ router.post(
 
       let atd: AutoTutorData;
       switch (lessonId) {
-        case 'q1':
-          atd = navyIntegrity;
-          break;
-        case 'q2':
-          atd = currentFlow;
-          break;
+        // case 'q1':
+        //   atd = navyIntegrity;
+        //   break;
+        // case 'q2':
+        //   atd = currentFlow;
+        //   break;
         default:
           atd = convertLessonDataToATData(await getLessonData(lessonId));
-          if(!atd)
-            return res.status(404).send();
+          if (!atd) return res.status(404).send();
           break;
       }
       addUserDialog(sessionData, req.body['message']);
@@ -125,7 +110,7 @@ router.post(
         e => e.status === 'active'
       );
 
-      console.log(sessionData);
+      // console.log(sessionData);
       logger.info(sessionData);
       res.send({
         status: 200,

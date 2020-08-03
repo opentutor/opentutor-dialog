@@ -12,15 +12,15 @@ import lesson1p8 from './lesson1-p8';
 import lesson1p9 from './lesson1-p9';
 
 export const all: DialogScenario[] = [
-  lesson1p1,
-  lesson1p2,
-  lesson1p3,
-  lesson1p4,
-  lesson1p5,
-  lesson1p6,
-  lesson1p7,
-  lesson1p8,
-  lesson1p9,
+  // lesson1p1,
+  // lesson1p2,
+  // lesson1p3,
+  // lesson1p4,
+  // lesson1p5,
+  // lesson1p6,
+  // lesson1p7,
+  // lesson1p8,
+  // lesson1p9,
   lesson2p1,
 ];
 export default all;

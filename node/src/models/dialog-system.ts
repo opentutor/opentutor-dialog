@@ -68,41 +68,7 @@ export async function processUserResponse(
   });
   if (e && p) {
     //response was to a prompt.
-    if (
-      expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
-        .evaluation === Evaluation.Good &&
-      expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
-        .score > goodThreshold
-    ) {
-      //prompt completed successfully
-      const index = sdp.dialogState.expectationsCompleted.indexOf(false);
-      sdp.dialogState.expectationsCompleted[index] = true;
-      sdp.dialogState.expectationData[index].ideal =
-        atd.expectations[index].expectation;
-      sdp.dialogState.expectationData[index].satisfied = true;
-      sdp.dialogState.expectationData[index].score = normalizeScores(
-        expectationResults[index]
-      );
-      sdp.dialogState.expectationData[index].status = 'complete';
-
-      return [
-        createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
-      ].concat(toNextExpectation(atd, sdp));
-    } else {
-      //prompt not answered correctly. Assert.
-      const index = sdp.dialogState.expectationsCompleted.indexOf(false);
-      sdp.dialogState.expectationsCompleted[index] = true;
-      sdp.dialogState.expectationData[index].ideal =
-        atd.expectations[index].expectation;
-      sdp.dialogState.expectationData[index].satisfied = false;
-      sdp.dialogState.expectationData[index].score = normalizeScores(
-        expectationResults[index]
-      );
-      sdp.dialogState.expectationData[index].status = 'complete';
-      return [createTextResponse(p.answer, 'text')].concat(
-        toNextExpectation(atd, sdp)
-      );
-    }
+    return handlePrompt(lessonId, atd, sdp, expectationResults, e, p);
   }
 
   //check if response was to a hint
@@ -114,89 +80,7 @@ export async function processUserResponse(
   });
   if (e && h) {
     //response is to a hint
-    const expectationId: number = atd.expectations.indexOf(e);
-    const finalResponses: Array<OpenTutorResponse> = [];
-
-    //check if any other expectations were met
-    expectationResults.forEach((e, id) => {
-      if (
-        e.evaluation === Evaluation.Good &&
-        e.score > goodThreshold &&
-        id != expectationId
-      ) {
-        //meets ANOTHER expectation
-        //add some neutral response
-        const neutralResponse = 'Good point! But lets focus on this part.';
-        finalResponses.push(createTextResponse(neutralResponse));
-        updateCompletedExpectations(expectationResults, sdp, atd);
-      }
-    });
-    if (
-      expectationResults[expectationId].evaluation === Evaluation.Good &&
-      expectationResults[expectationId].score > goodThreshold
-    ) {
-      //hint answered successfully
-      updateCompletedExpectations(expectationResults, sdp, atd);
-      sdp.dialogState.expectationsCompleted[expectationId] = true;
-      sdp.dialogState.expectationData[expectationId].ideal =
-        atd.expectations[expectationId].expectation;
-      sdp.dialogState.expectationData[expectationId].satisfied = true;
-      sdp.dialogState.expectationData[expectationId].score = normalizeScores(
-        expectationResults[expectationId]
-      );
-      sdp.dialogState.expectationData[expectationId].status = 'complete';
-      finalResponses.push(
-        createTextResponse(atd.positiveFeedback[0], 'feedbackPositive')
-      );
-      return finalResponses.concat(toNextExpectation(atd, sdp));
-    } else {
-      //hint not answered correctly, send other hint if exists
-      // or send prompt if exists
-
-      if (e.hints.indexOf(h) < e.hints.length - 1) {
-        //another hint exists, use that.
-        finalResponses.push(
-          createTextResponse(atd.neutralFeedback[0], 'feedbackNeutral')
-        );
-        finalResponses.push(createTextResponse(atd.hintStart[0]));
-        finalResponses.push(
-          createTextResponse(e.hints[e.hints.indexOf(h) + 1], 'hint')
-        );
-        return finalResponses;
-      } else if (e.prompts[0]) {
-        finalResponses.push(
-          createTextResponse(atd.negativeFeedback[0], 'feedbackNegative')
-        );
-        finalResponses.push(createTextResponse(atd.promptStart[0]));
-        finalResponses.push(createTextResponse(e.prompts[0].prompt, 'prompt'));
-        return finalResponses;
-      } else {
-        //if no prompt, assert
-        const index = sdp.dialogState.expectationsCompleted.indexOf(false);
-        sdp.dialogState.expectationsCompleted[index] = true;
-        sdp.dialogState.expectationData[index].ideal =
-          atd.expectations[index].expectation;
-        sdp.dialogState.expectationData[index].satisfied = false;
-        sdp.dialogState.expectationData[index].score = normalizeScores(
-          expectationResults[index]
-        );
-        sdp.dialogState.expectationData[index].status = 'complete';
-        if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
-          // there are still incomplete expectations
-          return [
-            createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
-            createTextResponse(e.expectation, 'text'),
-          ].concat(toNextExpectation(atd, sdp));
-        } else {
-          //no more incomplete expectations
-          return [
-            createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
-          ].concat(toNextExpectation(atd, sdp));
-        }
-
-        return finalResponses;
-      }
-    }
+    return handleHints(lessonId, atd, sdp, expectationResults, e, h);
   }
 
   if (
@@ -315,6 +199,144 @@ export function toNextExpectation(
     );
   }
   return answer;
+}
+
+function handlePrompt(
+  lessonId: string,
+  atd: AutoTutorData,
+  sdp: SessionData,
+  expectationResults: ExpectationResult[],
+  e: Expectation,
+  p: Prompt
+) {
+  if (
+    expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
+      .evaluation === Evaluation.Good &&
+    expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
+      .score > goodThreshold
+  ) {
+    //prompt completed successfully
+    const index = sdp.dialogState.expectationsCompleted.indexOf(false);
+    sdp.dialogState.expectationsCompleted[index] = true;
+    sdp.dialogState.expectationData[index].ideal =
+      atd.expectations[index].expectation;
+    sdp.dialogState.expectationData[index].satisfied = true;
+    sdp.dialogState.expectationData[index].score = normalizeScores(
+      expectationResults[index]
+    );
+    sdp.dialogState.expectationData[index].status = 'complete';
+
+    return [
+      createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
+    ].concat(toNextExpectation(atd, sdp));
+  } else {
+    //prompt not answered correctly. Assert.
+    const index = sdp.dialogState.expectationsCompleted.indexOf(false);
+    sdp.dialogState.expectationsCompleted[index] = true;
+    sdp.dialogState.expectationData[index].ideal =
+      atd.expectations[index].expectation;
+    sdp.dialogState.expectationData[index].satisfied = false;
+    sdp.dialogState.expectationData[index].score = normalizeScores(
+      expectationResults[index]
+    );
+    sdp.dialogState.expectationData[index].status = 'complete';
+    return [createTextResponse(p.answer, 'text')].concat(
+      toNextExpectation(atd, sdp)
+    );
+  }
+}
+
+function handleHints(
+  lessonId: string,
+  atd: AutoTutorData,
+  sdp: SessionData,
+  expectationResults: ExpectationResult[],
+  e: Expectation,
+  h: string
+) {
+  const expectationId: number = atd.expectations.indexOf(e);
+  const finalResponses: Array<OpenTutorResponse> = [];
+
+  //check if any other expectations were met
+  expectationResults.forEach((e, id) => {
+    if (
+      e.evaluation === Evaluation.Good &&
+      e.score > goodThreshold &&
+      id != expectationId
+    ) {
+      //meets ANOTHER expectation
+      //add some neutral response
+      const neutralResponse = 'Good point! But lets focus on this part.';
+      finalResponses.push(createTextResponse(neutralResponse));
+      updateCompletedExpectations(expectationResults, sdp, atd);
+    }
+  });
+  if (
+    expectationResults[expectationId].evaluation === Evaluation.Good &&
+    expectationResults[expectationId].score > goodThreshold
+  ) {
+    //hint answered successfully
+    updateCompletedExpectations(expectationResults, sdp, atd);
+    sdp.dialogState.expectationsCompleted[expectationId] = true;
+    sdp.dialogState.expectationData[expectationId].ideal =
+      atd.expectations[expectationId].expectation;
+    sdp.dialogState.expectationData[expectationId].satisfied = true;
+    sdp.dialogState.expectationData[expectationId].score = normalizeScores(
+      expectationResults[expectationId]
+    );
+    sdp.dialogState.expectationData[expectationId].status = 'complete';
+    finalResponses.push(
+      createTextResponse(atd.positiveFeedback[0], 'feedbackPositive')
+    );
+    return finalResponses.concat(toNextExpectation(atd, sdp));
+  } else {
+    //hint not answered correctly, send other hint if exists
+    // or send prompt if exists
+
+    if (e.hints.indexOf(h) < e.hints.length - 1) {
+      //another hint exists, use that.
+      finalResponses.push(
+        createTextResponse(atd.neutralFeedback[0], 'feedbackNeutral')
+      );
+      finalResponses.push(createTextResponse(atd.hintStart[0]));
+      finalResponses.push(
+        createTextResponse(e.hints[e.hints.indexOf(h) + 1], 'hint')
+      );
+      return finalResponses;
+    } else if (e.prompts[0]) {
+      finalResponses.push(
+        createTextResponse(atd.negativeFeedback[0], 'feedbackNegative')
+      );
+      finalResponses.push(createTextResponse(atd.promptStart[0]));
+      finalResponses.push(createTextResponse(e.prompts[0].prompt, 'prompt'));
+      return finalResponses;
+    } else {
+      //if no prompt, assert
+      const index = sdp.dialogState.expectationsCompleted.indexOf(false);
+      sdp.dialogState.expectationsCompleted[index] = true;
+      sdp.dialogState.expectationData[index].ideal =
+        atd.expectations[index].expectation;
+      sdp.dialogState.expectationData[index].satisfied = false;
+      sdp.dialogState.expectationData[index].score = normalizeScores(
+        expectationResults[index]
+      );
+      sdp.dialogState.expectationData[index].status = 'complete';
+      if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
+        // there are still incomplete expectations
+        return [
+          createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
+          createTextResponse(e.expectation, 'text'),
+        ].concat(toNextExpectation(atd, sdp));
+      } else {
+        //no more incomplete expectations
+        return [
+          createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
+        ].concat(toNextExpectation(atd, sdp));
+      }
+
+      return finalResponses;
+    }
+  }
 }
 
 export function calculateScore(sdp: SessionData, atd: AutoTutorData): number {
