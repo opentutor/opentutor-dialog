@@ -82,6 +82,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
         },
       };
     }
+    console.log(response.data.data.lesson);
     return response.data.data.lesson;
   } catch (err) {
     console.log('logging error');

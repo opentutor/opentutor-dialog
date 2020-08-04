@@ -117,13 +117,9 @@ describe('dialog', () => {
     updatedAt: 'asfasdfasdf',
   };
 
-  const currentFlowResponse: LResponseObject = {
+  const currentFlowResponse: LessonResponse = {
     data: {
-      lesson: {
-        data: {
-          lesson: currentFlowLesson,
-        },
-      },
+      lesson: currentFlowLesson,
     },
   };
 
@@ -233,19 +229,59 @@ describe('dialog', () => {
         mockAxios.onPost('/classifier').reply(_ => {
           return [500, {}];
         });
-        const response = await postSession(lessonId, app, {
-          message: 'peer pressure',
-          sessionInfo: validSessionDto,
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            console.log('query matched q1');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } else if ((reqBody.query as string).includes('q2')) {
+            console.log('query matched q2');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: currentFlowLesson } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
         });
-        expect(response.status).to.equal(502);
       }
+      const response = await postSession(lessonId, app, {
+        message: 'peer pressure',
+        sessionInfo: validSessionDto,
+      });
+      expect(response.status).to.equal(502);
     });
 
     it('responds with a 404 error if 404 error calling classifier', async () => {
-      mockAxios.reset();
-      mockAxios.onPost('/classifier').reply(_ => {
-        return [404, {}];
-      });
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/classifier').reply(_ => {
+          return [404, {}];
+        });
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            console.log('query matched q1');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } else if ((reqBody.query as string).includes('q2')) {
+            console.log('query matched q2');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: currentFlowLesson } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
+      }
       const response = await postSession(lessonId, app, {
         lessonId: lessonId,
         message: 'peer pressure',
@@ -306,6 +342,25 @@ describe('dialog', () => {
         mockAxios.onPost('/grading-api').reply(config => {
           return [200, { message: 'success' }];
         });
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            console.log('query matched q1');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } else if ((reqBody.query as string).includes('q2')) {
+            console.log('query matched q2');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: currentFlowLesson } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
       }
       const responseStartSession = await postDialog('q1', app, {
         lessonId: 'q1',
@@ -357,6 +412,25 @@ describe('dialog', () => {
           // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
           return [200, { message: 'success' }];
         });
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            console.log('query matched q1');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } else if ((reqBody.query as string).includes('q2')) {
+            console.log('query matched q2');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: currentFlowLesson } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
       }
       const response = await postSession(lessonId, app, {
         lessonId: 'q1',
@@ -371,6 +445,28 @@ describe('dialog', () => {
     // });
 
     it('sends the session information when session is started, along with initial dialog', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            console.log('query matched q1');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } else if ((reqBody.query as string).includes('q2')) {
+            console.log('query matched q2');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: currentFlowLesson } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
+      }
       const response = await postDialog(lessonId, app, {
         lessonId: 'q1',
         id: '1',
@@ -386,6 +482,28 @@ describe('dialog', () => {
     });
 
     it('accepts and uses a session id passed by user', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            console.log('query matched q1');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } else if ((reqBody.query as string).includes('q2')) {
+            console.log('query matched q2');
+            console.log(reqBody.query);
+            return [200, { data: { lesson: currentFlowLesson } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
+      }
       const sessionId = 'some-user-generated-session-id';
       const response = await postDialog(lessonId, app, {
         sessionId: sessionId,
@@ -467,7 +585,25 @@ describe('dialog', () => {
   });
 
   allScenarios.forEach(ex => {
-    it.only(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
+    it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } else if ((reqBody.query as string).includes('q2')) {
+            return [200, { data: { lesson: currentFlowLesson } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
+      }
       const responseStartSession = await postDialog(ex.lessonId, app, {
         lessonId: ex.lessonId,
         id: '1',
@@ -483,21 +619,22 @@ describe('dialog', () => {
         if (mockAxios) {
           mockAxios.reset();
           mockAxios.onPost('/graphql').reply(config => {
-            console.log('in graphql');
-            // const reqBody = JSON.parse(config);
-            // console.log(reqBody);
-            // expect(reqBody).to.have.property('lessonId', 'navyIntegrity');
-            //   const errData  : LResponseObject = {
-            //     data: {
-            //         lesson: cur
-            //     }
-            // }
-            return [200, { message: 'success' }];
+            const reqBody = JSON.parse(config.data);
+            if ((reqBody.query as string).includes('q1')) {
+              return [200, { data: { lesson: navyIntegrityLesson } }];
+            } else if ((reqBody.query as string).includes('q2')) {
+              return [200, { data: { lesson: currentFlowLesson } }];
+            } else {
+              const errData: LResponseObject = {
+                data: {
+                  lesson: null,
+                },
+              };
+              return [404, errData];
+            }
           });
           mockAxios.onPost('/classifier').reply(config => {
             const reqBody = JSON.parse(config.data);
-            console.log('in classifier');
-            console.log(reqBody);
             expect(reqBody).to.have.property('lesson', ex.lessonId);
             expect(reqBody).to.have.property('input', reqRes.userInput);
             expect(reqBody).to.have.property('config');
@@ -507,7 +644,6 @@ describe('dialog', () => {
             ];
           });
           mockAxios.onPost('/grading-api').reply(config => {
-            // const reqBody = JSON.parse(config.data);
             //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
             // expect(reqBody).to.have.property('userResponses', ['correct answer']);
             // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);

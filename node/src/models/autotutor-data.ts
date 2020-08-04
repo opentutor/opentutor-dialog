@@ -69,71 +69,13 @@ export function convertLessonDataToATData(lessonData: Lesson) {
     return {
       expectation: exp.expectation,
       hints: exp.hints.map(h => h.text),
-      prompts: [],
+      prompts: exp.prompts
+        ? exp.prompts.map(p => {
+            return { prompt: p.prompt, answer: p.answer };
+          })
+        : [],
     };
   });
 
   return defaultData;
 }
-
-// export const navyIntegrity: AutoTutorData = {
-//   rootExpectationId: 0,
-//   lessonId: 'q1',
-//   expectations:
-
-//   questionIntro: ,
-//   questionText:
-
-//   recapText:
-//   confusionFeedback: [
-//     'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
-//   ],
-//   positiveFeedback: ['Great'],
-//   negativeFeedback: ['Not really.'],
-//   neutralFeedback: ['OK'],
-//   pump: ["Let's work through this together"],
-//   hintStart: ['Consider this.'],
-//   promptStart: ['See if you can get this'],
-//   pumpBlank: [],
-//   media: {},
-//   originalXml: '',
-// };
-
-// export const currentFlow: AutoTutorData = {
-//   rootExpectationId: 0,
-//   lessonId: 'q2',
-//   expectations: [
-//     {
-//       expectation: 'Current flows in the same direction as the arrow.',
-//       hints: [
-//         'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-//       ],
-//       prompts: [
-//         {
-//           prompt: 'What might cause you to lower your standards?',
-//           answer: 'peer pressure',
-//         },
-//       ],
-//     },
-//   ],
-//   questionIntro:
-//     '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-//   questionText:
-//     'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-//   recapText: [
-//     'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-//     "Let's try a different problem.",
-//   ],
-//   confusionFeedback: [
-//     'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
-//   ],
-//   positiveFeedback: ['Great'],
-//   negativeFeedback: ['Not really.'],
-//   neutralFeedback: ['OK'],
-//   pump: ["Let's work through this together"],
-//   hintStart: ['Consider this.'],
-//   promptStart: ['See if you can get this'],
-//   pumpBlank: [],
-//   media: {},
-//   originalXml: '',
-// };

@@ -6,7 +6,6 @@ import {
   Evaluation,
   ExpectationResult,
   Expectation as CExpectation,
-  ClassifierResult,
 } from 'models/classifier';
 import OpenTutorResponse, { createTextResponse } from './opentutor-response';
 import logger from 'utils/logging';
@@ -53,7 +52,8 @@ export async function processUserResponse(
         : err.message;
     throw Object.assign(err, { status, message });
   }
-  logger.warn(JSON.stringify(atd));
+  console.log(JSON.stringify(atd));
+
   const expectationResults = classifierResult.output.expectationResults;
   //add results to the session history
   addClassifierGrades(sdp, {
@@ -80,6 +80,7 @@ export async function processUserResponse(
   });
   if (e && h) {
     //response is to a hint
+    console.log(e);
     return handleHints(lessonId, atd, sdp, expectationResults, e, h);
   }
 

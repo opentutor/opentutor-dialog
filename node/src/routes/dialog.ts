@@ -17,7 +17,6 @@ import {
   hasHistoryBeenTampered,
   newSession,
   SessionData,
-  ExpectationData,
 } from 'models/session-data';
 import { sendGraderRequest } from 'models/grader';
 import Joi from '@hapi/joi';
