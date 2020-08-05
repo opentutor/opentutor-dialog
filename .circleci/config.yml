@@ -87,6 +87,16 @@ jobs:
       - run:
           name: Test lint
           command: cd node && npm run test:lint
+  test-license:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: cd node && npm ci
+      - run:
+          name: Test lint
+          command: cd node && npm run test:license
   test-types:
     executor: node
     steps:
@@ -117,6 +127,8 @@ workflows:
           filters: *only-untagged
       - test-lint:
           filters: *only-untagged
+      - test-license:
+          filters: *only-untagged
       - test-types:
           filters: *only-untagged
       - test:
@@ -128,6 +140,7 @@ workflows:
             - test-format
             - test-audit
             - test-lint
+            - test-license
             - test-types
             - test
       - build-and-push:
@@ -143,6 +156,8 @@ workflows:
           filters: *only-tagged-releases
       - test-lint:
           filters: *only-tagged-releases
+      - test-license:
+          filters: *only-tagged-releases
       - test-types:
           filters: *only-tagged-releases
       - test:
@@ -154,5 +169,6 @@ workflows:
             - test-format
             - test-audit
             - test-lint
+            - test-license
             - test-types
             - test
