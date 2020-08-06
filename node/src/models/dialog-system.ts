@@ -52,8 +52,6 @@ export async function processUserResponse(
         : err.message;
     throw Object.assign(err, { status, message });
   }
-  console.log(JSON.stringify(atd));
-
   const expectationResults = classifierResult.output.expectationResults;
   //add results to the session history
   addClassifierGrades(sdp, {
@@ -80,7 +78,6 @@ export async function processUserResponse(
   });
   if (e && h) {
     //response is to a hint
-    console.log(e);
     return handleHints(lessonId, atd, sdp, expectationResults, e, h);
   }
 
@@ -174,7 +171,6 @@ export function toNextExpectation(
 ): OpenTutorResponse[] {
   //give positive feedback, and ask next expectation question
   let answer: OpenTutorResponse[] = [];
-  // console.log(sdp.dialogState.expectationsCompleted);
   if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[

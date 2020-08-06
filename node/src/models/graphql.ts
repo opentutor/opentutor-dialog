@@ -71,10 +71,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
       }
       `,
     });
-    // console.log('logging response');
-    // console.log(response);
     if (response.data.data.lesson === null) {
-      console.log('throwing 404');
       throw {
         response: {
           status: 404,
@@ -82,11 +79,9 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
         },
       };
     }
-    console.log(response.data.data.lesson);
     return response.data.data.lesson;
   } catch (err) {
-    console.log('logging error');
-    console.log(err);
+    logger.error(err);
     const status =
       `${err.response && err.response.status}` === '404' ? 404 : 502;
     const message =

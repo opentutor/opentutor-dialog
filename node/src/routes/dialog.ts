@@ -109,8 +109,6 @@ router.post(
         e => e.status === 'active'
       );
 
-      // console.log(sessionData);
-      logger.info(sessionData);
       res.send({
         status: 200,
         sessionInfo: dataToDto(sessionData),
@@ -121,7 +119,6 @@ router.post(
         expectationActive: currentExpectation,
       });
     } catch (err) {
-      console.log(err);
       logger.error(err);
       return next(err);
     }

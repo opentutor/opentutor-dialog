@@ -50,7 +50,7 @@ async function serverStart() {
     logger.info(`Listening on ${bind}`);
   });
   server.listen(port);
-  console.log('node version ' + process.version);
+  logger.info('node version ' + process.version);
 }
 
 serverStart();
