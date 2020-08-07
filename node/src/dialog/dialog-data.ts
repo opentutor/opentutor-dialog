@@ -47,9 +47,9 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     confusionFeedback: [
       'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
     ],
-    positiveFeedback: ['Great'],
-    negativeFeedback: ['Not really.'],
-    neutralFeedback: ['OK'],
+    positiveFeedback: ['Great', 'Nicely done!', 'You got it!'],
+    negativeFeedback: ['Not really.', "That's not right.", "I don't think so."],
+    neutralFeedback: ['OK', "So"],
     pump: ["Let's work through this together"],
     hintStart: ['Consider this.'],
     promptStart: ['See if you can get this'],
