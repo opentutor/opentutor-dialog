@@ -37,11 +37,17 @@ export interface DialogState {
   hints: boolean;
 }
 
+export enum ExpectationStatus {
+  Active = 'active',
+  Complete = 'complete',
+  None = 'none',
+}
+
 export interface ExpectationData {
   ideal: string;
   score: number;
   satisfied: boolean;
-  status: string;
+  status: ExpectationStatus;
 }
 
 export interface SessionHistory {
@@ -123,7 +129,7 @@ export function newExpectationData(atd: AutoTutorData): ExpectationData[] {
       ideal: '',
       score: 0,
       satisfied: false,
-      status: 'none',
+      status: ExpectationStatus.None,
     };
   });
 }

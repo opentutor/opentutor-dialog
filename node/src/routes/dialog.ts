@@ -23,11 +23,13 @@ import {
   hasHistoryBeenTampered,
   newSession,
   SessionData,
+  ExpectationStatus,
 } from 'models/session-data';
 import { sendGraderRequest } from 'models/grader';
 import Joi from '@hapi/joi';
 import logger from 'utils/logging';
 import { getLessonData } from 'models/graphql';
+import { ResponseType } from 'models/opentutor-response';
 
 const router = express.Router({ mergeParams: true });
 
@@ -93,7 +95,7 @@ router.post(
       addTutorDialog(sessionData, msg);
       const graderResponse = sendGraderRequest(atd, sessionData) ? true : false;
       const currentExpectation = sessionData.dialogState.expectationData.findIndex(
-        e => e.status === 'active'
+        e => e.status === ExpectationStatus.Active
       );
 
       res.send({
@@ -101,7 +103,9 @@ router.post(
         sessionInfo: dataToDto(sessionData),
         response: msg,
         sentToGrader: graderResponse,
-        completed: msg.find(m => m.type === 'closing') ? true : false,
+        completed: msg.find(m => m.type === ResponseType.Closing)
+          ? true
+          : false,
         score: calculateScore(sessionData, atd),
         expectationActive: currentExpectation,
       });

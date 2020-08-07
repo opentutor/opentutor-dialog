@@ -5,7 +5,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import AutoTutorData, { Prompt, Expectation } from 'models/opentutor-data';
-import SessionData, { addClassifierGrades } from './session-data';
+import SessionData, {
+  addClassifierGrades,
+  ExpectationStatus,
+} from './session-data';
 import {
   evaluate,
   ClassifierResponse,
@@ -147,7 +150,8 @@ export async function processUserResponse(
       )
     );
     sdp.dialogState.hints = true;
-    sdp.dialogState.expectationData[expectationId].status = 'active';
+    sdp.dialogState.expectationData[expectationId].status =
+      ExpectationStatus.Active;
     return [
       createTextResponse(
         atd.negativeFeedback[0],
@@ -183,7 +187,8 @@ function updateCompletedExpectations(
     sdp.dialogState.expectationsCompleted[expectationId] = true;
     sdp.dialogState.expectationData[expectationId].ideal =
       atd.expectations[expectationId].expectation;
-    sdp.dialogState.expectationData[expectationId].status = 'complete';
+    sdp.dialogState.expectationData[expectationId].status =
+      ExpectationStatus.Complete;
     sdp.dialogState.expectationData[expectationId].score = normalizeScores(
       expectationResults[expectationId]
     );
@@ -200,7 +205,7 @@ export function toNextExpectation(
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[
       sdp.dialogState.expectationsCompleted.indexOf(false)
-    ].status = 'active';
+    ].status = ExpectationStatus.Active;
     answer.push(createTextResponse(atd.hintStart[0]));
     if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
@@ -249,7 +254,7 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].score = normalizeScores(
       expectationResults[index]
     );
-    sdp.dialogState.expectationData[index].status = 'complete';
+    sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
 
     return [
       createTextResponse(
@@ -267,7 +272,7 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].score = normalizeScores(
       expectationResults[index]
     );
-    sdp.dialogState.expectationData[index].status = 'complete';
+    sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     return [createTextResponse(p.answer, ResponseType.Text)].concat(
       toNextExpectation(atd, sdp)
     );
@@ -314,7 +319,8 @@ function handleHints(
     sdp.dialogState.expectationData[expectationId].score = normalizeScores(
       expectationResults[expectationId]
     );
-    sdp.dialogState.expectationData[expectationId].status = 'complete';
+    sdp.dialogState.expectationData[expectationId].status =
+      ExpectationStatus.Complete;
     finalResponses.push(
       createTextResponse(atd.positiveFeedback[0], ResponseType.FeedbackPositive)
     );
@@ -355,7 +361,8 @@ function handleHints(
       sdp.dialogState.expectationData[index].score = normalizeScores(
         expectationResults[index]
       );
-      sdp.dialogState.expectationData[index].status = 'complete';
+      sdp.dialogState.expectationData[index].status =
+        ExpectationStatus.Complete;
       if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
         // there are still incomplete expectations
         return [

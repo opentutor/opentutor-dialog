@@ -9,7 +9,7 @@ import axios from 'axios';
 import MockAxios from 'axios-mock-adapter';
 import { expect } from 'chai';
 import { Express } from 'express';
-import { dataToDto, SessionData, SessionDto } from 'models/session-data';
+import { dataToDto, SessionData, SessionDto, ExpectationStatus } from 'models/session-data';
 import OpenTutorResponse from 'models/opentutor-response';
 import { ClassifierResult, Evaluation } from 'models/classifier';
 import { LessonResponse, LResponseObject, Lesson } from 'models/graphql';
@@ -163,19 +163,19 @@ describe('dialog', () => {
             ideal: '',
             score: 0,
             satisfied: false,
-            status: 'none',
+            status: ExpectationStatus.None,
           },
           {
             ideal: '',
             score: 0,
             satisfied: false,
-            status: 'none',
+            status: ExpectationStatus.None,
           },
           {
             ideal: '',
             score: 0,
             satisfied: false,
-            status: 'none',
+            status: ExpectationStatus.None,
           },
         ],
         hints: false,
