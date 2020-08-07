@@ -58,7 +58,7 @@ router.post(
         response: beginDialog(atd),
       });
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       return next(err);
     }
   }
