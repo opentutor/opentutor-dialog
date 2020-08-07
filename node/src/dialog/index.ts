@@ -20,7 +20,6 @@ import OpenTutorResponse, {
   createTextResponse,
   ResponseType,
 } from './response-data';
-import logger from 'utils/logging';
 
 const goodThreshold: number =
   Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;

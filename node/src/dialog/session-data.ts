@@ -124,7 +124,7 @@ export function newSession(atd: Dialog, sessionId = ''): SessionData {
 }
 
 export function newExpectationData(atd: Dialog): ExpectationData[] {
-  return atd.expectations.map((exp, ind) => {
+  return atd.expectations.map(() => {
     return {
       ideal: '',
       score: 0,
