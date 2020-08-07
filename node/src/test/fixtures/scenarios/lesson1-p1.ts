@@ -1,5 +1,6 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'models/classifier';
+import { ResponseType } from 'models/opentutor-response';
 
 //navy integrity perfect answer
 export const scenario: DialogScenario = {
@@ -23,14 +24,14 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackPositive',
+          type: ResponseType.FeedbackPositive,
           data: {
             text: 'Great',
           },
         },
         {
           author: 'them',
-          type: 'closing',
+          type: ResponseType.Closing,
           data: {
             text:
               'Peer pressure can push you to allow and participate in inappropriate behavior.',
@@ -38,7 +39,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: 'closing',
+          type: ResponseType.Closing,
           data: {
             text:
               "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
@@ -46,7 +47,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: 'closing',
+          type: ResponseType.Closing,
           data: {
             text:
               'However, integrity means speaking out even when it is unpopular.',

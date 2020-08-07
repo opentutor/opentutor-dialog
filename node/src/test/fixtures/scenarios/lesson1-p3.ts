@@ -1,5 +1,6 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'models/classifier';
+import { ResponseType } from 'models/opentutor-response';
 
 export const scenario: DialogScenario = {
   name:
@@ -22,21 +23,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackNegative',
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Not really.',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'Consider this.',
           },
         },
         {
           author: 'them',
-          type: 'hint',
+          type: ResponseType.Hint,
           data: {
             text:
               'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
@@ -60,14 +61,14 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackPositive',
+          type: ResponseType.FeedbackPositive,
           data: {
             text: 'Great',
           },
         },
         {
           author: 'them',
-          type: 'hint',
+          type: ResponseType.Hint,
           data: {
             text: 'How can it affect someone when you correct their behavior?',
           },

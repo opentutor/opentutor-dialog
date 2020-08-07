@@ -1,5 +1,6 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'models/classifier';
+import { ResponseType } from 'models/opentutor-response';
 
 //navy integrity perfect answer
 export const scenario: DialogScenario = {
@@ -18,7 +19,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'closing',
+          type: ResponseType.Closing,
           data: {
             text:
               'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
@@ -26,7 +27,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: 'closing',
+          type: ResponseType.Closing,
           data: {
             text: "Let's try a different problem.",
           },

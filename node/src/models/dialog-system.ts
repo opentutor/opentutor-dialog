@@ -13,7 +13,10 @@ import {
   ExpectationResult,
   Expectation as CExpectation,
 } from 'models/classifier';
-import OpenTutorResponse, { createTextResponse } from './opentutor-response';
+import OpenTutorResponse, {
+  createTextResponse,
+  ResponseType,
+} from './opentutor-response';
 import logger from 'utils/logging';
 
 const goodThreshold: number =
@@ -24,8 +27,8 @@ const badThreshold: number =
 //this should begin by sending the question prompt
 export function beginDialog(atd: AutoTutorData): OpenTutorResponse[] {
   return [
-    createTextResponse(atd.questionIntro, 'opening'),
-    createTextResponse(atd.questionText, 'mainQuestion'),
+    createTextResponse(atd.questionIntro, ResponseType.Opening),
+    createTextResponse(atd.questionText, ResponseType.MainQuestion),
   ];
 }
 
@@ -98,8 +101,13 @@ export async function processUserResponse(
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
     return [
-      createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
-    ].concat(atd.recapText.map(rt => createTextResponse(rt, 'closing')));
+      createTextResponse(
+        atd.positiveFeedback[0],
+        ResponseType.FeedbackPositive
+      ),
+    ].concat(
+      atd.recapText.map(rt => createTextResponse(rt, ResponseType.Closing))
+    );
   }
   if (
     expectationResults.every(
@@ -121,7 +129,10 @@ export async function processUserResponse(
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp, atd);
     return [
-      createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
+      createTextResponse(
+        atd.positiveFeedback[0],
+        ResponseType.FeedbackPositive
+      ),
     ].concat(toNextExpectation(atd, sdp));
   }
   if (
@@ -138,9 +149,15 @@ export async function processUserResponse(
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[expectationId].status = 'active';
     return [
-      createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
+      createTextResponse(
+        atd.negativeFeedback[0],
+        ResponseType.FeedbackNegative
+      ),
       createTextResponse(atd.hintStart[0]),
-      createTextResponse(atd.expectations[expectationId].hints[0], 'hint'),
+      createTextResponse(
+        atd.expectations[expectationId].hints[0],
+        ResponseType.Hint
+      ),
     ];
   }
   return [createTextResponse('this path has not been implemented yet.')];
@@ -193,14 +210,17 @@ export function toNextExpectation(
         createTextResponse(
           atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
             .hints[0],
-          'hint'
+          ResponseType.Hint
         )
       );
-    } else answer.push(createTextResponse('Think about the answer!', 'hint'));
+    } else
+      answer.push(
+        createTextResponse('Think about the answer!', ResponseType.Hint)
+      );
   } else {
     //all expectations completed
     answer = answer.concat(
-      atd.recapText.map(rt => createTextResponse(rt, 'closing'))
+      atd.recapText.map(rt => createTextResponse(rt, ResponseType.Closing))
     );
   }
   return answer;
@@ -232,7 +252,10 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].status = 'complete';
 
     return [
-      createTextResponse(atd.positiveFeedback[0], 'feedbackPositive'),
+      createTextResponse(
+        atd.positiveFeedback[0],
+        ResponseType.FeedbackPositive
+      ),
     ].concat(toNextExpectation(atd, sdp));
   } else {
     //prompt not answered correctly. Assert.
@@ -245,7 +268,7 @@ function handlePrompt(
       expectationResults[index]
     );
     sdp.dialogState.expectationData[index].status = 'complete';
-    return [createTextResponse(p.answer, 'text')].concat(
+    return [createTextResponse(p.answer, ResponseType.Text)].concat(
       toNextExpectation(atd, sdp)
     );
   }
@@ -272,7 +295,9 @@ function handleHints(
       //meets ANOTHER expectation
       //add some neutral response
       const neutralResponse = 'Good point! But lets focus on this part.';
-      finalResponses.push(createTextResponse(neutralResponse));
+      finalResponses.push(
+        createTextResponse(neutralResponse, ResponseType.FeedbackNeutral)
+      );
       updateCompletedExpectations(expectationResults, sdp, atd);
     }
   });
@@ -291,7 +316,7 @@ function handleHints(
     );
     sdp.dialogState.expectationData[expectationId].status = 'complete';
     finalResponses.push(
-      createTextResponse(atd.positiveFeedback[0], 'feedbackPositive')
+      createTextResponse(atd.positiveFeedback[0], ResponseType.FeedbackPositive)
     );
     return finalResponses.concat(toNextExpectation(atd, sdp));
   } else {
@@ -301,19 +326,24 @@ function handleHints(
     if (e.hints.indexOf(h) < e.hints.length - 1) {
       //another hint exists, use that.
       finalResponses.push(
-        createTextResponse(atd.neutralFeedback[0], 'feedbackNeutral')
+        createTextResponse(atd.neutralFeedback[0], ResponseType.FeedbackNeutral)
       );
       finalResponses.push(createTextResponse(atd.hintStart[0]));
       finalResponses.push(
-        createTextResponse(e.hints[e.hints.indexOf(h) + 1], 'hint')
+        createTextResponse(e.hints[e.hints.indexOf(h) + 1], ResponseType.Hint)
       );
       return finalResponses;
     } else if (e.prompts[0]) {
       finalResponses.push(
-        createTextResponse(atd.negativeFeedback[0], 'feedbackNegative')
+        createTextResponse(
+          atd.negativeFeedback[0],
+          ResponseType.FeedbackNegative
+        )
       );
       finalResponses.push(createTextResponse(atd.promptStart[0]));
-      finalResponses.push(createTextResponse(e.prompts[0].prompt, 'prompt'));
+      finalResponses.push(
+        createTextResponse(e.prompts[0].prompt, ResponseType.Prompt)
+      );
       return finalResponses;
     } else {
       //if no prompt, assert
@@ -329,13 +359,19 @@ function handleHints(
       if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
         // there are still incomplete expectations
         return [
-          createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
-          createTextResponse(e.expectation, 'text'),
+          createTextResponse(
+            atd.negativeFeedback[0],
+            ResponseType.FeedbackNegative
+          ),
+          createTextResponse(e.expectation, ResponseType.Text),
         ].concat(toNextExpectation(atd, sdp));
       } else {
         //no more incomplete expectations
         return [
-          createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
+          createTextResponse(
+            atd.negativeFeedback[0],
+            ResponseType.FeedbackNegative
+          ),
         ].concat(toNextExpectation(atd, sdp));
       }
 

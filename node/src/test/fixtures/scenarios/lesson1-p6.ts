@@ -1,5 +1,6 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'models/classifier';
+import { ResponseType } from 'models/opentutor-response';
 
 export const scenario: DialogScenario = {
   name:
@@ -22,21 +23,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackPositive',
+          type: ResponseType.FeedbackPositive,
           data: {
             text: 'Great',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'Consider this.',
           },
         },
         {
           author: 'them',
-          type: 'hint',
+          type: ResponseType.Hint,
           data: {
             text: 'How can it affect someone when you correct their behavior?',
           },
@@ -59,21 +60,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackNegative',
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Not really.',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'See if you can get this',
           },
         },
         {
           author: 'them',
-          type: 'prompt',
+          type: ResponseType.Prompt,
           data: {
             text:
               'How can it affect someone emotionally when you correct their behavior?',
@@ -97,21 +98,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackPositive',
+          type: ResponseType.FeedbackPositive,
           data: {
             text: 'Great',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'Consider this.',
           },
         },
         {
           author: 'them',
-          type: 'hint',
+          type: ResponseType.Hint,
           data: {
             text: "How can it affect you when you correct someone's behavior?",
           },

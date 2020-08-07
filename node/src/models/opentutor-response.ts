@@ -19,9 +19,21 @@ export interface ImageData {
   path: string;
 }
 
+export enum ResponseType {
+  Text = 'text',
+  Closing = 'closing',
+  Opening = 'opening',
+  MainQuestion = 'mainQuestion',
+  Hint = 'hint',
+  Prompt = 'prompt',
+  FeedbackPositive = 'feedbackPositive',
+  FeedbackNegative = 'feedbackNegative',
+  FeedbackNeutral = 'feedbackNeutral',
+}
+
 export function createTextResponse(
   msg: string,
-  type = 'text'
+  type: ResponseType = ResponseType.Text
 ): OpenTutorResponse {
   return { author: 'them', type, data: { text: msg } };
 }

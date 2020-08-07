@@ -1,5 +1,6 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'models/classifier';
+import { ResponseType } from 'models/opentutor-response';
 
 export const scenario: DialogScenario = {
   name:
@@ -22,21 +23,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackNegative',
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Not really.',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'Consider this.',
           },
         },
         {
           author: 'them',
-          type: 'hint',
+          type: ResponseType.Hint,
           data: {
             text:
               'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
@@ -60,14 +61,14 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'See if you can get this',
           },
         },
         {
           author: 'them',
-          type: 'prompt',
+          type: ResponseType.Prompt,
           data: {
             text: 'What might cause you to lower your standards?',
           },
@@ -90,21 +91,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'peer pressure',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'Consider this.',
           },
         },
         {
           author: 'them',
-          type: 'hint',
+          type: ResponseType.Hint,
           data: {
             text: 'How can it affect someone when you correct their behavior?',
           },
@@ -127,21 +128,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackNegative',
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Not really.',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'See if you can get this',
           },
         },
         {
           author: 'them',
-          type: 'prompt',
+          type: ResponseType.Prompt,
           data: {
             text:
               'How can it affect someone emotionally when you correct their behavior?',
@@ -165,21 +166,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'it may be harder to work with them',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'Consider this.',
           },
         },
         {
           author: 'them',
-          type: 'hint',
+          type: ResponseType.Hint,
           data: {
             text: "How can it affect you when you correct someone's behavior?",
           },
@@ -202,21 +203,21 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'feedbackNegative',
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Not really.',
           },
         },
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'See if you can get this',
           },
         },
         {
           author: 'them',
-          type: 'prompt',
+          type: ResponseType.Prompt,
           data: {
             text:
               'Integrity means doing the right thing even when it is _____ ?',
@@ -240,14 +241,14 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: 'text',
+          type: ResponseType.Text,
           data: {
             text: 'unpopular',
           },
         },
         {
           author: 'them',
-          type: 'closing',
+          type: ResponseType.Closing,
           data: {
             text:
               'Peer pressure can push you to allow and participate in inappropriate behavior.',
@@ -255,7 +256,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: 'closing',
+          type: ResponseType.Closing,
           data: {
             text:
               "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
@@ -263,7 +264,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: 'closing',
+          type: ResponseType.Closing,
           data: {
             text:
               'However, integrity means speaking out even when it is unpopular.',
