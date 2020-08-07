@@ -18,13 +18,15 @@ import {
 import OpenTutorResponse from 'dialog/response-data';
 import { ClassifierResult, Evaluation } from 'apis/classifier';
 import { LessonResponse, LResponseObject, Lesson } from 'apis/lessons';
-import { all as allScenarios } from 'test/fixtures/scenarios';
+import { findAll as findAllScenarios } from 'test/fixtures/scenarios';
+import { DialogScenario } from 'test/fixtures/types';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
 
-describe('dialog', () => {
+describe('dialog', async () => {
   let app: Express;
   let mockAxios: MockAxios;
+  const allScenarios: DialogScenario[] = await findAllScenarios();
 
   beforeEach(async () => {
     if (!MOCKING_DISABLED) {
@@ -134,15 +136,89 @@ describe('dialog', () => {
     },
   };
 
-  describe('POST', () => {
-    // it('responds with a 400 error when no session info passed', async () => {
-    //   const response = await postDialog('q1', app);
-    //   expect(response.status).to.equal(400);
-    //   expect(response.body)
-    //     .to.have.property('message')
-    //     .eql('lessonId is required');
-    // });
+  allScenarios.forEach(ex => {
+    it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } else if ((reqBody.query as string).includes('q2')) {
+            return [200, { data: { lesson: currentFlowLesson } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
+      }
+      const responseStartSession = await postDialog(ex.lessonId, app, {
+        lessonId: ex.lessonId,
+        id: '1',
+        user: 'rush',
+        UseDB: true,
+        ScriptXML: null,
+        LSASpaceName: 'English_TASA',
+        ScriptURL: null,
+      });
+      let sessionObj = responseStartSession.body.sessionInfo;
+      expect(responseStartSession.status).to.equal(200);
+      for (const reqRes of ex.expectedRequestResponses) {
+        if (mockAxios) {
+          mockAxios.reset();
+          mockAxios.onPost('/graphql').reply(config => {
+            const reqBody = JSON.parse(config.data);
+            if ((reqBody.query as string).includes('q1')) {
+              return [200, { data: { lesson: navyIntegrityLesson } }];
+            } else if ((reqBody.query as string).includes('q2')) {
+              return [200, { data: { lesson: currentFlowLesson } }];
+            } else {
+              const errData: LResponseObject = {
+                data: {
+                  lesson: null,
+                },
+              };
+              return [404, errData];
+            }
+          });
+          mockAxios.onPost('/classifier').reply(config => {
+            const reqBody = JSON.parse(config.data);
+            expect(reqBody).to.have.property('lesson', ex.lessonId);
+            expect(reqBody).to.have.property('input', reqRes.userInput);
+            expect(reqBody).to.have.property('config');
+            return [
+              reqRes.mockClassifierResponse.status || 200,
+              reqRes.mockClassifierResponse.data,
+            ];
+          });
+          mockAxios.onPost('/grading-api').reply(config => {
+            //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
+            // expect(reqBody).to.have.property('userResponses', ['correct answer']);
+            // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
+            return [200, { message: 'success' }];
+          });
+        }
+        const response = await postSession(ex.lessonId, app, {
+          message: reqRes.userInput,
+          sessionInfo: sessionObj,
+          lessonId: ex.lessonId,
+        });
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('response');
+        expect(response.body.response).to.deep.include.members(
+          reqRes.expectedResponse
+        );
+        expect(response.body).to.have.property('completed');
+        sessionObj = response.body.sessionInfo;
+      }
+    });
+  });
 
+  describe('POST', () => {
     const lessonId = 'q1';
 
     const lessonData: LessonResponse = {
@@ -423,9 +499,6 @@ describe('dialog', () => {
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('sentToGrader', true);
     });
-    // it('responds with 405 if method for dialog or dialog session not POST', async () => {
-    //   expect(1).to.eql(2);
-    // });
 
     it('sends the session information when session is started, along with initial dialog', async () => {
       if (mockAxios) {
@@ -553,88 +626,6 @@ describe('dialog', () => {
           m => m.data
         )
       ).to.eql([{ text: 'intro' }, { text: 'main' }]);
-    });
-  });
-
-  allScenarios.forEach(ex => {
-    it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
-      if (mockAxios) {
-        mockAxios.reset();
-        mockAxios.onPost('/graphql').reply(config => {
-          const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
-          } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
-          } else {
-            const errData: LResponseObject = {
-              data: {
-                lesson: null,
-              },
-            };
-            return [404, errData];
-          }
-        });
-      }
-      const responseStartSession = await postDialog(ex.lessonId, app, {
-        lessonId: ex.lessonId,
-        id: '1',
-        user: 'rush',
-        UseDB: true,
-        ScriptXML: null,
-        LSASpaceName: 'English_TASA',
-        ScriptURL: null,
-      });
-      let sessionObj = responseStartSession.body.sessionInfo;
-      expect(responseStartSession.status).to.equal(200);
-      for (const reqRes of ex.expectedRequestResponses) {
-        if (mockAxios) {
-          mockAxios.reset();
-          mockAxios.onPost('/graphql').reply(config => {
-            const reqBody = JSON.parse(config.data);
-            if ((reqBody.query as string).includes('q1')) {
-              return [200, { data: { lesson: navyIntegrityLesson } }];
-            } else if ((reqBody.query as string).includes('q2')) {
-              return [200, { data: { lesson: currentFlowLesson } }];
-            } else {
-              const errData: LResponseObject = {
-                data: {
-                  lesson: null,
-                },
-              };
-              return [404, errData];
-            }
-          });
-          mockAxios.onPost('/classifier').reply(config => {
-            const reqBody = JSON.parse(config.data);
-            expect(reqBody).to.have.property('lesson', ex.lessonId);
-            expect(reqBody).to.have.property('input', reqRes.userInput);
-            expect(reqBody).to.have.property('config');
-            return [
-              reqRes.mockClassifierResponse.status || 200,
-              reqRes.mockClassifierResponse.data,
-            ];
-          });
-          mockAxios.onPost('/grading-api').reply(config => {
-            //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
-            // expect(reqBody).to.have.property('userResponses', ['correct answer']);
-            // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
-            return [200, { message: 'success' }];
-          });
-        }
-        const response = await postSession(ex.lessonId, app, {
-          message: reqRes.userInput,
-          sessionInfo: sessionObj,
-          lessonId: ex.lessonId,
-        });
-        expect(response.status).to.equal(200);
-        expect(response.body).to.have.property('response');
-        expect(response.body.response).to.deep.include.members(
-          reqRes.expectedResponse
-        );
-        expect(response.body).to.have.property('completed');
-        sessionObj = response.body.sessionInfo;
-      }
     });
   });
 });
