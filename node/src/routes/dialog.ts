@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
-import AutoTutorData, {
+import OpenTutorData, {
   convertLessonDataToATData,
-} from 'models/autotutor-data';
+} from 'models/opentutor-data';
 import 'models/opentutor-response';
 import {
   beginDialog,
@@ -39,23 +39,13 @@ router.post(
     try {
       const result = dialogSchema.validate(req.body);
       const { value: body, error } = result;
-      const valid = error == null;
-      if (!valid) {
+      if (Boolean(error)) {
         return next(createError(400, error));
       }
       const lessonId = req.params['lessonId'];
-      let atd: AutoTutorData;
-      switch (lessonId) {
-        // case 'q1':
-        //   atd = navyIntegrity;
-        //   break;
-        // case 'q2':
-        //   atd = currentFlow;
-        //   break;
-        default:
-          //request graphQL for data.
-          atd = convertLessonDataToATData(await getLessonData(lessonId));
-      }
+      let atd: OpenTutorData;
+      //request graphQL for data.
+      atd = convertLessonDataToATData(await getLessonData(lessonId));
       //new sessionDataPacket
       const sdp = newSession(atd, body.sessionId);
       addTutorDialog(sdp, beginDialog(atd));
@@ -88,19 +78,9 @@ router.post(
         return res.status(410).send();
       }
 
-      let atd: AutoTutorData;
-      switch (lessonId) {
-        // case 'q1':
-        //   atd = navyIntegrity;
-        //   break;
-        // case 'q2':
-        //   atd = currentFlow;
-        //   break;
-        default:
-          atd = convertLessonDataToATData(await getLessonData(lessonId));
-          if (!atd) return res.status(404).send();
-          break;
-      }
+      let atd: OpenTutorData;
+      atd = convertLessonDataToATData(await getLessonData(lessonId));
+      if (!atd) return res.status(404).send();
       addUserDialog(sessionData, req.body['message']);
       const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);

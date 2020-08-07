@@ -1,7 +1,7 @@
 import sha256 from 'crypto-js/sha256';
 import 'models/opentutor-response';
 import { v4 as uuidv4 } from 'uuid';
-import AutoTutorData from './autotutor-data';
+import AutoTutorData from './opentutor-data';
 import { ClassifierResult } from './classifier';
 import OpenTutorResponse, { TextData } from 'models/opentutor-response';
 
@@ -123,8 +123,7 @@ export function newExpectationData(atd: AutoTutorData): ExpectationData[] {
 }
 
 export function hasHistoryBeenTampered(hist: SessionHistory, hash: string) {
-  const newhash = sha256(JSON.stringify(hist), SESSION_SECURITY_KEY).toString();
-  return !(newhash == hash);
+  return hash !== sha256(JSON.stringify(hist), SESSION_SECURITY_KEY).toString();
 }
 
 export default SessionData;

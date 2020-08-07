@@ -1,4 +1,4 @@
-export default class AutoTutorAnswer {
+export default class OpenTutorAnswer {
   answerText = '';
   questionContext = '';
   regexMatches = {};

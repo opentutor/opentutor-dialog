@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { logger } from 'utils/logging';
 
+const CLASSIFIER_ENDPOINT = process.env.CLASSIFIER_ENDPOINT || '/classifier';
+
 export interface ClassfierRequest {
   lesson: string;
   input: string;
@@ -33,8 +35,6 @@ export interface ClassifierResult {
 export interface ClassifierResponse {
   output: ClassifierResult;
 }
-
-const CLASSIFIER_ENDPOINT = process.env.CLASSIFIER_ENDPOINT || '/classifier';
 
 export async function evaluate(
   request: ClassfierRequest

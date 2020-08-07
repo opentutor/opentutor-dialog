@@ -20,9 +20,7 @@ export async function postDialog(
 ): Promise<PostDialogResponse> {
   const endpoint = `${DIALOG_ENDPOINT}/${questionId}/${path}`;
   if (MOCKING_DISABLED) {
-    // console.log(`MOCKING_DISABLED and endpoint='${endpoint}'`);
     const response = await axios.post<PostDialogResponse>(endpoint, body);
-    // console.log(`axios response=${inspect(response)}`);
     return {
       status: response.status,
       body: response.data,

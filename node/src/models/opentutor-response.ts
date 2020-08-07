@@ -13,8 +13,6 @@ export interface ImageData {
   path: string;
 }
 
-// type OpenTutorResponseData = TextData | ImageData; // look up union types
-
 export function createTextResponse(
   msg: string,
   type = 'text'

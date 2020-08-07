@@ -1,4 +1,4 @@
-import AutoTutorData, { Prompt, Expectation } from 'models/autotutor-data';
+import AutoTutorData, { Prompt, Expectation } from 'models/opentutor-data';
 import SessionData, { addClassifierGrades } from './session-data';
 import {
   evaluate,
@@ -44,13 +44,18 @@ export async function processUserResponse(
       },
     });
   } catch (err) {
-    const status =
-      `${err.response && err.response.status}` === '404' ? 404 : 502;
-    const message =
-      status === 404
-        ? `classifier cannot find lesson '${lessonId}'`
-        : err.message;
-    throw Object.assign(err, { status, message });
+    throw Object.assign(
+      err,
+      `${err.response && err.response.status}` === '404'
+        ? {
+            status: 404,
+            message: `classifier cannot find lesson '${lessonId}'`,
+          }
+        : {
+            status: 502,
+            message: err.message,
+          }
+    );
   }
   const expectationResults = classifierResult.output.expectationResults;
   //add results to the session history
@@ -59,10 +64,9 @@ export async function processUserResponse(
   });
   //check if response was for a prompt
   let p: Prompt;
-  let e: Expectation = atd.expectations.find(function(e) {
-    p = e.prompts.find(p => sdp.previousSystemResponse.indexOf(p.prompt) > -1);
-    if (p) return true;
-    else return false;
+  let e: Expectation = atd.expectations.find(e => {
+    p = e.prompts.find(p => sdp.previousSystemResponse.includes(p.prompt));
+    return Boolean(p);
   });
   if (e && p) {
     //response was to a prompt.
@@ -71,10 +75,9 @@ export async function processUserResponse(
 
   //check if response was to a hint
   let h: string;
-  e = atd.expectations.find(function(e) {
-    h = e.hints.find(n => sdp.previousSystemResponse.indexOf(n) > -1);
-    if (h) return true;
-    else return false;
+  e = atd.expectations.find(e => {
+    h = e.hints.find(n => sdp.previousSystemResponse.includes(n));
+    return Boolean(h);
   });
   if (e && h) {
     //response is to a hint
@@ -128,7 +131,6 @@ export async function processUserResponse(
     );
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[expectationId].status = 'active';
-    // sdp.dialogState.expectationsCompleted[expectationId] = true;
     return [
       createTextResponse(atd.negativeFeedback[0], 'feedbackNegative'),
       createTextResponse(atd.hintStart[0]),

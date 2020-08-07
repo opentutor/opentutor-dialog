@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { logger } from 'utils/logging';
-import AutoTutorData from './autotutor-data';
+import OpenTutorData from './opentutor-data';
 import SessionData from './session-data';
 
 export interface GraderRequest {
@@ -37,7 +37,7 @@ interface Expectation {
 const GRADER_ENDPOINT = process.env.GRADER_ENDPOINT || '/grading-api';
 
 export function createGraderObject(
-  atd: AutoTutorData,
+  atd: OpenTutorData,
   sdp: SessionData
 ): GraderRequest {
   const expectationScores: ExpectationScores[] = sdp.sessionHistory.classifierGrades.map(
@@ -76,14 +76,13 @@ export function createGraderObject(
   };
 }
 export async function sendGraderRequest(
-  atd: AutoTutorData,
+  atd: OpenTutorData,
   sdp: SessionData
 ): Promise<string> {
   const request: GraderRequest = createGraderObject(atd, sdp);
   logger.debug(
     `grader request to ${GRADER_ENDPOINT}: ${JSON.stringify(request)}`
   );
-  // const response = await axios.post(GRADER_ENDPOINT, request);
   const userSession = encodeURI(JSON.stringify(request));
   const response = await axios.post(GRADER_ENDPOINT, {
     query: `mutation {
@@ -93,18 +92,6 @@ export async function sendGraderRequest(
       }
     `,
   });
-
-  //   logger.debug(`grader result: ${JSON.stringify(response.data)}`);
-  //   const result = response.data;
-  //   if (
-  //     !result.output.expectationResults &&
-  //     (result.output as any).expectation_results
-  //   ) {
-  //     logger.warn(
-  //       `fix the snake case in classifer response!: ${JSON.stringify(result)}`
-  //     );
-  //     result.output.expectationResults = (result.output as any).expectation_results;
-  //   }
   return response.data;
 }
 
