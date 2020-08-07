@@ -6,8 +6,8 @@ The full terms of this copyright and license should always be found in the root 
 */
 import axios from 'axios';
 import { logger } from 'utils/logging';
-import OpenTutorData from 'models/opentutor-data';
-import SessionData from 'models/session-data';
+import OpenTutorData from 'dialog/dialog-data';
+import SessionData from 'dialog/session-data';
 
 export interface GraderRequest {
   sessionId: string;

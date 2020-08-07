@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { Lesson } from 'apis/lessons';
 
-export default interface AutoTutorData {
+export default interface Dialog {
   rootExpectationId: number;
   lessonId: string;
   expectations: Expectation[];
@@ -36,8 +36,8 @@ export interface Expectation {
   prompts: Prompt[];
 }
 
-export function convertLessonDataToATData(lessonData: Lesson) {
-  const defaultData: AutoTutorData = {
+export function convertLessonDataToATData(lessonData: Lesson): Dialog {
+  const defaultData: Dialog = {
     lessonId: '',
     rootExpectationId: 0,
     expectations: [],

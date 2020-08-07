@@ -1,4 +1,4 @@
-import { OpenTutorResponse } from 'models/opentutor-response';
+import { OpenTutorResponse } from 'dialog/response-data';
 import { ClassifierResponse } from 'apis/classifier';
 
 interface MockAxiosResponse {

@@ -1,6 +1,6 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
-import { ResponseType } from 'models/opentutor-response';
+import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
   name:

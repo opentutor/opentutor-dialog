@@ -6,15 +6,9 @@ The full terms of this copyright and license should always be found in the root 
 */
 import express, { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
-import OpenTutorData, {
-  convertLessonDataToATData,
-} from 'models/opentutor-data';
-import 'models/opentutor-response';
-import {
-  beginDialog,
-  calculateScore,
-  processUserResponse,
-} from 'models/dialog-system';
+import OpenTutorData, { convertLessonDataToATData } from 'dialog/dialog-data';
+import 'dialog/response-data';
+import { beginDialog, calculateScore, processUserResponse } from 'dialog';
 import {
   addTutorDialog,
   addUserDialog,
@@ -24,12 +18,12 @@ import {
   newSession,
   SessionData,
   ExpectationStatus,
-} from 'models/session-data';
+} from 'dialog/session-data';
 import { sendGraderRequest } from 'apis/grader';
 import Joi from '@hapi/joi';
 import logger from 'utils/logging';
 import { getLessonData } from 'apis/lessons';
-import { ResponseType } from 'models/opentutor-response';
+import { ResponseType } from 'dialog/response-data';
 
 const router = express.Router({ mergeParams: true });
 

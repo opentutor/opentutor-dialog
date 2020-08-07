@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import AutoTutorData, { Prompt, Expectation } from 'models/opentutor-data';
+import Dialog, { Prompt, Expectation } from 'dialog/dialog-data';
 import SessionData, {
   addClassifierGrades,
   ExpectationStatus,
@@ -19,7 +19,7 @@ import {
 import OpenTutorResponse, {
   createTextResponse,
   ResponseType,
-} from './opentutor-response';
+} from './response-data';
 import logger from 'utils/logging';
 
 const goodThreshold: number =
@@ -28,7 +28,7 @@ const badThreshold: number =
   Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
 
 //this should begin by sending the question prompt
-export function beginDialog(atd: AutoTutorData): OpenTutorResponse[] {
+export function beginDialog(atd: Dialog): OpenTutorResponse[] {
   return [
     createTextResponse(atd.questionIntro, ResponseType.Opening),
     createTextResponse(atd.questionText, ResponseType.MainQuestion),
@@ -37,7 +37,7 @@ export function beginDialog(atd: AutoTutorData): OpenTutorResponse[] {
 
 export async function processUserResponse(
   lessonId: string,
-  atd: AutoTutorData,
+  atd: Dialog,
   sdp: SessionData
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
@@ -170,7 +170,7 @@ export async function processUserResponse(
 function updateCompletedExpectations(
   expectationResults: ExpectationResult[],
   sdp: SessionData,
-  atd: AutoTutorData
+  atd: Dialog
 ) {
   //this function basically updates the dialog state to denote whichever expectations are met.
   const expectationIds: number[] = [];
@@ -196,7 +196,7 @@ function updateCompletedExpectations(
   });
 }
 export function toNextExpectation(
-  atd: AutoTutorData,
+  atd: Dialog,
   sdp: SessionData
 ): OpenTutorResponse[] {
   //give positive feedback, and ask next expectation question
@@ -233,7 +233,7 @@ export function toNextExpectation(
 
 function handlePrompt(
   lessonId: string,
-  atd: AutoTutorData,
+  atd: Dialog,
   sdp: SessionData,
   expectationResults: ExpectationResult[],
   e: Expectation,
@@ -281,7 +281,7 @@ function handlePrompt(
 
 function handleHints(
   lessonId: string,
-  atd: AutoTutorData,
+  atd: Dialog,
   sdp: SessionData,
   expectationResults: ExpectationResult[],
   e: Expectation,
@@ -387,7 +387,7 @@ function handleHints(
   }
 }
 
-export function calculateScore(sdp: SessionData, atd: AutoTutorData): number {
+export function calculateScore(sdp: SessionData, atd: Dialog): number {
   return Math.max(
     0.0,
     Math.min(
