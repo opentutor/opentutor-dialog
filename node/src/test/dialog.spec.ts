@@ -9,7 +9,12 @@ import axios from 'axios';
 import MockAxios from 'axios-mock-adapter';
 import { expect } from 'chai';
 import { Express } from 'express';
-import { dataToDto, SessionData, SessionDto, ExpectationStatus } from 'models/session-data';
+import {
+  dataToDto,
+  SessionData,
+  SessionDto,
+  ExpectationStatus,
+} from 'models/session-data';
 import OpenTutorResponse from 'models/opentutor-response';
 import { ClassifierResult, Evaluation } from 'models/classifier';
 import { LessonResponse, LResponseObject, Lesson } from 'models/graphql';
