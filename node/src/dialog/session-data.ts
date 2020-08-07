@@ -5,11 +5,11 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import sha256 from 'crypto-js/sha256';
-import 'models/opentutor-response';
+import 'dialog/response-data';
 import { v4 as uuidv4 } from 'uuid';
-import AutoTutorData from './opentutor-data';
-import { ClassifierResult } from './classifier';
-import OpenTutorResponse, { TextData } from 'models/opentutor-response';
+import Dialog from './dialog-data';
+import { ClassifierResult } from 'apis/classifier';
+import OpenTutorResponse, { TextData } from 'dialog/response-data';
 
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
@@ -103,7 +103,7 @@ function getHash(sh: string): string {
   return sha256(JSON.stringify(sh), SESSION_SECURITY_KEY).toString();
 }
 
-export function newSession(atd: AutoTutorData, sessionId = ''): SessionData {
+export function newSession(atd: Dialog, sessionId = ''): SessionData {
   const sh = {
     userResponses: new Array<string>(),
     systemResponses: new Array<string[]>(),
@@ -123,8 +123,8 @@ export function newSession(atd: AutoTutorData, sessionId = ''): SessionData {
   };
 }
 
-export function newExpectationData(atd: AutoTutorData): ExpectationData[] {
-  return atd.expectations.map((exp, ind) => {
+export function newExpectationData(atd: Dialog): ExpectationData[] {
+  return atd.expectations.map(() => {
     return {
       ideal: '',
       score: 0,

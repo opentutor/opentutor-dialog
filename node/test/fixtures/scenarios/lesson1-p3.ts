@@ -1,9 +1,10 @@
 import { DialogScenario } from 'test/fixtures/types';
-import { Evaluation } from 'models/classifier';
-import { ResponseType } from 'models/opentutor-response';
+import { Evaluation } from 'apis/classifier';
+import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 5: this does hints and prompts',
+  name:
+    'lesson1 part 3: wrong answer to expectation 1 and then system uses a hint',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -45,37 +46,7 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: "I don't know",
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
-            ],
-          },
-        },
-      },
-      expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'See if you can get this',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Prompt,
-          data: {
-            text: 'What might cause you to lower your standards?',
-          },
-        },
-      ],
-    },
-    {
-      userInput: 'peer pressure',
+      userInput: 'Peer pressure',
       mockClassifierResponse: {
         data: {
           output: {

@@ -4,9 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { Lesson } from './graphql';
+import { Lesson } from 'apis/lessons';
 
-export default interface AutoTutorData {
+export default interface Dialog {
   rootExpectationId: number;
   lessonId: string;
   expectations: Expectation[];
@@ -36,8 +36,8 @@ export interface Expectation {
   prompts: Prompt[];
 }
 
-export function convertLessonDataToATData(lessonData: Lesson) {
-  const defaultData: AutoTutorData = {
+export function convertLessonDataToATData(lessonData: Lesson): Dialog {
+  const defaultData: Dialog = {
     lessonId: '',
     rootExpectationId: 0,
     expectations: [],

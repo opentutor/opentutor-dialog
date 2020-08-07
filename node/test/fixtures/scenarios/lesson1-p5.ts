@@ -1,18 +1,86 @@
 import { DialogScenario } from 'test/fixtures/types';
-import { Evaluation } from 'models/classifier';
-import { ResponseType } from 'models/opentutor-response';
+import { Evaluation } from 'apis/classifier';
+import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 2',
+  name: 'lesson1 part 5: this does hints and prompts',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
-      userInput: 'Peer pressure',
+      userInput: 'Rules apply differently to the group',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { evaluation: Evaluation.Good, score: 0.75 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+            ],
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegative,
+          data: {
+            text: 'Not really.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'Consider this.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: "I don't know",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+            ],
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'See if you can get this',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Prompt,
+          data: {
+            text: 'What might cause you to lower your standards?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: 'peer pressure',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Good, score: 1.0 },
               { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 0.5 },
             ],
@@ -32,84 +100,6 @@ export const scenario: DialogScenario = {
           type: ResponseType.Hint,
           data: {
             text: 'How can it affect someone when you correct their behavior?',
-          },
-        },
-      ],
-    },
-    {
-      userInput:
-        "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 1.0 },
-              { evaluation: Evaluation.Good, score: 0.5 },
-            ],
-          },
-        },
-      },
-      expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.FeedbackPositive,
-          data: {
-            text: 'Great',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Hint,
-          data: {
-            text: "How can it affect you when you correct someone's behavior?",
-          },
-        },
-      ],
-    },
-    {
-      userInput: 'Enforcing the rules can make you unpopular.',
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 1.0 },
-            ],
-          },
-        },
-      },
-      expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.FeedbackPositive,
-          data: {
-            text: 'Great',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Closing,
-          data: {
-            text:
-              'Peer pressure can push you to allow and participate in inappropriate behavior.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Closing,
-          data: {
-            text:
-              "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Closing,
-          data: {
-            text:
-              'However, integrity means speaking out even when it is unpopular.',
           },
         },
       ],

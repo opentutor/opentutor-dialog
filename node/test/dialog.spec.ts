@@ -14,10 +14,10 @@ import {
   SessionData,
   SessionDto,
   ExpectationStatus,
-} from 'models/session-data';
-import OpenTutorResponse from 'models/opentutor-response';
-import { ClassifierResult, Evaluation } from 'models/classifier';
-import { LessonResponse, LResponseObject, Lesson } from 'models/graphql';
+} from 'dialog/session-data';
+import OpenTutorResponse from 'dialog/response-data';
+import { ClassifierResult, Evaluation } from 'apis/classifier';
+import { LessonResponse, LResponseObject, Lesson } from 'apis/lessons';
 import { all as allScenarios } from 'test/fixtures/scenarios';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';

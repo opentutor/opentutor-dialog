@@ -1,10 +1,9 @@
 import { DialogScenario } from 'test/fixtures/types';
-import { Evaluation } from 'models/classifier';
-import { ResponseType } from 'models/opentutor-response';
+import { Evaluation } from 'apis/classifier';
+import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name:
-    'lesson1 part 3: wrong answer to expectation 1 and then system uses a hint',
+  name: 'lesson1 part 4: this does hints, prompts and assert',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -46,12 +45,12 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: 'Peer pressure',
+      userInput: "I don't know",
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 0.5 },
             ],
@@ -61,9 +60,46 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackPositive,
+          type: ResponseType.Text,
           data: {
-            text: 'Great',
+            text: 'See if you can get this',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Prompt,
+          data: {
+            text: 'What might cause you to lower your standards?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: 'hurt me?',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+            ],
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'peer pressure',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'Consider this.',
           },
         },
         {

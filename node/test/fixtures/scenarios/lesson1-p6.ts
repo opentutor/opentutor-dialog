@@ -1,18 +1,19 @@
 import { DialogScenario } from 'test/fixtures/types';
-import { Evaluation } from 'models/classifier';
-import { ResponseType } from 'models/opentutor-response';
+import { Evaluation } from 'apis/classifier';
+import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 4: this does hints, prompts and assert',
+  name:
+    'lesson1 part 6: this simply tests hints, prompts and assert but not for the first expectation',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
-      userInput: 'Rules apply differently to the group',
+      userInput: 'Peer pressure can push you to allow inappropriate behavior.',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { evaluation: Evaluation.Bad, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 1.0 },
               { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 0.5 },
             ],
@@ -22,9 +23,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Not really.',
+            text: 'Great',
           },
         },
         {
@@ -38,8 +39,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            text: 'How can it affect someone when you correct their behavior?',
           },
         },
       ],
@@ -60,6 +60,13 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
+          type: ResponseType.FeedbackNegative,
+          data: {
+            text: 'Not really.',
+          },
+        },
+        {
+          author: 'them',
           type: ResponseType.Text,
           data: {
             text: 'See if you can get this',
@@ -69,19 +76,20 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Prompt,
           data: {
-            text: 'What might cause you to lower your standards?',
+            text:
+              'How can it affect someone emotionally when you correct their behavior?',
           },
         },
       ],
     },
     {
-      userInput: 'hurt me?',
+      userInput: 'it may be harder to work with them',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
               { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 1.0 },
               { evaluation: Evaluation.Good, score: 0.5 },
             ],
           },
@@ -90,9 +98,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.Text,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'peer pressure',
+            text: 'Great',
           },
         },
         {
@@ -106,7 +114,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text: 'How can it affect someone when you correct their behavior?',
+            text: "How can it affect you when you correct someone's behavior?",
           },
         },
       ],

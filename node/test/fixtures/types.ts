@@ -1,5 +1,5 @@
-import { OpenTutorResponse } from 'models/opentutor-response';
-import { ClassifierResponse } from 'models/classifier';
+import { OpenTutorResponse } from 'dialog/response-data';
+import { ClassifierResponse } from 'apis/classifier';
 
 interface MockAxiosResponse {
   status?: number;
