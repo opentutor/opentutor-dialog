@@ -25,10 +25,10 @@ import {
   SessionData,
   ExpectationStatus,
 } from 'models/session-data';
-import { sendGraderRequest } from 'models/grader';
+import { sendGraderRequest } from 'apis/grader';
 import Joi from '@hapi/joi';
 import logger from 'utils/logging';
-import { getLessonData } from 'models/graphql';
+import { getLessonData } from 'apis/lessons';
 import { ResponseType } from 'models/opentutor-response';
 
 const router = express.Router({ mergeParams: true });

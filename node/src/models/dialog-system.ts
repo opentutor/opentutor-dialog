@@ -15,7 +15,7 @@ import {
   Evaluation,
   ExpectationResult,
   Expectation as CExpectation,
-} from 'models/classifier';
+} from 'apis/classifier';
 import OpenTutorResponse, {
   createTextResponse,
   ResponseType,

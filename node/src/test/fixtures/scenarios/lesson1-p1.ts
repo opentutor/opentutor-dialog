@@ -1,5 +1,5 @@
 import { DialogScenario } from 'test/fixtures/types';
-import { Evaluation } from 'models/classifier';
+import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'models/opentutor-response';
 
 //navy integrity perfect answer

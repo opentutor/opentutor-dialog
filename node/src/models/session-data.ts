@@ -8,7 +8,7 @@ import sha256 from 'crypto-js/sha256';
 import 'models/opentutor-response';
 import { v4 as uuidv4 } from 'uuid';
 import AutoTutorData from './opentutor-data';
-import { ClassifierResult } from './classifier';
+import { ClassifierResult } from 'apis/classifier';
 import OpenTutorResponse, { TextData } from 'models/opentutor-response';
 
 const SESSION_SECURITY_KEY =
