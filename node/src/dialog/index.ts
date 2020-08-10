@@ -34,6 +34,10 @@ export function beginDialog(atd: Dialog): OpenTutorResponse[] {
   ];
 }
 
+function pickRandom<T>(a: T[]): T {
+  return a[Math.floor(Math.random() * a.length)];
+}
+
 export async function processUserResponse(
   lessonId: string,
   atd: Dialog,
@@ -104,7 +108,7 @@ export async function processUserResponse(
     updateCompletedExpectations(expectationResults, sdp, atd);
     return [
       createTextResponse(
-        atd.positiveFeedback[0],
+        pickRandom(atd.positiveFeedback),
         ResponseType.FeedbackPositive
       ),
     ].concat(
@@ -119,7 +123,7 @@ export async function processUserResponse(
     )
   ) {
     //answer did not match any expectation, guide user through expectations
-    return [createTextResponse(atd.pump[0])].concat(
+    return [createTextResponse(pickRandom(atd.pump))].concat(
       toNextExpectation(atd, sdp)
     );
   }
