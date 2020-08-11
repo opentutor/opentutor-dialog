@@ -89,10 +89,10 @@ export async function sendGraderRequest(
   logger.debug(
     `grader request to ${GRADER_ENDPOINT}: ${JSON.stringify(request)}`
   );
-  const userSession = encodeURI(JSON.stringify(request));
+  const session = encodeURI(JSON.stringify(request));
   const response = await axios.post(GRADER_ENDPOINT, {
     query: `mutation {
-      updateSession(sessionId: "${request.sessionId}", userSession: "${userSession}") {
+      updateSession(sessionId: "${request.sessionId}", session: "${session}") {
           sessionId
         }
       }
