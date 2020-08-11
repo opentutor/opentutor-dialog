@@ -29,6 +29,7 @@ export interface Lesson {
   question: string;
   expectations: LessonExpectation[];
   conclusion: string[] | string;
+  createdBy: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,6 +66,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
               text
             }
           }
+          createdBy
           createdAt
           updatedAt
         }
