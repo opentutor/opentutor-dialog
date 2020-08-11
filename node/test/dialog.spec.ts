@@ -22,11 +22,14 @@ import { findAll as findAllScenarios } from 'test/fixtures/scenarios';
 import { DialogScenario } from 'test/fixtures/types';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
+import sinon, { SinonStub } from 'sinon';
+const index = require('dialog/index');
 
 describe('dialog', async () => {
   let app: Express;
   let mockAxios: MockAxios;
   const allScenarios: DialogScenario[] = await findAllScenarios();
+  let randomStub = sinon.stub(Math, 'random').returns(0);
 
   beforeEach(async () => {
     if (!MOCKING_DISABLED) {

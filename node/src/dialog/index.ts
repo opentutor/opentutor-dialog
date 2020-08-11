@@ -34,7 +34,7 @@ export function beginDialog(atd: Dialog): OpenTutorResponse[] {
   ];
 }
 
-function pickRandom<T>(a: T[]): T {
+export function pickRandom<T>(a: T[]): T {
   return a[Math.floor(Math.random() * a.length)];
 }
 
@@ -136,7 +136,7 @@ export async function processUserResponse(
     updateCompletedExpectations(expectationResults, sdp, atd);
     return [
       createTextResponse(
-        atd.positiveFeedback[0],
+        pickRandom(atd.positiveFeedback),
         ResponseType.FeedbackPositive
       ),
     ].concat(toNextExpectation(atd, sdp));
@@ -157,10 +157,10 @@ export async function processUserResponse(
       ExpectationStatus.Active;
     return [
       createTextResponse(
-        atd.negativeFeedback[0],
+        pickRandom(atd.negativeFeedback),
         ResponseType.FeedbackNegative
       ),
-      createTextResponse(atd.hintStart[0]),
+      createTextResponse(pickRandom(atd.hintStart)),
       createTextResponse(
         atd.expectations[expectationId].hints[0],
         ResponseType.Hint
@@ -209,7 +209,7 @@ export function toNextExpectation(
     sdp.dialogState.expectationData[
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
-    answer.push(createTextResponse(atd.hintStart[0]));
+    answer.push(createTextResponse(pickRandom(atd.hintStart)));
     if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
         .hints[0]
@@ -261,7 +261,7 @@ function handlePrompt(
 
     return [
       createTextResponse(
-        atd.positiveFeedback[0],
+        pickRandom(atd.positiveFeedback),
         ResponseType.FeedbackPositive
       ),
     ].concat(toNextExpectation(atd, sdp));
@@ -325,7 +325,7 @@ function handleHints(
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Complete;
     finalResponses.push(
-      createTextResponse(atd.positiveFeedback[0], ResponseType.FeedbackPositive)
+      createTextResponse(pickRandom(atd.positiveFeedback), ResponseType.FeedbackPositive)
     );
     return finalResponses.concat(toNextExpectation(atd, sdp));
   } else {
@@ -335,9 +335,9 @@ function handleHints(
     if (e.hints.indexOf(h) < e.hints.length - 1) {
       //another hint exists, use that.
       finalResponses.push(
-        createTextResponse(atd.neutralFeedback[0], ResponseType.FeedbackNeutral)
+        createTextResponse(pickRandom(atd.neutralFeedback), ResponseType.FeedbackNeutral)
       );
-      finalResponses.push(createTextResponse(atd.hintStart[0]));
+      finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       finalResponses.push(
         createTextResponse(e.hints[e.hints.indexOf(h) + 1], ResponseType.Hint)
       );
@@ -345,13 +345,13 @@ function handleHints(
     } else if (e.prompts[0]) {
       finalResponses.push(
         createTextResponse(
-          atd.negativeFeedback[0],
+          pickRandom(atd.negativeFeedback),
           ResponseType.FeedbackNegative
         )
       );
-      finalResponses.push(createTextResponse(atd.promptStart[0]));
+      finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
       finalResponses.push(
-        createTextResponse(e.prompts[0].prompt, ResponseType.Prompt)
+        createTextResponse(pickRandom(e.prompts).prompt, ResponseType.Prompt)
       );
       return finalResponses;
     } else {
@@ -370,7 +370,7 @@ function handleHints(
         // there are still incomplete expectations
         return [
           createTextResponse(
-            atd.negativeFeedback[0],
+            pickRandom(atd.negativeFeedback),
             ResponseType.FeedbackNegative
           ),
           createTextResponse(e.expectation, ResponseType.Text),
@@ -379,7 +379,7 @@ function handleHints(
         //no more incomplete expectations
         return [
           createTextResponse(
-            atd.negativeFeedback[0],
+            pickRandom(atd.negativeFeedback),
             ResponseType.FeedbackNegative
           ),
         ].concat(toNextExpectation(atd, sdp));
