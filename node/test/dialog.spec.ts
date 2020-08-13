@@ -16,6 +16,7 @@ import {
   ExpectationStatus,
 } from 'dialog/session-data';
 import OpenTutorResponse from 'dialog/response-data';
+import { ResponseType, TextData } from 'dialog/response-data';
 import { ClassifierResult, Evaluation } from 'apis/classifier';
 import { LessonResponse, LResponseObject, Lesson } from 'apis/lessons';
 import { findAll as findAllScenarios } from 'test/fixtures/scenarios';
@@ -317,10 +318,12 @@ describe('dialog', async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/classifier').reply(_ => {
+          console.log('classifier');
           return [500, {}];
         });
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
+          console.log('GQL');
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
           } else if ((reqBody.query as string).includes('q2')) {
@@ -630,5 +633,110 @@ describe('dialog', async () => {
         )
       ).to.eql([{ text: 'intro' }, { text: 'main' }]);
     });
+
+    it('responds with a random positive feedback message from a set of messages', async () => {
+      if (mockAxios) {
+        randomStub.restore();
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } 
+           else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+              },
+            },
+          ];
+        });
+        mockAxios.onPost('/grading-api').reply(config => {
+          return [200, { message: 'success' }];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        message: 'peer pressure',
+        sessionInfo: validSessionDto,
+        lessonId: lessonId,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[]).filter(
+          m => m.type == ResponseType.FeedbackPositive
+        ).map(m => (m.data as TextData).text)[0]
+      ).to.be.oneOf(['Great', 'Nicely done!', 'You got it!']);
+    });
+
+    it('responds with a random negative feedback message from a set of messages', async () => {
+      if (mockAxios) {
+        randomStub.restore();
+        mockAxios.reset();
+        mockAxios.onPost('/graphql').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            return [200, { data: { lesson: navyIntegrityLesson } }];
+          } 
+           else {
+            const errData: LResponseObject = {
+              data: {
+                lesson: null,
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply(config => {
+          const reqBody = JSON.parse(config.data);
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+              },
+            },
+          ];
+        });
+        mockAxios.onPost('/grading-api').reply(config => {
+          return [200, { message: 'success' }];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        message: 'bad answer',
+        sessionInfo: validSessionDto,
+        lessonId: lessonId,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[]).filter(
+          m => m.type == ResponseType.FeedbackNegative
+        ).map(m => (m.data as TextData).text)[0]
+      ).to.be.oneOf(['Not really.', "That's not right.", "I don't think so."]);
+    });
+
   });
 });

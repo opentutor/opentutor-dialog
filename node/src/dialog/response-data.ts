@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 export default interface OpenTutorResponse {
   author: string;
-  type: string;
+  type: ResponseType;
   data: TextData | ImageData;
 }
 
