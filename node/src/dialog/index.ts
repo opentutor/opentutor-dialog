@@ -123,9 +123,12 @@ export async function processUserResponse(
     )
   ) {
     //answer did not match any expectation, guide user through expectations
-    return [createTextResponse(pickRandom(atd.pump))].concat(
-      toNextExpectation(atd, sdp)
-    );
+    return [
+      createTextResponse(
+        pickRandom(atd.neutralFeedback),
+        ResponseType.FeedbackNeutral
+      ),
+    ].concat(toNextExpectation(atd, sdp));
   }
   if (
     expectationResults.find(
@@ -325,7 +328,10 @@ function handleHints(
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Complete;
     finalResponses.push(
-      createTextResponse(pickRandom(atd.positiveFeedback), ResponseType.FeedbackPositive)
+      createTextResponse(
+        pickRandom(atd.positiveFeedback),
+        ResponseType.FeedbackPositive
+      )
     );
     return finalResponses.concat(toNextExpectation(atd, sdp));
   } else {
@@ -335,7 +341,10 @@ function handleHints(
     if (e.hints.indexOf(h) < e.hints.length - 1) {
       //another hint exists, use that.
       finalResponses.push(
-        createTextResponse(pickRandom(atd.neutralFeedback), ResponseType.FeedbackNeutral)
+        createTextResponse(
+          pickRandom(atd.neutralFeedback),
+          ResponseType.FeedbackNeutral
+        )
       );
       finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       finalResponses.push(
