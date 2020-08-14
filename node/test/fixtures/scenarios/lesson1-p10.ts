@@ -29,6 +29,13 @@ export const scenario: DialogScenario = {
       },
       expectedResponse: [
         {
+            author: 'them',
+            type: ResponseType.Profanity,
+            data: {
+                text: 'Please behave in a civil manner.',
+            },
+        },
+        {
           author: 'them',
           type: ResponseType.FeedbackPositive,
           data: {
