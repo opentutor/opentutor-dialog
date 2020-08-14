@@ -4,12 +4,12 @@ import { ResponseType } from 'dialog/response-data';
 
 //navy integrity perfect answer
 export const scenario: DialogScenario = {
-    name: 'lesson1 part 10: profanity test',
+    name: 'lesson1 part 11: metacognitive response test',
     lessonId: 'q1',
     expectedRequestResponses: [
         {
             userInput:
-                "Fuck you.",
+                "I dont know",
             mockClassifierResponse: {
                 data: {
                     output: {
@@ -20,9 +20,9 @@ export const scenario: DialogScenario = {
                         ],
                         speechActs: {
                             metaCognitive:
-                                { evaluation: Evaluation.Good, score: 0.5 },
-                            profanity:
                                 { evaluation: Evaluation.Good, score: 1.0 },
+                            profanity:
+                                { evaluation: Evaluation.Good, score: 0.5 },
                         }
                     },
                 },
@@ -30,9 +30,9 @@ export const scenario: DialogScenario = {
             expectedResponse: [
                 {
                     author: 'them',
-                    type: ResponseType.Profanity,
+                    type: ResponseType.Encouragement,
                     data: {
-                        text: 'Please behave in a civil manner.',
+                        text: 'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
                     },
                 },
                 {
