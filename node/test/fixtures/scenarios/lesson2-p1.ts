@@ -15,9 +15,9 @@ export const scenario: DialogScenario = {
             expectationResults: [{ evaluation: Evaluation.Good, score: 1.0 }],
             speechActs: {
               metaCognitive: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               profanity: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
             }
           },
         },

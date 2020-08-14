@@ -19,9 +19,9 @@ export const scenario: DialogScenario = {
             ],
             speechActs: {
               metaCognitive: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               profanity: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
             }
           },
         },
@@ -63,9 +63,9 @@ export const scenario: DialogScenario = {
             ],
             speechActs: {
               metaCognitive: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               profanity: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
             }
           },
         },
@@ -106,9 +106,9 @@ export const scenario: DialogScenario = {
             ],
             speechActs: {
               metaCognitive: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               profanity: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
             }
           },
         },
@@ -149,9 +149,9 @@ export const scenario: DialogScenario = {
             ],
             speechActs: {
               metaCognitive: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               profanity: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
             }
           },
         },
@@ -193,9 +193,9 @@ export const scenario: DialogScenario = {
             ],
             speechActs: {
               metaCognitive: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               profanity: 
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
             }
           },
         },
