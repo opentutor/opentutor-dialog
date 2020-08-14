@@ -34,8 +34,17 @@ export function beginDialog(atd: Dialog): OpenTutorResponse[] {
   ];
 }
 
+// We need a random generator that is safe to mock
+// and the only way could figure out to make sinon mocking work (w ts)
+// is to put it in a class
+export class ScopedRandom {
+  static nextRandom(): number {
+    return Math.random();
+  }
+}
+
 export function pickRandom<T>(a: T[]): T {
-  return a[Math.floor(Math.random() * a.length)];
+  return a[Math.floor(ScopedRandom.nextRandom() * a.length)];
 }
 
 export async function processUserResponse(
