@@ -34,8 +34,14 @@ export interface ExpectationResult {
   score: number;
 }
 
+export interface SpeechActs {
+  metaCognitive: ExpectationResult;
+  profanity: ExpectationResult;
+}
+
 export interface ClassifierResult {
   expectationResults: ExpectationResult[];
+  speechActs: SpeechActs;
 }
 
 export interface ClassifierResponse {
@@ -63,7 +69,7 @@ export async function evaluate(
     );
     result.output.expectationResults = (result.output as any).expectation_results;
   }
-  return response.data;
+  return result;
 }
 
 export default {

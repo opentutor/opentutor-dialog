@@ -13,6 +13,12 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [{ evaluation: Evaluation.Good, score: 1.0 }],
+            speechActs: {
+              metaCognitive: 
+              { evaluation: Evaluation.Good, score: 1.0 },
+              profanity: 
+              { evaluation: Evaluation.Good, score: 1.0 },
+            }
           },
         },
       },

@@ -85,6 +85,7 @@ export async function processUserResponse(
   //add results to the session history
   addClassifierGrades(sdp, {
     expectationResults: classifierResult.output.expectationResults,
+    speechActs: classifierResult.output.speechActs,
   });
   //check if response was for a prompt
   let p: Prompt;

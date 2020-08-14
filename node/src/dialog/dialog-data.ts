@@ -21,6 +21,7 @@ export default interface Dialog {
   pumpBlank: string[];
   hintStart: string[];
   promptStart: string[];
+  profanityFeedback: string[];
   media: object;
   originalXml: string;
 }
@@ -46,6 +47,8 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     recapText: [],
     confusionFeedback: [
       'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+      'Please try to answer at least part of the question.',
+      'If you give me some sort of an answer, we can at least start from there and build.',
     ],
     positiveFeedback: ['Great', 'Nicely done!', 'You got it!'],
     negativeFeedback: ['Not really.', "That's not right.", "I don't think so."],
@@ -62,6 +65,11 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'Try this.',
       'What about this.',
       'See if you know the answer to this.',
+    ],
+    profanityFeedback: [
+      'Please behave in a civil manner.',
+      'This kind of communication is not acceptable.',
+      'Please try again. This will be reported.',
     ],
     pumpBlank: [],
     media: {},

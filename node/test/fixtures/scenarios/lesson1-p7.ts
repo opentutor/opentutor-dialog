@@ -17,6 +17,12 @@ export const scenario: DialogScenario = {
               { evaluation: Evaluation.Good, score: 1.0 },
               { evaluation: Evaluation.Good, score: 0.5 },
             ],
+            speechActs: {
+              metaCognitive: 
+              { evaluation: Evaluation.Good, score: 1.0 },
+              profanity: 
+              { evaluation: Evaluation.Good, score: 1.0 },
+            }
           },
         },
       },
@@ -47,6 +53,12 @@ export const scenario: DialogScenario = {
               { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 1.0 },
             ],
+            speechActs: {
+              metaCognitive: 
+              { evaluation: Evaluation.Good, score: 1.0 },
+              profanity: 
+              { evaluation: Evaluation.Good, score: 1.0 },
+            }
           },
         },
       },
