@@ -132,6 +132,7 @@ export async function processUserResponse(
         (x.score < badThreshold && x.evaluation == Evaluation.Bad)
     )
   ) {
+    console.log('neutral');
     //answer did not match any expectation, guide user through expectations
     return [
       createTextResponse(
