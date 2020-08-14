@@ -23,26 +23,27 @@ import { findAll as findAllScenarios } from 'test/fixtures/scenarios';
 import { DialogScenario } from 'test/fixtures/types';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
-import sinon, { SinonStub } from 'sinon';
-const index = require('dialog/index');
+import sinon from 'sinon';
+import { ScopedRandom } from 'dialog';
 
 describe('dialog', async () => {
   let app: Express;
   let mockAxios: MockAxios;
   const allScenarios: DialogScenario[] = await findAllScenarios();
-  let randomStub = sinon.stub(Math, 'random').returns(0);
 
   beforeEach(async () => {
     if (!MOCKING_DISABLED) {
       app = await createApp();
       mockAxios = new MockAxios(axios);
     }
+    sinon.stub(ScopedRandom, 'nextRandom').returns(0);
   });
 
   afterEach(() => {
     if (mockAxios) {
       mockAxios.reset();
     }
+    sinon.restore();
   });
 
   const currentFlowLesson: Lesson = {
@@ -360,12 +361,10 @@ describe('dialog', async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/classifier').reply(_ => {
-          console.log('classifier');
           return [500, {}];
         });
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
-          console.log('GQL');
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
           } else if ((reqBody.query as string).includes('q2')) {
@@ -678,7 +677,6 @@ describe('dialog', async () => {
 
     it('responds with a random positive feedback message from a set of messages', async () => {
       if (mockAxios) {
-        randomStub.restore();
         mockAxios.reset();
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
@@ -729,7 +727,6 @@ describe('dialog', async () => {
 
     it('responds with a random negative feedback message from a set of messages', async () => {
       if (mockAxios) {
-        randomStub.restore();
         mockAxios.reset();
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
@@ -780,7 +777,6 @@ describe('dialog', async () => {
 
     it('responds with a random neutral feedback message from a set of messages', async () => {
       if (mockAxios) {
-        randomStub.restore();
         mockAxios.reset();
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
@@ -819,7 +815,6 @@ describe('dialog', async () => {
         sessionInfo: validSessionDto,
         lessonId: lessonId,
       });
-      console.log(response.body.response);
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('response');
       expect(
@@ -831,7 +826,6 @@ describe('dialog', async () => {
 
     it('responds with random hint start message and prompt start message from a set of messages', async () => {
       if (mockAxios) {
-        randomStub.restore();
         mockAxios.reset();
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
