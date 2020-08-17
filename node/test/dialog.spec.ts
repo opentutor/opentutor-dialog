@@ -458,11 +458,9 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
                 speechActs: {
-                  metaCognitive: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                }
+                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
           ];
@@ -521,14 +519,11 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
                 speechActs: {
-                  metaCognitive: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                }
+                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-            
           ];
         });
         mockAxios.onPost('/grading-api').reply(config => {
@@ -652,11 +647,9 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
                 speechActs: {
-                  metaCognitive: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                }
+                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
           ];
@@ -721,11 +714,9 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
                 speechActs: {
-                  metaCognitive: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                }
+                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
           ];
@@ -777,11 +768,9 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
                 speechActs: {
-                  metaCognitive: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                }
+                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
           ];
@@ -833,11 +822,9 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
                 speechActs: {
-                  metaCognitive: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                }
+                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
           ];
@@ -888,11 +875,9 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
                 speechActs: {
-                  metaCognitive: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: 
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                }
+                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
           ];

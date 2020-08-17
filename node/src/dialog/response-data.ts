@@ -30,7 +30,7 @@ export enum ResponseType {
   FeedbackNegative = 'feedbackNegative',
   FeedbackNeutral = 'feedbackNeutral',
   Profanity = 'profanity',
-  Encouragement = 'encouragement'
+  Encouragement = 'encouragement',
 }
 
 export function createTextResponse(
