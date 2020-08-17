@@ -458,7 +458,7 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
                 speechActs: {
-                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
                   profanity: { evaluation: Evaluation.Good, score: 0.5 },
                 },
               },
@@ -519,7 +519,7 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
                 speechActs: {
-                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
                   profanity: { evaluation: Evaluation.Good, score: 0.5 },
                 },
               },
@@ -647,7 +647,7 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
                 speechActs: {
-                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
                   profanity: { evaluation: Evaluation.Good, score: 0.5 },
                 },
               },
@@ -714,7 +714,7 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
                 speechActs: {
-                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
                   profanity: { evaluation: Evaluation.Good, score: 0.5 },
                 },
               },
@@ -768,7 +768,7 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
                 speechActs: {
-                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
                   profanity: { evaluation: Evaluation.Good, score: 0.5 },
                 },
               },
@@ -822,7 +822,7 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
                 speechActs: {
-                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
                   profanity: { evaluation: Evaluation.Good, score: 0.5 },
                 },
               },
@@ -875,7 +875,7 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
                 speechActs: {
-                  metaCognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
                   profanity: { evaluation: Evaluation.Good, score: 0.5 },
                 },
               },

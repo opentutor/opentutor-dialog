@@ -102,8 +102,8 @@ export async function processUserResponse(
       )
     );
   } else if (
-    speechActs['metaCognitive'].score > goodThreshold &&
-    speechActs['metaCognitive'].evaluation === Evaluation.Good
+    speechActs['metacognitive'].score > goodThreshold &&
+    speechActs['metacognitive'].evaluation === Evaluation.Good
   ) {
     //50 percent of the time it will use encouragement. Else, it will go on.
     if (ScopedRandom.nextRandom() < 0.5) {

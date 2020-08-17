@@ -35,7 +35,7 @@ export interface ExpectationResult {
 }
 
 export interface SpeechActs {
-  metaCognitive: ExpectationResult;
+  metacognitive: ExpectationResult;
   profanity: ExpectationResult;
 }
 
