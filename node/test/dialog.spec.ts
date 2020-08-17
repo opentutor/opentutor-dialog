@@ -457,6 +457,12 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
+                speechActs: {
+                  metaCognitive: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                }
               },
             },
           ];
@@ -495,7 +501,6 @@ describe('dialog', async () => {
         message: 'peer pressure',
         sessionInfo: sessionObj,
       });
-
       expect(response.body).to.have.property('score');
       expect(response.body.score).to.be.at.least(0.0);
       expect(response.body.score).to.be.at.most(1.0);
@@ -515,8 +520,15 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
+                speechActs: {
+                  metaCognitive: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                }
               },
             },
+            
           ];
         });
         mockAxios.onPost('/grading-api').reply(config => {
@@ -639,6 +651,12 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 1.0 },
                   { evaluation: Evaluation.Good, score: 1.0 },
                 ],
+                speechActs: {
+                  metaCognitive: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                }
               },
             },
           ];
@@ -702,6 +720,12 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
+                speechActs: {
+                  metaCognitive: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                }
               },
             },
           ];
@@ -752,6 +776,12 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
+                speechActs: {
+                  metaCognitive: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                }
               },
             },
           ];
@@ -802,6 +832,12 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
+                speechActs: {
+                  metaCognitive: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                }
               },
             },
           ];
@@ -851,6 +887,12 @@ describe('dialog', async () => {
                   { evaluation: Evaluation.Good, score: 0.4 },
                   { evaluation: Evaluation.Good, score: 0.4 },
                 ],
+                speechActs: {
+                  metaCognitive: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: 
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                }
               },
             },
           ];

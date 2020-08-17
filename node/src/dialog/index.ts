@@ -82,11 +82,20 @@ export async function processUserResponse(
     );
   }
   const expectationResults = classifierResult.output.expectationResults;
+  const speechActs = classifierResult.output.speechActs;
   //add results to the session history
   addClassifierGrades(sdp, {
     expectationResults: classifierResult.output.expectationResults,
     speechActs: classifierResult.output.speechActs,
   });
+  const responses : OpenTutorResponse[]= [];
+
+
+  //check if user used profanity
+  if(speechActs['profanity'].score > goodThreshold && speechActs['profanity'].evaluation === Evaluation.Good) {
+    responses.push(createTextResponse(pickRandom(atd.profanityFeedback), ResponseType.Profanity));
+  }
+
   //check if response was for a prompt
   let p: Prompt;
   let e: Expectation = atd.expectations.find(e => {
@@ -95,7 +104,7 @@ export async function processUserResponse(
   });
   if (e && p) {
     //response was to a prompt.
-    return handlePrompt(lessonId, atd, sdp, expectationResults, e, p);
+    return responses.concat(handlePrompt(lessonId, atd, sdp, expectationResults, e, p));
   }
 
   //check if response was to a hint
@@ -106,7 +115,7 @@ export async function processUserResponse(
   });
   if (e && h) {
     //response is to a hint
-    return handleHints(lessonId, atd, sdp, expectationResults, e, h);
+    return responses.concat(handleHints(lessonId, atd, sdp, expectationResults, e, h));
   }
 
   if (
@@ -116,12 +125,11 @@ export async function processUserResponse(
   ) {
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
-    return [
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      ),
-    ].concat(
+    responses.push(createTextResponse(
+      pickRandom(atd.positiveFeedback),
+      ResponseType.FeedbackPositive
+    ));
+    return responses.concat(
       atd.recapText.map(rt => createTextResponse(rt, ResponseType.Closing))
     );
   }
@@ -134,12 +142,11 @@ export async function processUserResponse(
   ) {
     console.log('neutral');
     //answer did not match any expectation, guide user through expectations
-    return [
-      createTextResponse(
-        pickRandom(atd.neutralFeedback),
-        ResponseType.FeedbackNeutral
-      ),
-    ].concat(toNextExpectation(atd, sdp));
+    responses.push(createTextResponse(
+      pickRandom(atd.neutralFeedback),
+      ResponseType.FeedbackNeutral
+    ));
+    return responses.concat(toNextExpectation(atd, sdp));
   }
   if (
     expectationResults.find(
@@ -148,12 +155,11 @@ export async function processUserResponse(
   ) {
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp, atd);
-    return [
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      ),
-    ].concat(toNextExpectation(atd, sdp));
+    responses.push(createTextResponse(
+      pickRandom(atd.positiveFeedback),
+      ResponseType.FeedbackPositive
+    ));
+    return responses.concat(toNextExpectation(atd, sdp));
   }
   if (
     expectationResults.find(
@@ -169,19 +175,19 @@ export async function processUserResponse(
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Active;
-    return [
-      createTextResponse(
-        pickRandom(atd.negativeFeedback),
-        ResponseType.FeedbackNegative
-      ),
-      createTextResponse(pickRandom(atd.hintStart)),
-      createTextResponse(
-        atd.expectations[expectationId].hints[0],
-        ResponseType.Hint
-      ),
-    ];
+    
+    responses.push(createTextResponse(
+      pickRandom(atd.negativeFeedback),
+      ResponseType.FeedbackNegative
+    ));
+    responses.push(createTextResponse(pickRandom(atd.hintStart)),
+    createTextResponse(
+      atd.expectations[expectationId].hints[0],
+      ResponseType.Hint
+    ));
+    return responses;
   }
-  return [createTextResponse('this path has not been implemented yet.')];
+  return responses.concat([createTextResponse('this path has not been implemented yet.')]);
 }
 
 function updateCompletedExpectations(
