@@ -47,7 +47,7 @@ export interface LResponseObject {
   };
 }
 
-const GRAPHQL_ENDPOINT = process.env.GRADER_ENDPOINT || '/graphql';
+const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
 
 export async function getLessonData(lessonId: string): Promise<Lesson> {
   try {

@@ -19,7 +19,7 @@ import {
   SessionData,
   ExpectationStatus,
 } from 'dialog/session-data';
-import { sendGraderRequest } from 'apis/grader';
+import { sendGraphQLRequest } from 'apis/graphql';
 import Joi from '@hapi/joi';
 import logger from 'utils/logging';
 import { getLessonData } from 'apis/lessons';
@@ -87,7 +87,9 @@ router.post(
       addUserDialog(sessionData, req.body['message']);
       const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);
-      const graderResponse = sendGraderRequest(atd, sessionData) ? true : false;
+      const graphQLResponse = sendGraphQLRequest(atd, sessionData)
+        ? true
+        : false;
       const currentExpectation = sessionData.dialogState.expectationData.findIndex(
         e => e.status === ExpectationStatus.Active
       );
@@ -96,7 +98,7 @@ router.post(
         status: 200,
         sessionInfo: dataToDto(sessionData),
         response: msg,
-        sentToGrader: graderResponse,
+        sentToGrader: graphQLResponse,
         completed: msg.find(m => m.type === ResponseType.Closing)
           ? true
           : false,

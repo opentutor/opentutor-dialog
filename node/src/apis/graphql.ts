@@ -9,7 +9,7 @@ import { logger } from 'utils/logging';
 import OpenTutorData from 'dialog/dialog-data';
 import SessionData from 'dialog/session-data';
 
-export interface GraderRequest {
+export interface GraphQLRequest {
   sessionId: string;
   lessonId: string;
   username: string;
@@ -40,12 +40,12 @@ interface Expectation {
   text: string;
 }
 
-const GRADER_ENDPOINT = process.env.GRADER_ENDPOINT || '/grading-api';
+const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
 
-export function createGraderObject(
+export function createGraphQLObject(
   atd: OpenTutorData,
   sdp: SessionData
-): GraderRequest {
+): GraphQLRequest {
   const expectationScores: ExpectationScores[] = sdp.sessionHistory.classifierGrades.map(
     r => {
       return {
@@ -81,16 +81,16 @@ export function createGraderObject(
     userResponses: userResponses,
   };
 }
-export async function sendGraderRequest(
+export async function sendGraphQLRequest(
   atd: OpenTutorData,
   sdp: SessionData
 ): Promise<string> {
-  const request: GraderRequest = createGraderObject(atd, sdp);
+  const request: GraphQLRequest = createGraphQLObject(atd, sdp);
   logger.debug(
-    `grader request to ${GRADER_ENDPOINT}: ${JSON.stringify(request)}`
+    `graphql request to ${GRAPHQL_ENDPOINT}: ${JSON.stringify(request)}`
   );
   const userSession = encodeURI(JSON.stringify(request));
-  const response = await axios.post(GRADER_ENDPOINT, {
+  const response = await axios.post(GRAPHQL_ENDPOINT, {
     query: `mutation {
       updateSession(sessionId: "${request.sessionId}", userSession: "${userSession}") {
           sessionId
@@ -102,5 +102,5 @@ export async function sendGraderRequest(
 }
 
 export default {
-  sendGraderRequest,
+  sendGraphQLRequest,
 };
