@@ -68,9 +68,6 @@ describe('dialog', async () => {
       'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
       "Let's try a different problem.",
     ],
-    createdBy: '',
-    createdAt: 'asdasdffas',
-    updatedAt: 'asfasdfasdf',
   };
 
   const navyIntegrityLesson: Lesson = {
@@ -132,9 +129,6 @@ describe('dialog', async () => {
       "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
       'However, integrity means speaking out even when it is unpopular.',
     ],
-    createdBy: '',
-    createdAt: 'asdasdffas',
-    updatedAt: 'asfasdfasdf',
   };
 
   const currentFlowResponse: LessonResponse = {
@@ -237,9 +231,6 @@ describe('dialog', async () => {
           question: 'main',
           expectations: [],
           conclusion: ['a'],
-          createdBy: '',
-          createdAt: 'affadsas',
-          updatedAt: 'fdasasdf',
         },
       },
     };
