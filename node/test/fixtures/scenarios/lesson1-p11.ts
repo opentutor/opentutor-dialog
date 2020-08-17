@@ -33,21 +33,6 @@ export const scenario: DialogScenario = {
               'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
           },
         },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Consider this.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Hint,
-          data: {
-            text:
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-          },
-        },
       ],
     },
   ],

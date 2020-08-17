@@ -49,6 +49,7 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
       'Please try to answer at least part of the question.',
       'If you give me some sort of an answer, we can at least start from there and build.',
+      "It's okay. Just say your best guess and we'll go from there.",
     ],
     positiveFeedback: ['Great', 'Nicely done!', 'You got it!'],
     negativeFeedback: ['Not really.', "That's not right.", "I don't think so."],

@@ -90,7 +90,7 @@ export async function processUserResponse(
   });
   const responses: OpenTutorResponse[] = [];
 
-  //check if user used profanity
+  //check if user used profanity or metacog response
   if (
     speechActs['profanity'].score > goodThreshold &&
     speechActs['profanity'].evaluation === Evaluation.Good
@@ -105,12 +105,23 @@ export async function processUserResponse(
     speechActs['metaCognitive'].score > goodThreshold &&
     speechActs['metaCognitive'].evaluation === Evaluation.Good
   ) {
-    responses.push(
-      createTextResponse(
-        pickRandom(atd.confusionFeedback),
-        ResponseType.Encouragement
-      )
-    );
+    //50 percent of the time it will use encouragement. Else, it will go on.
+    if (ScopedRandom.nextRandom() < 0.5) {
+      responses.push(
+        createTextResponse(
+          pickRandom(atd.confusionFeedback),
+          ResponseType.Encouragement
+        )
+      );
+      return responses;
+    } else {
+      responses.push(
+        createTextResponse(
+          pickRandom(atd.confusionFeedback),
+          ResponseType.Encouragement
+        )
+      );
+    }
   }
 
   //check if response was for a prompt
