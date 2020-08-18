@@ -32,21 +32,6 @@ export const scenario: DialogScenario = {
             text: "Okay, let's calm down.",
           },
         },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Consider this.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Hint,
-          data: {
-            text:
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-          },
-        },
       ],
     },
   ],

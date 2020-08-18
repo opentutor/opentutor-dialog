@@ -101,6 +101,7 @@ export async function processUserResponse(
         ResponseType.Profanity
       )
     );
+    return responses;
   } else if (
     speechActs['metacognitive'].score > goodThreshold &&
     speechActs['metacognitive'].evaluation === Evaluation.Good
