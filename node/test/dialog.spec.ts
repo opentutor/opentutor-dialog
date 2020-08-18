@@ -731,7 +731,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter(m => m.type == ResponseType.FeedbackPositive)
           .map(m => (m.data as TextData).text)[0]
-      ).to.be.oneOf(['Great', 'Nicely done!', 'You got it!']);
+      ).to.be.oneOf(['Great.', 'Nicely done!', 'You got it!']);
     });
 
     it('responds with a random negative feedback message from a set of messages', async () => {
@@ -838,7 +838,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter(m => m.type == ResponseType.FeedbackNeutral)
           .map(m => (m.data as TextData).text)[0]
-      ).to.be.oneOf(['OK', 'So']);
+      ).to.be.oneOf(['Ok.', 'So']);
     });
 
     it('responds with random hint start message and prompt start message from a set of messages', async () => {

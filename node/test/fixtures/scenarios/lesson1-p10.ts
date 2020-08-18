@@ -29,7 +29,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Profanity,
           data: {
-            text: 'Please behave in a civil manner.',
+            text: "Okay, let's calm down.",
           },
         },
         {

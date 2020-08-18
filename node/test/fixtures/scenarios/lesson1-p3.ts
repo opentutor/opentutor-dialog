@@ -71,7 +71,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Great',
+            text: 'Great.',
           },
         },
         {

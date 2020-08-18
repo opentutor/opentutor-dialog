@@ -17,6 +17,7 @@ export default interface Dialog {
   positiveFeedback: string[];
   negativeFeedback: string[];
   neutralFeedback: string[];
+  perfectFeedback: string[];
   pump: string[];
   pumpBlank: string[];
   hintStart: string[];
@@ -51,10 +52,11 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'If you give me some sort of an answer, we can at least start from there and build.',
       "It's okay. Just say your best guess and we'll go from there.",
     ],
-    positiveFeedback: ['Great', 'Nicely done!', 'You got it!'],
-    negativeFeedback: ['Not really.', "That's not right.", "I don't think so."],
-    neutralFeedback: ['OK', 'So'],
-    pump: ["Let's work through this together"],
+    positiveFeedback: ['Great.', 'Good.', 'Right.', 'Yeah, that\'s right.', 'Excellent.', 'Correct.'],
+    perfectFeedback: ['Nicely done!', 'You got it!'],
+    negativeFeedback: ['Not really.', "I don't think so.", "No.", "I'm not so sure about that.", "I don't think that is right." ],
+    neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
+    pump: ["Let's work through this together.", "And can you add to that?" , "What else?", "Anything else?", "Could you elaborate on that a little?", "Can you add anything to that?"],
     hintStart: [
       'Consider this.',
       'Let me help you a little.',
@@ -68,11 +70,14 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'See if you know the answer to this.',
     ],
     profanityFeedback: [
-      'Please behave in a civil manner.',
-      'This kind of communication is not acceptable.',
-      'Please try again. This will be reported.',
+      "Okay, let's calm down.",
+      "Let's calm down and focus on the problem.",
+      "I see. Let's take a deep breath and try this again.",
+      "I hear you. Let's just both do our best to help you learn.",
+      "Let's take a step back for a moment.",
+      "Hey, easy there. We're both here to help you learn."
     ],
-    pumpBlank: [],
+    pumpBlank: ["I'll give you some more time."],
     media: {},
     originalXml: '',
   };
