@@ -72,13 +72,13 @@ export async function processUserResponse(
       err,
       `${err.response && err.response.status}` === '404'
         ? {
-            status: 404,
-            message: `classifier cannot find lesson '${lessonId}'`,
-          }
+          status: 404,
+          message: `classifier cannot find lesson '${lessonId}'`,
+        }
         : {
-            status: 502,
-            message: err.message,
-          }
+          status: 502,
+          message: err.message,
+        }
     );
   }
   const expectationResults = classifierResult.output.expectationResults;
