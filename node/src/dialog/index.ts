@@ -437,26 +437,15 @@ function handleHints(
       );
       sdp.dialogState.expectationData[index].status =
         ExpectationStatus.Complete;
-      if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
-        // there are still incomplete expectations
-        return [
+      return finalResponses
+        .concat([
           createTextResponse(
             pickRandom(atd.negativeFeedback),
             ResponseType.FeedbackNegative
           ),
           createTextResponse(e.expectation, ResponseType.Text),
-        ].concat(toNextExpectation(atd, sdp));
-      } else {
-        //no more incomplete expectations
-        return [
-          createTextResponse(
-            pickRandom(atd.negativeFeedback),
-            ResponseType.FeedbackNegative
-          ),
-        ].concat(toNextExpectation(atd, sdp));
-      }
-
-      return finalResponses;
+        ])
+        .concat(toNextExpectation(atd, sdp));
     }
   }
 }
