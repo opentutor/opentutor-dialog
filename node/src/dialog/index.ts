@@ -72,13 +72,13 @@ export async function processUserResponse(
       err,
       `${err.response && err.response.status}` === '404'
         ? {
-            status: 404,
-            message: `classifier cannot find lesson '${lessonId}'`,
-          }
+          status: 404,
+          message: `classifier cannot find lesson '${lessonId}'`,
+        }
         : {
-            status: 502,
-            message: err.message,
-          }
+          status: 502,
+          message: err.message,
+        }
     );
   }
   const expectationResults = classifierResult.output.expectationResults;
@@ -437,26 +437,13 @@ function handleHints(
       );
       sdp.dialogState.expectationData[index].status =
         ExpectationStatus.Complete;
-      if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
-        // there are still incomplete expectations
-        return [
-          createTextResponse(
-            pickRandom(atd.negativeFeedback),
-            ResponseType.FeedbackNegative
-          ),
-          createTextResponse(e.expectation, ResponseType.Text),
-        ].concat(toNextExpectation(atd, sdp));
-      } else {
-        //no more incomplete expectations
-        return [
-          createTextResponse(
-            pickRandom(atd.negativeFeedback),
-            ResponseType.FeedbackNegative
-          ),
-        ].concat(toNextExpectation(atd, sdp));
-      }
-
-      return finalResponses;
+      return finalResponses.concat([
+        createTextResponse(
+          pickRandom(atd.negativeFeedback),
+          ResponseType.FeedbackNegative
+        ),
+        createTextResponse(e.expectation, ResponseType.Text),
+      ]).concat(toNextExpectation(atd, sdp));
     }
   }
 }
