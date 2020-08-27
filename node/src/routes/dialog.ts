@@ -73,21 +73,20 @@ router.post(
       if (hasHistoryBeenTampered(sessionDto.sessionHistory, sessionDto.hash)) {
         return res.status(403).send();
       }
-
       const sessionData: SessionData = dtoToData(sessionDto);
       //if last system message was a closing, send error
       if (sessionData.dialogState.expectationsCompleted.every(v => v == true)) {
         return res.status(410).send();
       }
-
       const atd: OpenTutorData = convertLessonDataToATData(
         await getLessonData(lessonId)
       );
       if (!atd) return res.status(404).send();
       addUserDialog(sessionData, req.body['message']);
       const msg = await processUserResponse(lessonId, atd, sessionData);
+      const username = req.body['username'];
       addTutorDialog(sessionData, msg);
-      const graphQLResponse = sendGraphQLRequest(atd, sessionData)
+      const graphQLResponse = sendGraphQLRequest(atd, sessionData, username)
         ? true
         : false;
       const currentExpectation = sessionData.dialogState.expectationData.findIndex(

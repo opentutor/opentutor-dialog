@@ -44,7 +44,8 @@ const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
 
 export function createGraphQLObject(
   atd: OpenTutorData,
-  sdp: SessionData
+  sdp: SessionData,
+  username: string
 ): GraphQLRequest {
   const expectationScores: ExpectationScores[] = sdp.sessionHistory.classifierGrades.map(
     r => {
@@ -70,7 +71,7 @@ export function createGraphQLObject(
 
   return {
     sessionId: sdp.sessionId,
-    username: '',
+    username: username,
     lessonId: atd.lessonId,
     question: {
       text: atd.questionText,
@@ -83,9 +84,10 @@ export function createGraphQLObject(
 }
 export async function sendGraphQLRequest(
   atd: OpenTutorData,
-  sdp: SessionData
+  sdp: SessionData,
+  username: string
 ): Promise<string> {
-  const request: GraphQLRequest = createGraphQLObject(atd, sdp);
+  const request: GraphQLRequest = createGraphQLObject(atd, sdp, username);
   logger.debug(
     `graphql request to ${GRAPHQL_ENDPOINT}: ${JSON.stringify(request)}`
   );
