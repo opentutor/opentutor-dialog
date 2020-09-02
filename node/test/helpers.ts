@@ -8,7 +8,6 @@ import yn from 'yn';
 import axios from 'axios';
 import { Express } from 'express';
 import request from 'supertest';
-import { inspect } from 'util';
 
 export const MOCKING_DISABLED = yn(process.env.MOCKING_DISABLED || 0);
 export const DIALOG_ENDPOINT = process.env.DIALOG_ENDPOINT || '/dialog';

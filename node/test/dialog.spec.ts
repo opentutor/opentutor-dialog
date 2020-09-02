@@ -131,12 +131,6 @@ describe('dialog', async () => {
     ],
   };
 
-  const currentFlowResponse: LessonResponse = {
-    data: {
-      lesson: currentFlowLesson,
-    },
-  };
-
   allScenarios.forEach(ex => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       if (mockAxios) {
@@ -196,15 +190,10 @@ describe('dialog', async () => {
               reqRes.mockClassifierResponse.data,
             ];
           });
-          mockAxios.onPost('/grading-api').reply(config => {
-            //expect(reqBody).to.have.property('sessionId', sessionObj.sessionId);
-            // expect(reqBody).to.have.property('userResponses', ['correct answer']);
-            // expect(reqBody).to.have.property('inputSentence', reqRes.userInput);
-            return [200, { message: 'success' }];
-          });
         }
         const response = await postSession(ex.lessonId, app, {
           message: reqRes.userInput,
+          username: 'testuser',
           sessionInfo: sessionObj,
           lessonId: ex.lessonId,
         });
@@ -277,48 +266,6 @@ describe('dialog', async () => {
       ],
     };
 
-    // const promptSessionData: SessionData = {
-    //   dialogState: {
-    //     expectationsCompleted: [false],
-    //     expectationData: [
-    //       {
-    //         ideal: '',
-    //         score: 0,
-    //         satisfied: false,
-    //         status: ExpectationStatus.None,
-    //       },
-    //       {
-    //         ideal: '',
-    //         score: 0,
-    //         satisfied: false,
-    //         status: ExpectationStatus.None,
-    //       },
-    //       {
-    //         ideal: '',
-    //         score: 0,
-    //         satisfied: false,
-    //         status: ExpectationStatus.None,
-    //       },
-    //     ],
-    //     hints: false,
-    //   },
-    //   sessionHistory: {
-    //     classifierGrades: new Array<ClassifierResult>(),
-    //     systemResponses: [
-    //       [
-    //         'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-    //       ],
-    //     ],
-    //     userResponses: new Array<string>(),
-    //     userScores: new Array<number>(),
-    //   },
-    //   sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-    //   previousUserResponse: '',
-    //   previousSystemResponse: [
-    //     'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-    //   ],
-    // };
-
     const completedSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [true],
@@ -344,18 +291,72 @@ describe('dialog', async () => {
 
     const validSessionDto = dataToDto(validSessionData);
 
-    it('responds with a 404 error if lesson Id passed does not corrospond to a valid lesson', async () => {
+    it('responds with a 404 error if lesson id passed does not correspond to a valid lesson', async () => {
       const response = await postDialog('q3', app, {
         lessonId: 'q3',
       });
       expect(response.status).to.equal(404);
     });
 
+    it('responds with a 400 error if no message passed to session', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/classifier').reply(() => {
+          return [200, {}];
+        });
+        mockAxios.onPost('/graphql').reply(() => {
+          return [200, { data: { lesson: navyIntegrityLesson } }];
+        });
+      }
+      const responseStartSession = await postDialog('q1', app, {
+        lessonId: 'q1',
+        id: '1',
+        user: 'rush',
+        UseDB: true,
+        ScriptXML: null,
+        LSASpaceName: 'English_TASA',
+        ScriptURL: null,
+      });
+      let sessionObj = responseStartSession.body.sessionInfo;
+      const response = await postSession(lessonId, app, {
+        username: 'testuser',
+        sessionInfo: sessionObj,
+      });
+      expect(response.status).to.equal(400);
+    });
+
+    it('responds with a 400 error if no username passed to session', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onPost('/classifier').reply(() => {
+          return [200, {}];
+        });
+        mockAxios.onPost('/graphql').reply(() => {
+          return [200, { data: { lesson: navyIntegrityLesson } }];
+        });
+      }
+      const responseStartSession = await postDialog('q1', app, {
+        lessonId: 'q1',
+        id: '1',
+        user: 'rush',
+        UseDB: true,
+        ScriptXML: null,
+        LSASpaceName: 'English_TASA',
+        ScriptURL: null,
+      });
+      let sessionObj = responseStartSession.body.sessionInfo;
+      const response = await postSession(lessonId, app, {
+        message: 'message',
+        sessionInfo: sessionObj,
+      });
+      expect(response.status).to.equal(400);
+    });
+
     it('responds with a 502 error if 500 error calling classifier', async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/classifier').reply(_ => {
-          return [500, {}];
+          return [200, {}];
         });
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
@@ -375,6 +376,7 @@ describe('dialog', async () => {
       }
       const response = await postSession(lessonId, app, {
         message: 'peer pressure',
+        username: 'testuser',
         sessionInfo: validSessionDto,
       });
       expect(response.status).to.equal(502);
@@ -405,6 +407,7 @@ describe('dialog', async () => {
       const response = await postSession(lessonId, app, {
         lessonId: lessonId,
         message: 'peer pressure',
+        username: 'testuser',
         sessionInfo: validSessionDto,
       });
       expect(response.status).to.equal(404);
@@ -429,6 +432,7 @@ describe('dialog', async () => {
       const response = await postSession('q3', app, {
         lessonId: lessonId,
         message: 'peer pressure',
+        username: 'testuser',
         sessionInfo: validSessionDto,
       });
       expect(response.status).to.equal(404);
@@ -459,9 +463,6 @@ describe('dialog', async () => {
             },
           ];
         });
-        mockAxios.onPost('/grading-api').reply(config => {
-          return [200, { message: 'success' }];
-        });
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
@@ -491,6 +492,7 @@ describe('dialog', async () => {
       const response = await postSession(lessonId, app, {
         lessonId: 'q1',
         message: 'peer pressure',
+        username: 'testuser',
         sessionInfo: sessionObj,
       });
       expect(response.body).to.have.property('score');
@@ -502,7 +504,6 @@ describe('dialog', async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/classifier').reply(config => {
-          //const reqBody = JSON.parse(config.data);
           return [
             200,
             {
@@ -519,9 +520,6 @@ describe('dialog', async () => {
               },
             },
           ];
-        });
-        mockAxios.onPost('/grading-api').reply(config => {
-          return [200, { message: 'success' }];
         });
         mockAxios.onPost('/graphql').reply(config => {
           const reqBody = JSON.parse(config.data);
@@ -542,6 +540,7 @@ describe('dialog', async () => {
       const response = await postSession(lessonId, app, {
         lessonId: 'q1',
         message: 'correct answer',
+        username: 'testuser',
         sessionInfo: dataToDto(validSessionData),
       });
       expect(response.status).to.equal(200);
@@ -622,6 +621,7 @@ describe('dialog', async () => {
       tampered.hash = validSessionDto.hash;
       const response = await postSession(lessonId, app, {
         message: 'peer pressure',
+        username: 'testuser',
         sessionInfo: tampered,
       });
       expect(response.status).to.equal(403);
@@ -648,14 +648,11 @@ describe('dialog', async () => {
             },
           ];
         });
-        mockAxios.onPost('/grading-api').reply(config => {
-          const reqBody = JSON.parse(config.data);
-          return [200, { message: 'success' }];
-        });
       }
       const completedSession: SessionDto = dataToDto(completedSessionData);
       const response = await postSession(lessonId, app, {
         message: 'another message',
+        username: 'testuser',
         sessionInfo: completedSession,
       });
       expect(response.status).to.equal(410);
@@ -715,12 +712,10 @@ describe('dialog', async () => {
             },
           ];
         });
-        mockAxios.onPost('/grading-api').reply(config => {
-          return [200, { message: 'success' }];
-        });
       }
       const response = await postSession(lessonId, app, {
         message: 'peer pressure',
+        username: 'testuser',
         sessionInfo: validSessionDto,
         lessonId: lessonId,
       });
@@ -769,12 +764,10 @@ describe('dialog', async () => {
             },
           ];
         });
-        mockAxios.onPost('/grading-api').reply(config => {
-          return [200, { message: 'success' }];
-        });
       }
       const response = await postSession(lessonId, app, {
         message: 'bad answer',
+        username: 'testuser',
         sessionInfo: validSessionDto,
         lessonId: lessonId,
       });
@@ -823,12 +816,10 @@ describe('dialog', async () => {
             },
           ];
         });
-        mockAxios.onPost('/grading-api').reply(config => {
-          return [200, { message: 'success' }];
-        });
       }
       const response = await postSession(lessonId, app, {
         message: 'neutral answer',
+        username: 'testuser',
         sessionInfo: validSessionDto,
         lessonId: lessonId,
       });
@@ -876,12 +867,10 @@ describe('dialog', async () => {
             },
           ];
         });
-        mockAxios.onPost('/grading-api').reply(config => {
-          return [200, { message: 'success' }];
-        });
       }
       const responseHint = await postSession(lessonId, app, {
         message: 'no answer',
+        username: 'testuser',
         sessionInfo: validSessionDto,
         lessonId: lessonId,
       });
@@ -901,6 +890,7 @@ describe('dialog', async () => {
 
       const responsePrompt = await postSession(lessonId, app, {
         message: 'no answer',
+        username: 'testuser',
         sessionInfo: responseHint.body.sessionInfo,
         lessonId: lessonId,
       });

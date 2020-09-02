@@ -6,9 +6,9 @@ The full terms of this copyright and license should always be found in the root 
 */
 import express, { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
+import { beginDialog, calculateScore, processUserResponse } from 'dialog';
 import OpenTutorData, { convertLessonDataToATData } from 'dialog/dialog-data';
 import 'dialog/response-data';
-import { beginDialog, calculateScore, processUserResponse } from 'dialog';
 import {
   addTutorDialog,
   addUserDialog,
@@ -39,12 +39,15 @@ router.post(
   '/:lessonId',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const lessonId = req.params['lessonId'];
+      if (!lessonId) {
+        return next(createError(400, 'Lesson not provided'));
+      }
       const result = dialogSchema.validate(req.body);
       const { value: body, error } = result;
       if (Boolean(error)) {
         return next(createError(400, error));
       }
-      const lessonId = req.params['lessonId'];
       const atd: OpenTutorData = convertLessonDataToATData(
         await getLessonData(lessonId)
       );
@@ -69,10 +72,22 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const lessonId = req.params['lessonId'];
+      const message = req.body['message'];
+      const username = req.body['username'];
       const sessionDto = req.body['sessionInfo'];
+      if (!lessonId) {
+        return next(createError(400, 'Lesson not provided'));
+      }
+      if (!message || !message.trim()) {
+        return next(createError(400, 'Message not provided'));
+      }
+      if (!username || !username.trim()) {
+        return next(createError(400, 'Username not provided'));
+      }
       if (hasHistoryBeenTampered(sessionDto.sessionHistory, sessionDto.hash)) {
         return res.status(403).send();
       }
+
       const sessionData: SessionData = dtoToData(sessionDto);
       //if last system message was a closing, send error
       if (sessionData.dialogState.expectationsCompleted.every(v => v == true)) {
@@ -82,9 +97,8 @@ router.post(
         await getLessonData(lessonId)
       );
       if (!atd) return res.status(404).send();
-      addUserDialog(sessionData, req.body['message']);
+      addUserDialog(sessionData, message);
       const msg = await processUserResponse(lessonId, atd, sessionData);
-      const username = req.body['username'];
       addTutorDialog(sessionData, msg);
       const graphQLResponse = sendGraphQLRequest(atd, sessionData, username)
         ? true
