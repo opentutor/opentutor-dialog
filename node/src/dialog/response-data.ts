@@ -4,15 +4,38 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-/*
- * return a variable from process.env or throw an Error
- */
-export default function requireEnv(name: string): string {
-  const val = process.env[name];
-  if (val) {
-    return val;
-  }
-  throw new Error(
-    `required env variable '${name}' is not defined. Make sure .env file exists in root and has ${name} set`
-  );
+export default interface OpenTutorResponse {
+  author: string;
+  type: ResponseType;
+  data: TextData | ImageData;
+}
+
+export interface TextData {
+  text: string;
+}
+
+export interface ImageData {
+  url: string;
+  path: string;
+}
+
+export enum ResponseType {
+  Text = 'text',
+  Closing = 'closing',
+  Opening = 'opening',
+  MainQuestion = 'mainQuestion',
+  Hint = 'hint',
+  Prompt = 'prompt',
+  FeedbackPositive = 'feedbackPositive',
+  FeedbackNegative = 'feedbackNegative',
+  FeedbackNeutral = 'feedbackNeutral',
+  Profanity = 'profanity',
+  Encouragement = 'encouragement',
+}
+
+export function createTextResponse(
+  msg: string,
+  type: ResponseType = ResponseType.Text
+): OpenTutorResponse {
+  return { author: 'them', type, data: { text: msg } };
 }
