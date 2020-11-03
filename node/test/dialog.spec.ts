@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import createApp from 'app';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import MockAxios from 'axios-mock-adapter';
 import { expect } from 'chai';
 import { Express } from 'express';
@@ -135,7 +135,7 @@ describe('dialog', async () => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -165,7 +165,7 @@ describe('dialog', async () => {
       for (const reqRes of ex.expectedRequestResponses) {
         if (mockAxios) {
           mockAxios.reset();
-          mockAxios.onPost('/graphql').reply((config: any) => {
+          mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
             const reqBody = JSON.parse(config.data);
             if ((reqBody.query as string).includes('q1')) {
               return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -180,16 +180,18 @@ describe('dialog', async () => {
               return [404, errData];
             }
           });
-          mockAxios.onPost('/classifier').reply((config: any) => {
-            const reqBody = JSON.parse(config.data);
-            expect(reqBody).to.have.property('lesson', ex.lessonId);
-            expect(reqBody).to.have.property('input', reqRes.userInput);
-            expect(reqBody).to.have.property('config');
-            return [
-              reqRes.mockClassifierResponse.status || 200,
-              reqRes.mockClassifierResponse.data,
-            ];
-          });
+          mockAxios
+            .onPost('/classifier')
+            .reply((config: AxiosRequestConfig) => {
+              const reqBody = JSON.parse(config.data);
+              expect(reqBody).to.have.property('lesson', ex.lessonId);
+              expect(reqBody).to.have.property('input', reqRes.userInput);
+              expect(reqBody).to.have.property('config');
+              return [
+                reqRes.mockClassifierResponse.status || 200,
+                reqRes.mockClassifierResponse.data,
+              ];
+            });
         }
         const response = await postSession(ex.lessonId, app, {
           message: reqRes.userInput,
@@ -358,7 +360,7 @@ describe('dialog', async () => {
         mockAxios.onPost('/classifier').reply(_ => {
           return [200, {}];
         });
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -388,7 +390,7 @@ describe('dialog', async () => {
         mockAxios.onPost('/classifier').reply(_ => {
           return [404, {}];
         });
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -420,7 +422,7 @@ describe('dialog', async () => {
     it('responds with a 404 error if graphql cannot find lesson', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const errData: LResponseObject = {
             data: {
               lesson: null,
@@ -445,7 +447,7 @@ describe('dialog', async () => {
     it('returns a score between 0 and 1', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/classifier').reply((config: any) => {
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
           return [
             200,
             {
@@ -463,7 +465,7 @@ describe('dialog', async () => {
             },
           ];
         });
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -503,7 +505,7 @@ describe('dialog', async () => {
     it('sends the session data to the grader at the end of the dialog', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/classifier').reply((config: any) => {
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
           return [
             200,
             {
@@ -521,7 +523,7 @@ describe('dialog', async () => {
             },
           ];
         });
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -550,7 +552,7 @@ describe('dialog', async () => {
     it('sends the session information when session is started, along with initial dialog', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -583,7 +585,7 @@ describe('dialog', async () => {
     it('accepts and uses a session id passed by user', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -630,7 +632,7 @@ describe('dialog', async () => {
     it('sends an error if client sends dialog when the session is complete.', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/classifier').reply((config: any) => {
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
           return [
             200,
             {
@@ -661,7 +663,7 @@ describe('dialog', async () => {
     it('successfully sends a request to the graphql endpoint for data', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           return [200, lessonData];
         });
       }
@@ -680,7 +682,7 @@ describe('dialog', async () => {
     it('responds with a random positive feedback message from a set of messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -693,7 +695,7 @@ describe('dialog', async () => {
             return [404, errData];
           }
         });
-        mockAxios.onPost('/classifier').reply((config: any) => {
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           return [
             200,
@@ -732,7 +734,7 @@ describe('dialog', async () => {
     it('responds with a random negative feedback message from a set of messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -745,7 +747,7 @@ describe('dialog', async () => {
             return [404, errData];
           }
         });
-        mockAxios.onPost('/classifier').reply((config: any) => {
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           return [
             200,
@@ -784,7 +786,7 @@ describe('dialog', async () => {
     it('responds with a random neutral feedback message from a set of messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -797,7 +799,7 @@ describe('dialog', async () => {
             return [404, errData];
           }
         });
-        mockAxios.onPost('/classifier').reply((config: any) => {
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           return [
             200,
@@ -835,7 +837,7 @@ describe('dialog', async () => {
     it('responds with random hint start message and prompt start message from a set of messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/graphql').reply((config: any) => {
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
             return [200, { data: { lesson: navyIntegrityLesson } }];
@@ -848,7 +850,7 @@ describe('dialog', async () => {
             return [404, errData];
           }
         });
-        mockAxios.onPost('/classifier').reply((config: any) => {
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           return [
             200,
