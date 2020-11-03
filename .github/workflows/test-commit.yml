@@ -19,6 +19,5 @@ jobs:
       - name: Run license test
         run: cd node && npm run test:license
       - name: Run tests
-        run: cd node && npm run test
-
+        run: cd node && export APP_DISABLE_AUTO_START=true && export ENV=test && export NODE_PATH=$(shell pwd)/src && npm test
   
