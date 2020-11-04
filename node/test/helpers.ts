@@ -31,9 +31,7 @@ export async function postDialog(
       body: response.data,
     };
   }
-  return await request(app)
-    .post(endpoint)
-    .send(body);
+  return await request(app).post(endpoint).send(body);
 }
 
 export async function postSession(

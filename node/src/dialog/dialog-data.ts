@@ -23,7 +23,7 @@ export default interface Dialog {
   hintStart: string[];
   promptStart: string[];
   profanityFeedback: string[];
-  media: object;
+  media: any;
   originalXml: string;
 }
 
@@ -115,12 +115,12 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     throw { status: '404', message: 'lesson data not found' };
   }
 
-  defaultData.expectations = lessonData.expectations.map(exp => {
+  defaultData.expectations = lessonData.expectations.map((exp) => {
     return {
       expectation: exp.expectation,
-      hints: exp.hints.map(h => h.text),
+      hints: exp.hints.map((h) => h.text),
       prompts: exp.prompts
-        ? exp.prompts.map(p => {
+        ? exp.prompts.map((p) => {
             return { prompt: p.prompt, answer: p.answer };
           })
         : [],

@@ -39,7 +39,7 @@ function findDotEnvPath(): string[] {
     : ['.env'];
 }
 
-export function configureEnv() {
+export function configureEnv(): void {
   findAndDecryptEnvEnc();
   const dotEnvPath = findDotEnvPath();
   for (const p of dotEnvPath) {
