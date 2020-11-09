@@ -18,6 +18,7 @@ import {
   newSession,
   SessionData,
   ExpectationStatus,
+  SessionDto,
 } from 'dialog/session-data';
 import { sendGraphQLRequest } from 'apis/graphql';
 import Joi from '@hapi/joi';
@@ -72,25 +73,31 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const lessonId = req.params['lessonId'];
-      const message = req.body['message'];
-      const username = req.body['username'];
-      const sessionDto = req.body['sessionInfo'];
+      const message = `${req.body['message'] || ''}`.trim();
+      const username = `${req.body['username'] || ''}`.trim();
+      const sessionDto = req.body['sessionInfo'] as SessionDto;
       if (!lessonId) {
         return next(createError(400, 'Lesson not provided'));
       }
-      if (!message || !message.trim()) {
+      if (!message) {
         return next(createError(400, 'Message not provided'));
       }
-      if (!username || !username.trim()) {
+      if (!username) {
         return next(createError(400, 'Username not provided'));
       }
-      if (hasHistoryBeenTampered(sessionDto.sessionHistory, sessionDto.hash)) {
+      let sessionData: SessionData;
+      try {
+        sessionData = dtoToData(sessionDto);
+      } catch (err) {
+        return next(createError(400, 'Session data invalid'));
+      }
+      if (hasHistoryBeenTampered(sessionData.sessionHistory, sessionDto.hash)) {
         return res.status(403).send();
       }
-
-      const sessionData: SessionData = dtoToData(sessionDto);
       //if last system message was a closing, send error
-      if (sessionData.dialogState.expectationsCompleted.every(v => v == true)) {
+      if (
+        sessionData.dialogState.expectationsCompleted.every((v) => v == true)
+      ) {
         return res.status(410).send();
       }
       const atd: OpenTutorData = convertLessonDataToATData(
@@ -104,7 +111,7 @@ router.post(
         ? true
         : false;
       const currentExpectation = sessionData.dialogState.expectationData.findIndex(
-        e => e.status === ExpectationStatus.Active
+        (e) => e.status === ExpectationStatus.Active
       );
 
       res.send({
@@ -112,7 +119,7 @@ router.post(
         sessionInfo: dataToDto(sessionData),
         response: msg,
         sentToGrader: graphQLResponse,
-        completed: msg.find(m => m.type === ResponseType.Closing)
+        completed: msg.find((m) => m.type === ResponseType.Closing)
           ? true
           : false,
         score: calculateScore(sessionData, atd),

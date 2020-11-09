@@ -4,7 +4,6 @@ DOCKER_IMAGE?=opentutor-dialog
 docker-build:
 	DOCKER_BUILDKIT=1 \
 	docker build \
-		--ssh default \
 		-t $(DOCKER_IMAGE) \
 	.
 

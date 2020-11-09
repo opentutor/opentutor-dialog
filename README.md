@@ -58,8 +58,8 @@ To build/push a pre-release semver tag of `opentutor-dialog` for the current com
 - this trigger a circleci workflow that should build and push a docker image with the same tag as the git tag, e.g. `uscictdocker/opentutor-dialog:1.0.0-alpha.1`
 - You can monitor your workflow in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-dialog)
 
-Once your changes are approved and merged to master, you should create a release tag in semver format as follows:
+Once your changes are approved and merged to main, you should create a release tag in semver format as follows:
 
-- create a [github release](https://github.com/ICTLearningSciences/opentutor-dialog/releases/new) **from master** with tag format `/^\d+\.\d+\.\d$/` (e.g. `1.0.0`)
+- create a [github release](https://github.com/ICTLearningSciences/opentutor-dialog/releases/new) **from main** with tag format `/^\d+\.\d+\.\d$/` (e.g. `1.0.0`)
 - this trigger a circleci workflow that should build and push a docker image with the same tag as the git tag, e.g. `uscictdocker/opentutor-dialog:1.0.0`
 - You can monitor your workflow in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-dialog)

@@ -5,6 +5,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import sha256 from 'crypto-js/sha256';
+import hmacSHA512 from 'crypto-js/hmac-sha512';
+import Base64 from 'crypto-js/enc-base64';
 import 'dialog/response-data';
 import { v4 as uuidv4 } from 'uuid';
 import Dialog from './dialog-data';
@@ -79,7 +81,7 @@ export function dataToDto(d: SessionData): SessionDto {
   };
 }
 
-export function addUserDialog(sdp: SessionData, message: string) {
+export function addUserDialog(sdp: SessionData, message: string): void {
   sdp.previousUserResponse = message;
   sdp.sessionHistory.userResponses.push(message);
 }
@@ -87,20 +89,20 @@ export function addUserDialog(sdp: SessionData, message: string) {
 export function addTutorDialog(
   sdp: SessionData,
   messages: OpenTutorResponse[]
-) {
-  sdp.previousSystemResponse = messages.map(m => (m.data as TextData).text);
+): void {
+  sdp.previousSystemResponse = messages.map((m) => (m.data as TextData).text);
   sdp.sessionHistory.systemResponses.push(sdp.previousSystemResponse);
 }
 
 export function addClassifierGrades(
   sdp: SessionData,
   result: ClassifierResult
-) {
+): void {
   sdp.sessionHistory.classifierGrades.push(result);
 }
 
 function getHash(sh: string): string {
-  return sha256(JSON.stringify(sh), SESSION_SECURITY_KEY).toString();
+  return Base64.stringify(hmacSHA512(sha256(sh), SESSION_SECURITY_KEY));
 }
 
 export function newSession(atd: Dialog, sessionId = ''): SessionData {
@@ -134,8 +136,11 @@ export function newExpectationData(atd: Dialog): ExpectationData[] {
   });
 }
 
-export function hasHistoryBeenTampered(hist: SessionHistory, hash: string) {
-  return hash !== sha256(JSON.stringify(hist), SESSION_SECURITY_KEY).toString();
+export function hasHistoryBeenTampered(
+  hist: SessionHistory,
+  hash: string
+): boolean {
+  return hash !== getHash(JSON.stringify(hist));
 }
 
 export default SessionData;

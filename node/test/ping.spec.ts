@@ -18,9 +18,7 @@ describe('ping', () => {
   });
 
   it('responds with a 200 status', async () => {
-    const response = await request(app)
-      .get(`${DIALOG_ENDPOINT}/ping`)
-      .send();
+    const response = await request(app).get(`${DIALOG_ENDPOINT}/ping`).send();
     expect(response.status).to.equal(200);
   });
 });

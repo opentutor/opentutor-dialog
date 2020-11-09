@@ -48,9 +48,9 @@ export function createGraphQLObject(
   username: string
 ): GraphQLRequest {
   const expectationScores: ExpectationScores[] = sdp.sessionHistory.classifierGrades.map(
-    r => {
+    (r) => {
       return {
-        expectationScore: r.expectationResults.map(e => {
+        expectationScore: r.expectationResults.map((e) => {
           return {
             classifierGrade: e.evaluation.toString(),
             graderGrade: '',
@@ -75,7 +75,7 @@ export function createGraphQLObject(
     lessonId: atd.lessonId,
     question: {
       text: atd.questionText,
-      expectations: atd.expectations.map(e => {
+      expectations: atd.expectations.map((e) => {
         return { text: e.expectation } as Expectation;
       }),
     },
