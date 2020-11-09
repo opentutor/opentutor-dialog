@@ -54,7 +54,7 @@ export async function processUserResponse(
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
   try {
-    const expectations: CExpectation[] = atd.expectations.map(exp => {
+    const expectations: CExpectation[] = atd.expectations.map((exp) => {
       return {
         ideal: exp.expectation,
       } as CExpectation;
@@ -127,8 +127,8 @@ export async function processUserResponse(
 
   //check if response was for a prompt
   let p: Prompt;
-  let e: Expectation = atd.expectations.find(e => {
-    p = e.prompts.find(p => sdp.previousSystemResponse.includes(p.prompt));
+  let e: Expectation = atd.expectations.find((e) => {
+    p = e.prompts.find((p) => sdp.previousSystemResponse.includes(p.prompt));
     return Boolean(p);
   });
   if (e && p) {
@@ -140,8 +140,8 @@ export async function processUserResponse(
 
   //check if response was to a hint
   let h: string;
-  e = atd.expectations.find(e => {
-    h = e.hints.find(n => sdp.previousSystemResponse.includes(n));
+  e = atd.expectations.find((e) => {
+    h = e.hints.find((n) => sdp.previousSystemResponse.includes(n));
     return Boolean(h);
   });
   if (e && h) {
@@ -153,7 +153,7 @@ export async function processUserResponse(
 
   if (
     expectationResults.every(
-      x => x.evaluation === Evaluation.Good && x.score > goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score > goodThreshold
     )
   ) {
     //perfect answer
@@ -165,12 +165,12 @@ export async function processUserResponse(
       )
     );
     return responses.concat(
-      atd.recapText.map(rt => createTextResponse(rt, ResponseType.Closing))
+      atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
     );
   }
   if (
     expectationResults.every(
-      x =>
+      (x) =>
         (x.score < goodThreshold && x.evaluation == Evaluation.Good) ||
         (x.score < badThreshold && x.evaluation == Evaluation.Bad)
     )
@@ -187,7 +187,7 @@ export async function processUserResponse(
   }
   if (
     expectationResults.find(
-      x => x.evaluation === Evaluation.Good && x.score > goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score > goodThreshold
     )
   ) {
     //matched atleast one specific expectation
@@ -202,13 +202,13 @@ export async function processUserResponse(
   }
   if (
     expectationResults.find(
-      x => x.evaluation === Evaluation.Bad && x.score > badThreshold
+      (x) => x.evaluation === Evaluation.Bad && x.score > badThreshold
     )
   ) {
     //bad answer. use hint
     const expectationId = expectationResults.indexOf(
       expectationResults.find(
-        x => x.evaluation === Evaluation.Bad && x.score > badThreshold
+        (x) => x.evaluation === Evaluation.Bad && x.score > badThreshold
       )
     );
     sdp.dialogState.hints = true;
@@ -251,7 +251,7 @@ function updateCompletedExpectations(
       expectationIds.push(i);
     }
   }
-  expectationIds.forEach(expectationId => {
+  expectationIds.forEach((expectationId) => {
     sdp.dialogState.expectationsCompleted[expectationId] = true;
     sdp.dialogState.expectationData[expectationId].ideal =
       atd.expectations[expectationId].expectation;
@@ -293,7 +293,7 @@ export function toNextExpectation(
   } else {
     //all expectations completed
     answer = answer.concat(
-      atd.recapText.map(rt => createTextResponse(rt, ResponseType.Closing))
+      atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
     );
   }
   return answer;

@@ -131,7 +131,7 @@ describe('dialog', async () => {
     ],
   };
 
-  allScenarios.forEach(ex => {
+  allScenarios.forEach((ex) => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       if (mockAxios) {
         mockAxios.reset();
@@ -357,7 +357,7 @@ describe('dialog', async () => {
     it('responds with a 502 error if 500 error calling classifier', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/classifier').reply(_ => {
+        mockAxios.onPost('/classifier').reply((_) => {
           return [200, {}];
         });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
@@ -387,7 +387,7 @@ describe('dialog', async () => {
     it('responds with a 404 error if 404 error calling classifier', async () => {
       if (mockAxios) {
         mockAxios.reset();
-        mockAxios.onPost('/classifier').reply(_ => {
+        mockAxios.onPost('/classifier').reply((_) => {
           return [404, {}];
         });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
@@ -674,7 +674,7 @@ describe('dialog', async () => {
       expect(responseStartSession.body).to.have.property('response');
       expect(
         (responseStartSession.body.response as OpenTutorResponse[]).map(
-          m => m.data
+          (m) => m.data
         )
       ).to.eql([{ text: 'intro' }, { text: 'main' }]);
     });
@@ -726,8 +726,8 @@ describe('dialog', async () => {
       expect(response.body).to.have.property('response');
       expect(
         (response.body.response as OpenTutorResponse[])
-          .filter(m => m.type == ResponseType.FeedbackPositive)
-          .map(m => (m.data as TextData).text)[0]
+          .filter((m) => m.type == ResponseType.FeedbackPositive)
+          .map((m) => (m.data as TextData).text)[0]
       ).to.be.oneOf(['Great.', 'Nicely done!', 'You got it!']);
     });
 
@@ -778,8 +778,8 @@ describe('dialog', async () => {
       expect(response.body).to.have.property('response');
       expect(
         (response.body.response as OpenTutorResponse[])
-          .filter(m => m.type == ResponseType.FeedbackNegative)
-          .map(m => (m.data as TextData).text)[0]
+          .filter((m) => m.type == ResponseType.FeedbackNegative)
+          .map((m) => (m.data as TextData).text)[0]
       ).to.be.oneOf(['Not really.', "That's not right.", "I don't think so."]);
     });
 
@@ -829,8 +829,8 @@ describe('dialog', async () => {
       expect(response.body).to.have.property('response');
       expect(
         (response.body.response as OpenTutorResponse[])
-          .filter(m => m.type == ResponseType.FeedbackNeutral)
-          .map(m => (m.data as TextData).text)[0]
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
+          .map((m) => (m.data as TextData).text)[0]
       ).to.be.oneOf(['Ok.', 'So']);
     });
 
@@ -881,8 +881,8 @@ describe('dialog', async () => {
       expect(responseHint.body).to.have.property('response');
       expect(
         (responseHint.body.response as OpenTutorResponse[])
-          .filter(m => m.type == ResponseType.Text)
-          .map(m => (m.data as TextData).text)[0]
+          .filter((m) => m.type == ResponseType.Text)
+          .map((m) => (m.data as TextData).text)[0]
       ).to.be.oneOf([
         'Consider this.',
         'Let me help you a little.',
@@ -900,8 +900,8 @@ describe('dialog', async () => {
       expect(responsePrompt.body).to.have.property('response');
       expect(
         (responsePrompt.body.response as OpenTutorResponse[])
-          .filter(m => m.type == ResponseType.Text)
-          .map(m => (m.data as TextData).text)[0]
+          .filter((m) => m.type == ResponseType.Text)
+          .map((m) => (m.data as TextData).text)[0]
       ).to.be.oneOf([
         'See if you can get this',
         'Try this.',
