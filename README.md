@@ -1,8 +1,8 @@
-# open-tutor-api
+# opentutor-dialog
 
 ## Usage
 
-TODO: fill in
+microservice for managing a dialog in the opentutor app
 
 ## Running Tests
 
@@ -14,8 +14,7 @@ make test
 
 # Required Software
 
-- node 12
-- npm
+- node 14 + npm
 - make
 
 Any changes made to this repo should be covered by tests. To run the existing tests:
