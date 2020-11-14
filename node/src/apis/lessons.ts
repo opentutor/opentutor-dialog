@@ -6,6 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import axios from 'axios';
 import logger from 'utils/logging';
+import { getApiKey } from 'config';
 
 export interface Hint {
   text: string;
@@ -23,7 +24,7 @@ export interface LessonPrompt {
 }
 
 export interface Lesson {
-  lessonName: string;
+  name: string;
   lessonId: string;
   intro: string;
   question: string;
@@ -32,7 +33,9 @@ export interface Lesson {
 }
 
 export interface LessonWrapper {
-  lesson: Lesson;
+  me: {
+    lesson: Lesson;
+  };
 }
 
 export interface LessonResponse {
@@ -41,7 +44,9 @@ export interface LessonResponse {
 
 export interface LResponseObject {
   data: {
-    lesson: LessonResponse;
+    me: {
+      lesson: Lesson;
+    };
   };
 }
 
@@ -49,25 +54,32 @@ const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
 
 export async function getLessonData(lessonId: string): Promise<Lesson> {
   try {
+    const API_SECRET = await getApiKey();
     const response = await axios.post(GRAPHQL_ENDPOINT, {
+      headers: {
+        'opentutor-api-req': 'true',
+        Authorization: `bearer ${API_SECRET}`,
+      },
       query: `{
-        lesson(lessonId: "${lessonId}") {
-          id
-          lessonId
-          intro
-          question
-          conclusion
-          expectations {
-            expectation
-            hints {
-              text
+        me {
+          lesson(lessonId: "${lessonId}") {
+            id
+            lessonId
+            intro
+            question
+            conclusion
+            expectations {
+              expectation
+              hints {
+                text
+              }
             }
-          }
+          }  
         }
       }
       `,
     });
-    if (!response.data.data.lesson) {
+    if (!response.data.data.me.lesson) {
       throw {
         response: {
           status: 404,
@@ -75,7 +87,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
         },
       };
     }
-    return response.data.data.lesson;
+    return response.data.data.me.lesson;
   } catch (err) {
     logger.error(err);
     const status =
