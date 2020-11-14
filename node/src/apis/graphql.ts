@@ -8,6 +8,7 @@ import axios from 'axios';
 import { logger } from 'utils/logging';
 import OpenTutorData from 'dialog/dialog-data';
 import SessionData from 'dialog/session-data';
+import { getApiKey } from 'config';
 
 export interface GraphQLRequest {
   sessionId: string;
@@ -91,15 +92,26 @@ export async function sendGraphQLRequest(
   logger.debug(
     `graphql request to ${GRAPHQL_ENDPOINT}: ${JSON.stringify(request)}`
   );
+  const API_SECRET = await getApiKey();
   const session = encodeURI(JSON.stringify(request));
-  const response = await axios.post(GRAPHQL_ENDPOINT, {
-    query: `mutation {
-      updateSession(sessionId: "${request.sessionId}", session: "${session}") {
-          sessionId
+  const headers = {
+    'opentutor-api-req': 'true',
+    Authorization: `bearer ${API_SECRET}`,
+  };
+  const response = await axios.post(
+    GRAPHQL_ENDPOINT,
+    {
+      query: `mutation {
+        me {
+          updateSession(sessionId: "${request.sessionId}", session: "${session}") {
+            sessionId
+          }  
         }
       }
     `,
-  });
+    },
+    { headers: headers }
+  );
   return response.data;
 }
 
