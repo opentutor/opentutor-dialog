@@ -29,6 +29,7 @@ import { ScopedRandom } from 'dialog';
 describe('dialog', async () => {
   let app: Express;
   let mockAxios: MockAxios;
+  let mockNextRandom: sinon.SinonStub<number[]>;
   const allScenarios: DialogScenario[] = await findAllScenarios();
 
   beforeEach(async () => {
@@ -36,7 +37,8 @@ describe('dialog', async () => {
       app = await createApp();
       mockAxios = new MockAxios(axios);
     }
-    sinon.stub(ScopedRandom, 'nextRandom').returns(0);
+    mockNextRandom = sinon.stub(ScopedRandom, 'nextRandom').returns(0);
+    mockNextRandom.returns(0);
   });
 
   afterEach(() => {
@@ -193,6 +195,7 @@ describe('dialog', async () => {
               ];
             });
         }
+        mockNextRandom.returns(reqRes.nextRandom || 0);
         const response = await postSession(ex.lessonId, app, {
           message: reqRes.userInput,
           username: 'testuser',
