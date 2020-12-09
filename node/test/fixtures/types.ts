@@ -10,6 +10,7 @@ export interface DialogRequestResponse {
   userInput: string;
   expectedResponse: OpenTutorResponse;
   mockClassifierResponse: MockAxiosResponse;
+  nextRandom?: number;
 }
 
 export interface DialogScenario {

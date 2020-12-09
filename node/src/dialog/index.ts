@@ -43,8 +43,12 @@ export class ScopedRandom {
   }
 }
 
-export function pickRandom<T>(a: T[]): T {
-  return a[Math.floor(ScopedRandom.nextRandom() * a.length)];
+export function pickRandom<T>(a: T[], forceVariant = -1): T {
+  if (forceVariant >= 0) {
+    return a[forceVariant % a.length];
+  } else {
+    return a[Math.round(ScopedRandom.nextRandom() * a.length)];
+  }
 }
 
 export async function processUserResponse(
@@ -175,7 +179,6 @@ export async function processUserResponse(
         (x.score < badThreshold && x.evaluation == Evaluation.Bad)
     )
   ) {
-    console.log('neutral');
     //answer did not match any expectation, guide user through expectations
     responses.push(
       createTextResponse(
@@ -367,9 +370,11 @@ function handleHints(
     ) {
       //meets ANOTHER expectation
       //add some neutral response
-      const neutralResponse = 'Good point! But lets focus on this part.';
       finalResponses.push(
-        createTextResponse(neutralResponse, ResponseType.FeedbackNeutral)
+        createTextResponse(
+          pickRandom(atd.goodPointButFeedback),
+          ResponseType.FeedbackNeutral
+        )
       );
       updateCompletedExpectations(expectationResults, sdp, atd);
     }
