@@ -202,6 +202,7 @@ describe('dialog', async () => {
           sessionInfo: sessionObj,
           lessonId: ex.lessonId,
         });
+
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property('response');
         expect(response.body.response).to.deep.include.members(
