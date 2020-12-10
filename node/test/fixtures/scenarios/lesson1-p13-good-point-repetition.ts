@@ -1,10 +1,10 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
-import { FEEDBACK_GOOD_POINT_BUT } from 'dialog/dialog-data';
+import { POSITIVE_FEEDBACK } from 'dialog/dialog-data';
 
 const expectVariantIndex = 1;
-const variantRandom = expectVariantIndex / FEEDBACK_GOOD_POINT_BUT.length;
+const variantRandom = expectVariantIndex / POSITIVE_FEEDBACK.length;
 
 export const scenario: DialogScenario = {
   name:
@@ -51,16 +51,16 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackPositive,
           data: {
             // this whole scenario is about
             // testing we get this "variant" good-point-but response
-            text: FEEDBACK_GOOD_POINT_BUT[expectVariantIndex],
+            text: POSITIVE_FEEDBACK[expectVariantIndex],
           },
         },
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.Closing,
           data: {
             // this whole scenario is about
             // testing we get this "variant" good-point-but response
