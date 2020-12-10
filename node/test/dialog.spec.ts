@@ -205,13 +205,11 @@ describe('dialog', async () => {
 
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property('response');
-        if(reqRes.expectExactMatchResponse)
-        {
+        if (reqRes.expectExactMatchResponse) {
           expect(response.body.response).to.deep.equal(reqRes.expectedResponse);
-        }
-        else{
+        } else {
           expect(response.body.response).to.deep.include.members(
-           reqRes.expectedResponse
+            reqRes.expectedResponse
           );
         }
         expect(response.body).to.have.property('completed');

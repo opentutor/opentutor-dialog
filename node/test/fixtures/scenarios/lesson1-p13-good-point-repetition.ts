@@ -8,7 +8,7 @@ const variantRandom = expectVariantIndex / POSITIVE_FEEDBACK.length;
 
 export const scenario: DialogScenario = {
   name:
-    'lesson1 part 13: if more than one unexpected expectation is fulfilled in a single utterrance only one good point utterance should play',
+    'lesson1 part 13: if more than one unexpected expectation is fulfilled along with the expected expectation, only the positive feedback should be given.',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -48,14 +48,12 @@ export const scenario: DialogScenario = {
         },
       },
       nextRandom: variantRandom,
-      expectExactMatchResponse:true,
+      expectExactMatchResponse: true,
       expectedResponse: [
         {
           author: 'them',
           type: ResponseType.FeedbackPositive,
           data: {
-            // this whole scenario is about
-            // testing we get this "variant" good-point-but response
             text: POSITIVE_FEEDBACK[expectVariantIndex],
           },
         },
@@ -63,27 +61,23 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            // this whole scenario is about
-            // testing we get this "variant" good-point-but response
-            text: 'Peer pressure can push you to allow and participate in inappropriate behavior.'
+            text:
+              'Peer pressure can push you to allow and participate in inappropriate behavior.',
           },
         },
         {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            // this whole scenario is about
-            // testing we get this "variant" good-point-but response
-            text: `When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.`
+            text: `When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.`,
           },
         },
         {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            // this whole scenario is about
-            // testing we get this "variant" good-point-but response
-            text: 'However, integrity means speaking out even when it is unpopular.'
+            text:
+              'However, integrity means speaking out even when it is unpopular.',
           },
         },
       ],
