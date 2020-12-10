@@ -48,6 +48,7 @@ export const scenario: DialogScenario = {
         },
       },
       nextRandom: variantRandom,
+      expectExactMatchResponse:true,
       expectedResponse: [
         {
           author: 'them',
@@ -65,6 +66,24 @@ export const scenario: DialogScenario = {
             // this whole scenario is about
             // testing we get this "variant" good-point-but response
             text: 'Peer pressure can push you to allow and participate in inappropriate behavior.'
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Closing,
+          data: {
+            // this whole scenario is about
+            // testing we get this "variant" good-point-but response
+            text: `When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.`
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Closing,
+          data: {
+            // this whole scenario is about
+            // testing we get this "variant" good-point-but response
+            text: 'However, integrity means speaking out even when it is unpopular.'
           },
         },
       ],
