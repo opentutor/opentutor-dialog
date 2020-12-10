@@ -360,8 +360,8 @@ function handleHints(
 ) {
   const expectationId: number = atd.expectations.indexOf(e);
   const finalResponses: Array<OpenTutorResponse> = [];
-  let alternateExpectationMet: Boolean = false;
-  let expectedExpectationMet: Boolean = false;
+  let alternateExpectationMet: boolean = false;
+  let expectedExpectationMet: boolean = false;
 
   //check if any other expectations were met
   expectationResults.forEach((e, id) => {
