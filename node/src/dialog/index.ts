@@ -366,7 +366,7 @@ function handleHints(
   //check if any other expectations were met
   expectationResults.forEach((e, id) => {
     if (e.evaluation === Evaluation.Good && e.score > goodThreshold) {
-      if (id != expectationId) {
+      if (id !== expectationId) {
         //meets ANOTHER expectation
         //add some neutral response
         alternateExpectationMet = true;
