@@ -11,6 +11,7 @@ export interface DialogRequestResponse {
   expectedResponse: OpenTutorResponse;
   mockClassifierResponse: MockAxiosResponse;
   nextRandom?: number;
+  expectExactMatchResponse?: boolean;
 }
 
 export interface DialogScenario {

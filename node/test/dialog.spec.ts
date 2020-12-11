@@ -202,11 +202,16 @@ describe('dialog', async () => {
           sessionInfo: sessionObj,
           lessonId: ex.lessonId,
         });
+
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property('response');
-        expect(response.body.response).to.deep.include.members(
-          reqRes.expectedResponse
-        );
+        if (reqRes.expectExactMatchResponse) {
+          expect(response.body.response).to.deep.equal(reqRes.expectedResponse);
+        } else {
+          expect(response.body.response).to.deep.include.members(
+            reqRes.expectedResponse
+          );
+        }
         expect(response.body).to.have.property('completed');
         sessionObj = response.body.sessionInfo;
       }

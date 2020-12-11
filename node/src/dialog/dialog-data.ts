@@ -60,6 +60,15 @@ export const PROMPT_START = [
   'See if you know the answer to this.',
 ];
 
+export const POSITIVE_FEEDBACK = [
+  'Great.',
+  'Good.',
+  'Right.',
+  "Yeah, that's right.",
+  'Excellent.',
+  'Correct.',
+];
+
 export function convertLessonDataToATData(lessonData: Lesson): Dialog {
   const defaultData: Dialog = {
     lessonId: '',
@@ -74,14 +83,7 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'If you give me some sort of an answer, we can at least start from there and build.',
       "It's okay. Just say your best guess and we'll go from there.",
     ],
-    positiveFeedback: [
-      'Great.',
-      'Good.',
-      'Right.',
-      "Yeah, that's right.",
-      'Excellent.',
-      'Correct.',
-    ],
+    positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
     negativeFeedback: FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],

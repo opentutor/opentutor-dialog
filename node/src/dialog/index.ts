@@ -360,25 +360,30 @@ function handleHints(
 ) {
   const expectationId: number = atd.expectations.indexOf(e);
   const finalResponses: Array<OpenTutorResponse> = [];
+  let alternateExpectationMet = false;
+  let expectedExpectationMet = false;
 
   //check if any other expectations were met
   expectationResults.forEach((e, id) => {
-    if (
-      e.evaluation === Evaluation.Good &&
-      e.score > goodThreshold &&
-      id != expectationId
-    ) {
-      //meets ANOTHER expectation
-      //add some neutral response
-      finalResponses.push(
-        createTextResponse(
-          pickRandom(atd.goodPointButFeedback),
-          ResponseType.FeedbackNeutral
-        )
-      );
-      updateCompletedExpectations(expectationResults, sdp, atd);
+    if (e.evaluation === Evaluation.Good && e.score > goodThreshold) {
+      if (id !== expectationId) {
+        //meets ANOTHER expectation
+        //add some neutral response
+        alternateExpectationMet = true;
+        updateCompletedExpectations(expectationResults, sdp, atd);
+      } else {
+        expectedExpectationMet = true;
+      }
     }
   });
+  if (alternateExpectationMet && !expectedExpectationMet) {
+    finalResponses.push(
+      createTextResponse(
+        pickRandom(atd.goodPointButFeedback),
+        ResponseType.FeedbackNeutral
+      )
+    );
+  }
   if (
     expectationResults[expectationId].evaluation === Evaluation.Good &&
     expectationResults[expectationId].score > goodThreshold
