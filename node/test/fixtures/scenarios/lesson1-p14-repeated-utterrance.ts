@@ -8,7 +8,7 @@ const variantRandom = expectVariantIndex / FEEDBACK_NEGATIVE.length;
 
 export const scenario: DialogScenario = {
   name:
-    'lesson1 part 14: if the user fulfills an expecation the system should recognize that and reply accordingly',
+    'lesson1 part 14: if the user says the same thing twice in a row, then the system should say something.',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
