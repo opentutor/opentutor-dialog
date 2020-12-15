@@ -1,10 +1,10 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
-import { POSITIVE_FEEDBACK } from 'dialog/dialog-data';
+import { FEEDBACK_NEGATIVE } from 'dialog/dialog-data';
 
 const expectVariantIndex = 1;
-const variantRandom = expectVariantIndex / POSITIVE_FEEDBACK.length;
+const variantRandom = expectVariantIndex / FEEDBACK_NEGATIVE.length;
 
 export const scenario: DialogScenario = {
   name:
@@ -12,17 +12,17 @@ export const scenario: DialogScenario = {
   lessonId: 'q1',
   expectedRequestResponses: [
     {
-      userInput: 'Rules apply differently to the group',
+      userInput: 'a',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
               { evaluation: Evaluation.Bad, score: 1.0 },
               { evaluation: Evaluation.Bad, score: 1.0 },
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
             ],
             speechActs: {
-              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: { evaluation: Evaluation.Bad, score: 0.5 },
               profanity: { evaluation: Evaluation.Good, score: 0.5 },
             },
           },
@@ -31,17 +31,17 @@ export const scenario: DialogScenario = {
       expectedResponse: [],
     },
     {
-      userInput: 'It may be harder to work with them.',
+      userInput: 'a',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { evaluation: Evaluation.Bad score: 1.0 },
               { evaluation: Evaluation.Bad, score: 1.0 },
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
             ],
             speechActs: {
-              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: { evaluation: Evaluation.Bad, score: 0.5 },
               profanity: { evaluation: Evaluation.Good, score: 0.5 },
             },
           },
@@ -51,9 +51,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackPositive,
+          type: ResponseType.FeedbackNegative,
           data: {
-            text: POSITIVE_FEEDBACK[expectVariantIndex],
+            text: FEEDBACK_NEGATIVE[expectVariantIndex],
           },
         },
       ],
