@@ -24,7 +24,9 @@ import { DialogScenario } from 'test/fixtures/types';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
-import { ScopedRandom } from 'dialog';
+import { randomFunctionSet, randomFunctionRestore } from 'dialog';
+
+const sandbox = sinon.createSandbox();
 
 describe('dialog', async () => {
   let app: Express;
@@ -37,15 +39,20 @@ describe('dialog', async () => {
       app = await createApp();
       mockAxios = new MockAxios(axios);
     }
-    mockNextRandom = sinon.stub(ScopedRandom, 'nextRandom').returns(0);
-    mockNextRandom.returns(0);
+    mockNextRandom = sandbox.stub().returns(0);
+    randomFunctionSet(mockNextRandom);
   });
 
   afterEach(() => {
     if (mockAxios) {
       mockAxios.reset();
     }
-    sinon.restore();
+    // NO version of sinon sandboxing seems to work without error, so hacked below
+    // if (mockNextRandom) {
+    //   (SCOPED_RANDOM.nextRandom as any).restore();
+    //   mockNextRandom.restore();
+    // }
+    randomFunctionRestore();
   });
 
   const currentFlowLesson: Lesson = {

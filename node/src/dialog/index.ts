@@ -34,20 +34,25 @@ export function beginDialog(atd: Dialog): OpenTutorResponse[] {
   ];
 }
 
-// We need a random generator that is safe to mock
-// and the only way could figure out to make sinon mocking work (w ts)
-// is to put it in a class
-export class ScopedRandom {
-  static nextRandom(): number {
-    return Math.random();
-  }
+interface RandomFunction {
+  (): number;
+}
+let _random = Math.random;
+
+export function randomFunctionSet(f: RandomFunction): void {
+  _random = f;
+}
+
+export function randomFunctionRestore(): void {
+  _random = Math.random;
 }
 
 export function pickRandom<T>(a: T[], forceVariant = -1): T {
   if (forceVariant >= 0) {
     return a[forceVariant % a.length];
   } else {
-    return a[Math.round(ScopedRandom.nextRandom() * a.length)];
+    const randomNum = _random();
+    return a[Math.floor(randomNum * a.length)];
   }
 }
 
@@ -111,7 +116,7 @@ export async function processUserResponse(
     speechActs['metacognitive'].evaluation === Evaluation.Good
   ) {
     //50 percent of the time it will use encouragement. Else, it will go on.
-    if (ScopedRandom.nextRandom() < 0.5) {
+    if (_random() < 0.5) {
       responses.push(
         createTextResponse(
           pickRandom(atd.confusionFeedback),
