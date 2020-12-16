@@ -26,6 +26,8 @@ import { describe, it } from 'mocha';
 import sinon from 'sinon';
 import { ScopedRandom } from 'dialog';
 
+const sandbox = sinon.createSandbox();
+
 describe('dialog', async () => {
   let app: Express;
   let mockAxios: MockAxios;
@@ -37,7 +39,7 @@ describe('dialog', async () => {
       app = await createApp();
       mockAxios = new MockAxios(axios);
     }
-    mockNextRandom = sinon.stub(ScopedRandom, 'nextRandom').returns(0);
+    mockNextRandom = sandbox.stub(ScopedRandom, 'nextRandom').returns(0);
     mockNextRandom.returns(0);
   });
 
@@ -45,7 +47,10 @@ describe('dialog', async () => {
     if (mockAxios) {
       mockAxios.reset();
     }
-    sinon.restore();
+    sandbox.restore();
+    if (mockNextRandom) {
+      mockNextRandom.restore();
+    }
   });
 
   const currentFlowLesson: Lesson = {

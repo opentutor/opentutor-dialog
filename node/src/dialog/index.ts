@@ -47,8 +47,8 @@ export function pickRandom<T>(a: T[], forceVariant = -1): T {
   if (forceVariant >= 0) {
     return a[forceVariant % a.length];
   } else {
-    let randomNum = ScopedRandom.nextRandom();
-    return a[Math.round(randomNum * a.length)];
+    const randomNum = ScopedRandom.nextRandom();
+    return a[Math.floor(randomNum * a.length)];
   }
 }
 
