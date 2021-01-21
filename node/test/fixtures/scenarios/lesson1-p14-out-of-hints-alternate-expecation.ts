@@ -1,10 +1,15 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
-import { POSITIVE_FEEDBACK, FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED } from 'dialog/dialog-data';
+import {
+  POSITIVE_FEEDBACK,
+  FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
+} from 'dialog/dialog-data';
 
 const expectVariantIndex = 1;
-const variantRandom = expectVariantIndex / FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED.length;
+const variantRandom =
+  expectVariantIndex /
+  FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED.length;
 
 export const scenario: DialogScenario = {
   name:
@@ -54,16 +59,20 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED[expectVariantIndex],
+            text:
+              FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED[
+                expectVariantIndex
+              ],
           },
         },
         {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text: 'Peer pressure can cause you to allow inappropriate behavior.',
+            text:
+              'Peer pressure can cause you to allow inappropriate behavior.',
           },
-        }
+        },
       ],
     },
   ],

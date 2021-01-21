@@ -41,7 +41,7 @@ export interface Expectation {
 }
 
 export const FEEDBACK_GOOD_POINT_BUT = [
-  'Good point! But let\'s focus on this part.',
+  "Good point! But let's focus on this part.",
   `That's true. Now consider this...`,
   `Yes and let's get this other point...`,
 ];
@@ -107,7 +107,7 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'Consider this.',
       'Let me help you a little.',
       'Think about this.',
-      'Let\'s work through this together.',
+      "Let's work through this together.",
     ],
     promptStart: PROMPT_START,
     profanityFeedback: [

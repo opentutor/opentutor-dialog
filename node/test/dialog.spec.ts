@@ -155,8 +155,7 @@ describe('dialog', async () => {
               'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           },
         ],
-        prompts: [
-        ],
+        prompts: [],
       },
       {
         expectation:
@@ -166,8 +165,7 @@ describe('dialog', async () => {
             text: 'How can it affect someone when you correct their behavior?',
           },
         ],
-        prompts: [
-        ],
+        prompts: [],
       },
       {
         expectation: 'Enforcing the rules can make you unpopular.',
@@ -176,8 +174,7 @@ describe('dialog', async () => {
             text: "How can it affect you when you correct someone's behavior?",
           },
         ],
-        prompts: [
-        ],
+        prompts: [],
       },
     ],
     conclusion: [
@@ -198,9 +195,8 @@ describe('dialog', async () => {
           } else if ((reqBody.query as string).includes('q2')) {
             return [200, { data: { lesson: currentFlowLesson } }];
           } else if ((reqBody.query as string).includes('q3')) {
-            return [200, {data: {lesson:noPromptsLesson} }];
-          }
-           else {
+            return [200, { data: { lesson: noPromptsLesson } }];
+          } else {
             const errData: LResponseObject = {
               data: {
                 lesson: null,
@@ -231,9 +227,8 @@ describe('dialog', async () => {
             } else if ((reqBody.query as string).includes('q2')) {
               return [200, { data: { lesson: currentFlowLesson } }];
             } else if ((reqBody.query as string).includes('q3')) {
-              return [200, {data: {lesson:noPromptsLesson} }];
-            }
-             else {
+              return [200, { data: { lesson: noPromptsLesson } }];
+            } else {
               const errData: LResponseObject = {
                 data: {
                   lesson: null,

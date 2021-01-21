@@ -416,21 +416,21 @@ function handleHints(
             ResponseType.FeedbackNeutral
           )
         );
-      }else{
-      finalResponses.push(
-        createTextResponse(
-          pickRandom(atd.neutralFeedback),
-          ResponseType.FeedbackNeutral
-        )
-      );};
-  
+      } else {
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.neutralFeedback),
+            ResponseType.FeedbackNeutral
+          )
+        );
+      }
+
       finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       finalResponses.push(
         createTextResponse(e.hints[e.hints.indexOf(h) + 1], ResponseType.Hint)
       );
       return finalResponses;
     } else if (e.prompts[0]) {
-
       if (alternateExpectationMet && !expectedExpectationMet) {
         finalResponses.push(
           createTextResponse(
@@ -438,14 +438,14 @@ function handleHints(
             ResponseType.FeedbackNeutral
           )
         );
-      }else{
-
-      finalResponses.push(
-        createTextResponse(
-          pickRandom(atd.negativeFeedback),
-          ResponseType.FeedbackNegative
-        )
-      );};
+      } else {
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.negativeFeedback),
+            ResponseType.FeedbackNegative
+          )
+        );
+      }
       finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
       finalResponses.push(
         createTextResponse(pickRandom(e.prompts).prompt, ResponseType.Prompt)
@@ -463,18 +463,18 @@ function handleHints(
       );
       sdp.dialogState.expectationData[index].status =
         ExpectationStatus.Complete;
-      
+
       if (alternateExpectationMet && !expectedExpectationMet) {
         return finalResponses
-        .concat([
-          createTextResponse(
-            pickRandom(atd.feedbackOutOfHintsAlternateExpectation),
-            ResponseType.Text
-          ),
-          createTextResponse(e.expectation, ResponseType.Text),
-        ])
-        .concat(toNextExpectation(atd, sdp));
-      }  
+          .concat([
+            createTextResponse(
+              pickRandom(atd.feedbackOutOfHintsAlternateExpectation),
+              ResponseType.Text
+            ),
+            createTextResponse(e.expectation, ResponseType.Text),
+          ])
+          .concat(toNextExpectation(atd, sdp));
+      }
       return finalResponses
         .concat([
           createTextResponse(
