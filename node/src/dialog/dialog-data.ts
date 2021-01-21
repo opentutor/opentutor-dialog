@@ -69,6 +69,11 @@ export const POSITIVE_FEEDBACK = [
   'Correct.',
 ];
 
+export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [
+  'Put text here',
+  'and here',
+];
+
 export function convertLessonDataToATData(lessonData: Lesson): Dialog {
   const defaultData: Dialog = {
     lessonId: '',
