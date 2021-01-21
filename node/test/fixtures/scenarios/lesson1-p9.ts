@@ -71,7 +71,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.FeedbackNeutral,
           data: {
-            text: 'Good point! But lets focus on this part.',
+            text: 'Good point! But let\'s focus on this part.',
           },
         },
         {

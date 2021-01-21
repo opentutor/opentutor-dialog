@@ -18,6 +18,7 @@ export default interface Dialog {
   negativeFeedback: string[];
   neutralFeedback: string[];
   goodPointButFeedback: string[];
+  feedbackOutOfHintsAlternateExpectation: string[];
   perfectFeedback: string[];
   pump: string[];
   pumpBlank: string[];
@@ -40,7 +41,7 @@ export interface Expectation {
 }
 
 export const FEEDBACK_GOOD_POINT_BUT = [
-  'Good point! But lets focus on this part.',
+  'Good point! But let\'s focus on this part.',
   `That's true. Now consider this...`,
   `Yes and let's get this other point...`,
 ];
@@ -93,6 +94,7 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     negativeFeedback: FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
+    feedbackOutOfHintsAlternateExpectation: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
     pump: [
       "Let's work through this together.",
       'And can you add to that?',
@@ -105,7 +107,7 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'Consider this.',
       'Let me help you a little.',
       'Think about this.',
-      'Lets work through this together.',
+      'Let\'s work through this together.',
     ],
     promptStart: PROMPT_START,
     profanityFeedback: [

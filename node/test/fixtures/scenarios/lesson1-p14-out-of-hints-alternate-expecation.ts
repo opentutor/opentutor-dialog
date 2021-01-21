@@ -4,7 +4,7 @@ import { ResponseType } from 'dialog/response-data';
 import { POSITIVE_FEEDBACK, FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED } from 'dialog/dialog-data';
 
 const expectVariantIndex = 1;
-const variantRandom = expectVariantIndex / POSITIVE_FEEDBACK.length;
+const variantRandom = expectVariantIndex / FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED.length;
 
 export const scenario: DialogScenario = {
   name:
