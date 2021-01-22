@@ -208,7 +208,7 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           const lessonData = findLessonForGqlQuery(reqBody.query);
-          if (lessonData !== null) {
+          if (lessonData) {
             return [
               200,
               { data: { lesson: findLessonForGqlQuery(reqBody.query) } },
