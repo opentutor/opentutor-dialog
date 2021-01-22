@@ -184,18 +184,35 @@ describe('dialog', async () => {
     ],
   };
 
+  const lessonById: Record<string, Lesson> = {
+    q1: navyIntegrityLesson,
+    q2: currentFlowLesson,
+    q3: noPromptsLesson,
+  };
+
+  function findLessonForGqlQuery(query: string): Lesson {
+    let lessonId = query.includes('q1')
+      ? 'q1'
+      : query.includes('q2')
+      ? 'q2'
+      : query.includes('q3')
+      ? 'q3'
+      : 'ok fix this properly with a regex already';
+    return lessonById[lessonId];
+  }
+
   allScenarios.forEach((ex) => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
-          } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
-          } else if ((reqBody.query as string).includes('q3')) {
-            return [200, { data: { lesson: noPromptsLesson } }];
+          const lessonData = findLessonForGqlQuery(reqBody.query);
+          if (lessonData !== null) {
+            return [
+              200,
+              { data: { lesson: findLessonForGqlQuery(reqBody.query) } },
+            ];
           } else {
             const errData: LResponseObject = {
               data: {

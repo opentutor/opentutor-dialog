@@ -468,7 +468,7 @@ function handleHints(
         return finalResponses
           .concat([
             createTextResponse(
-              pickRandom(atd.feedbackOutOfHintsAlternateExpectation),
+              pickRandom(atd.goodPointButOutOfHintsFeedback),
               ResponseType.Text
             ),
             createTextResponse(e.expectation, ResponseType.Text),
