@@ -71,8 +71,8 @@ export const POSITIVE_FEEDBACK = [
 ];
 
 export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [
-  'Put text here',
-  'and here',
+  'Good point, though I was actually thinking about another piece.',
+  "That's a good point, but I had another part in mind.",
 ];
 
 export function convertLessonDataToATData(lessonData: Lesson): Dialog {
