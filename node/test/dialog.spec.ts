@@ -140,16 +140,79 @@ describe('dialog', async () => {
     ],
   };
 
+  const noPromptsLesson: Lesson = {
+    lessonName: 'Current Flow2',
+    lessonId: 'q3',
+    intro: 'Here is a question about integrity, a key Navy attribute.',
+    question: 'What are the challenges to demonstrating integrity in a group?',
+    expectations: [
+      {
+        expectation:
+          'Peer pressure can cause you to allow inappropriate behavior.',
+        hints: [
+          {
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          },
+        ],
+        prompts: [],
+      },
+      {
+        expectation:
+          "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+        hints: [
+          {
+            text: 'How can it affect someone when you correct their behavior?',
+          },
+        ],
+        prompts: [],
+      },
+      {
+        expectation: 'Enforcing the rules can make you unpopular.',
+        hints: [
+          {
+            text: "How can it affect you when you correct someone's behavior?",
+          },
+        ],
+        prompts: [],
+      },
+    ],
+    conclusion: [
+      'Peer pressure can push you to allow and participate in inappropriate behavior.',
+      "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+      'However, integrity means speaking out even when it is unpopular.',
+    ],
+  };
+
+  const lessonById: Record<string, Lesson> = {
+    q1: navyIntegrityLesson,
+    q2: currentFlowLesson,
+    q3: noPromptsLesson,
+  };
+
+  function findLessonForGqlQuery(query: string): Lesson {
+    let lessonId = query.includes('q1')
+      ? 'q1'
+      : query.includes('q2')
+      ? 'q2'
+      : query.includes('q3')
+      ? 'q3'
+      : 'ok fix this properly with a regex already';
+    return lessonById[lessonId];
+  }
+
   allScenarios.forEach((ex) => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
-          } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
+          const lessonData = findLessonForGqlQuery(reqBody.query);
+          if (lessonData) {
+            return [
+              200,
+              { data: { lesson: findLessonForGqlQuery(reqBody.query) } },
+            ];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -180,6 +243,8 @@ describe('dialog', async () => {
               return [200, { data: { lesson: navyIntegrityLesson } }];
             } else if ((reqBody.query as string).includes('q2')) {
               return [200, { data: { lesson: currentFlowLesson } }];
+            } else if ((reqBody.query as string).includes('q3')) {
+              return [200, { data: { lesson: noPromptsLesson } }];
             } else {
               const errData: LResponseObject = {
                 data: {
