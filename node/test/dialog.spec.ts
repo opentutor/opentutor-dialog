@@ -14,6 +14,7 @@ import {
   SessionData,
   SessionDto,
   ExpectationStatus,
+  UserResponse,
 } from 'dialog/session-data';
 import OpenTutorResponse from 'dialog/response-data';
 import { ResponseType, TextData } from 'dialog/response-data';
@@ -244,22 +245,32 @@ describe('dialog', async () => {
     const validSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [false],
+        currentExpectation: "None",
         expectationData: [
           {
             ideal: '',
             score: 0,
+            dialogScore: 0,
+            numHints: 0,
+            numPrompts: 0,
             satisfied: false,
             status: ExpectationStatus.None,
           },
           {
             ideal: '',
             score: 0,
+            dialogScore: 0,
+            numHints: 0,
+            numPrompts: 0,
             satisfied: false,
             status: ExpectationStatus.None,
           },
           {
             ideal: '',
             score: 0,
+            dialogScore: 0,
+            numHints: 0,
+            numPrompts: 0,
             satisfied: false,
             status: ExpectationStatus.None,
           },
@@ -273,7 +284,7 @@ describe('dialog', async () => {
             'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
           ],
         ],
-        userResponses: new Array<string>(),
+        userResponses: new Array<UserResponse>(),
         userScores: new Array<number>(),
       },
       sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
@@ -286,6 +297,7 @@ describe('dialog', async () => {
     const completedSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [true],
+        currentExpectation: "None",
         hints: false,
         expectationData: [],
       },
@@ -296,7 +308,7 @@ describe('dialog', async () => {
             'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
           ],
         ],
-        userResponses: new Array<string>(),
+        userResponses: new Array<UserResponse>(),
         userScores: new Array<number>(),
       },
       sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
