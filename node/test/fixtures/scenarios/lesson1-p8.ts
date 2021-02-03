@@ -6,6 +6,7 @@ export const scenario: DialogScenario = {
   name:
     'lesson1 part 8: this does hints, prompts and assert for every expectation.',
   lessonId: 'q1',
+  expectedScore: 2/3,
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',

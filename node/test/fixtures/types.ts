@@ -18,4 +18,5 @@ export interface DialogScenario {
   name: string;
   lessonId: string;
   expectedRequestResponses: DialogRequestResponse[];
+  expectedScore?: number;
 }

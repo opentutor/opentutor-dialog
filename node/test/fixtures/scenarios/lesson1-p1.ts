@@ -6,6 +6,7 @@ import { ResponseType } from 'dialog/response-data';
 export const scenario: DialogScenario = {
   name: 'lesson1 part 1',
   lessonId: 'q1',
+  expectedScore: 1.0,
   expectedRequestResponses: [
     {
       userInput:
