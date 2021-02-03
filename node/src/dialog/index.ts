@@ -282,9 +282,10 @@ export function toNextExpectation(
     sdp.dialogState.expectationData[
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
-    sdp.dialogState.currentExpectation =  sdp.dialogState.expectationData[
-      sdp.dialogState.expectationsCompleted.indexOf(false)
-    ].ideal;
+    sdp.dialogState.currentExpectation =
+      sdp.dialogState.expectationData[
+        sdp.dialogState.expectationsCompleted.indexOf(false)
+      ].ideal;
     answer.push(createTextResponse(pickRandom(atd.hintStart)));
     if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
@@ -334,7 +335,8 @@ function handlePrompt(
       expectationResults[index]
     );
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
-    sdp.dialogState.expectationData[index].numPrompts = sdp.dialogState.expectationData[index].numPrompts + 1;
+    sdp.dialogState.expectationData[index].numPrompts =
+      sdp.dialogState.expectationData[index].numPrompts + 1;
 
     return [
       createTextResponse(
@@ -353,7 +355,8 @@ function handlePrompt(
       expectationResults[index]
     );
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
-    sdp.dialogState.expectationData[index].numPrompts = sdp.dialogState.expectationData[index].numPrompts + 1;
+    sdp.dialogState.expectationData[index].numPrompts =
+      sdp.dialogState.expectationData[index].numPrompts + 1;
     return [createTextResponse(p.answer, ResponseType.Text)].concat(
       toNextExpectation(atd, sdp)
     );
@@ -373,7 +376,8 @@ function handleHints(
   let alternateExpectationMet = false;
   let expectedExpectationMet = false;
 
-  sdp.dialogState.expectationData[expectationId].numHints = sdp.dialogState.expectationData[expectationId].numHints + 1;
+  sdp.dialogState.expectationData[expectationId].numHints =
+    sdp.dialogState.expectationData[expectationId].numHints + 1;
 
   //check if any other expectations were met
   expectationResults.forEach((e, id) => {

@@ -92,7 +92,10 @@ export function dataToDto(d: SessionData): SessionDto {
 
 export function addUserDialog(sdp: SessionData, message: string): void {
   sdp.previousUserResponse = message;
-  sdp.sessionHistory.userResponses.push({text:message, activeExpectation:sdp.dialogState.currentExpectation});
+  sdp.sessionHistory.userResponses.push({
+    text: message,
+    activeExpectation: sdp.dialogState.currentExpectation,
+  });
 }
 
 export function addTutorDialog(
@@ -129,7 +132,7 @@ export function newSession(atd: Dialog, sessionId = ''): SessionData {
     dialogState: {
       expectationsCompleted: atd.expectations.map(() => false),
       expectationData: newExpectationData(atd),
-      currentExpectation:"None",
+      currentExpectation: 'None',
       hints: false,
     },
   };

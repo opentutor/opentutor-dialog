@@ -245,7 +245,7 @@ describe('dialog', async () => {
     const validSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [false],
-        currentExpectation: "None",
+        currentExpectation: 'None',
         expectationData: [
           {
             ideal: '',
@@ -297,7 +297,7 @@ describe('dialog', async () => {
     const completedSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [true],
-        currentExpectation: "None",
+        currentExpectation: 'None',
         hints: false,
         expectationData: [],
       },
