@@ -7,7 +7,10 @@ The full terms of this copyright and license should always be found in the root 
 import Dialog, { Prompt, Expectation } from 'dialog/dialog-data';
 import SessionData, {
   addClassifierGrades,
+  ExpectationData,
   ExpectationStatus,
+  NoneLabel,
+  SessionHistory,
 } from './session-data';
 import {
   evaluate,
@@ -20,6 +23,7 @@ import OpenTutorResponse, {
   createTextResponse,
   ResponseType,
 } from './response-data';
+import { expectation } from 'sinon';
 
 const goodThreshold: number =
   Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
@@ -53,6 +57,22 @@ export function pickRandom<T>(a: T[], forceVariant = -1): T {
   } else {
     const randomNum = _random();
     return a[Math.floor(randomNum * a.length)];
+  }
+}
+
+function setActiveExpecation(atd: Dialog, sdp: SessionData) {
+  //find the current active expecation and log it.
+  for (
+    let index = 0;
+    index < sdp.dialogState.expectationData.length;
+    index = index + 1
+  ) {
+    const expectationData = sdp.dialogState.expectationData[index];
+    const expectation = atd.expectations[index];
+
+    if (expectationData.status == ExpectationStatus.Active) {
+      sdp.dialogState.currentExpectation = expectation.expectation;
+    }
   }
 }
 
@@ -222,6 +242,7 @@ export async function processUserResponse(
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Active;
+    setActiveExpecation(atd, sdp);
 
     responses.push(
       createTextResponse(
@@ -277,15 +298,13 @@ export function toNextExpectation(
 ): OpenTutorResponse[] {
   //give positive feedback, and ask next expectation question
   let answer: OpenTutorResponse[] = [];
+
   if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
-    sdp.dialogState.currentExpectation =
-      sdp.dialogState.expectationData[
-        sdp.dialogState.expectationsCompleted.indexOf(false)
-      ].ideal;
+    setActiveExpecation(atd, sdp);
     answer.push(createTextResponse(pickRandom(atd.hintStart)));
     if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
@@ -476,13 +495,72 @@ function handleHints(
   }
 }
 
+function calculateQuality(
+  expectationData: ExpectationData,
+  sessionHistory: SessionHistory,
+  expectationIndex: number,
+  expectationName: string
+) {
+  let qualityOfUtterancesForExpecation: number[] = [];
+
+  const baseQuality = 0.5;
+
+  for (
+    let index = 0;
+    index < sessionHistory.userResponses.length;
+    index = index + 1
+  ) {
+    const userResponse = sessionHistory.userResponses[index];
+    const classiferGrade = sessionHistory.classifierGrades[index];
+
+    if (
+      userResponse.activeExpectation == expectationName ||
+      userResponse.activeExpectation == NoneLabel
+    ) {
+      let classifierScore =
+        classiferGrade.expectationResults[expectationIndex].score;
+      if (
+        classiferGrade.expectationResults[expectationIndex].evaluation ==
+        Evaluation.Bad
+      ) {
+        classifierScore = classifierScore * -1;
+      }
+      const quality = baseQuality + classifierScore / 2;
+      qualityOfUtterancesForExpecation.push(quality);
+    }
+  }
+  const result =
+    qualityOfUtterancesForExpecation.reduce((a, b) => a + b, 0) /
+    qualityOfUtterancesForExpecation.length;
+  return result;
+}
+
 export function calculateScore(sdp: SessionData, atd: Dialog): number {
-  return Math.max(
-    0.0,
-    Math.min(
-      1.0,
-      (atd.expectations.length / sdp.sessionHistory.userResponses.length) * 1.0
-    )
+  let expectationScores: number[] = [];
+  const c = 0.002;
+
+  for (
+    let index = 0;
+    index < sdp.dialogState.expectationData.length;
+    index = index + 1
+  ) {
+    const currentElement = sdp.dialogState.expectationData[index];
+    if (currentElement.satisfied) {
+      expectationScores.push(1 - c * currentElement.numHints);
+    } else {
+      expectationScores.push(
+        calculateQuality(
+          currentElement,
+          sdp.sessionHistory,
+          index,
+          atd.expectations[index].expectation
+        )
+      );
+    }
+  }
+
+  return (
+    expectationScores.reduce((a, b) => a + b, 0) / expectationScores.length
   );
 }
 

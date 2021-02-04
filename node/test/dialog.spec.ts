@@ -257,7 +257,6 @@ describe('dialog', async () => {
           {
             ideal: '',
             score: 0,
-            dialogScore: 0,
             numHints: 0,
             numPrompts: 0,
             satisfied: false,
@@ -266,7 +265,6 @@ describe('dialog', async () => {
           {
             ideal: '',
             score: 0,
-            dialogScore: 0,
             numHints: 0,
             numPrompts: 0,
             satisfied: false,
@@ -275,7 +273,6 @@ describe('dialog', async () => {
           {
             ideal: '',
             score: 0,
-            dialogScore: 0,
             numHints: 0,
             numPrompts: 0,
             satisfied: false,

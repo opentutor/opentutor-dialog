@@ -16,6 +16,8 @@ import OpenTutorResponse, { TextData } from 'dialog/response-data';
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
 
+export const NoneLabel = 'None';
+
 export interface SessionData {
   sessionId: string;
   sessionHistory: SessionHistory;
@@ -49,7 +51,6 @@ export enum ExpectationStatus {
 export interface ExpectationData {
   ideal: string;
   score: number;
-  dialogScore: number;
   numHints: number;
   numPrompts: number;
   satisfied: boolean;
@@ -132,7 +133,7 @@ export function newSession(atd: Dialog, sessionId = ''): SessionData {
     dialogState: {
       expectationsCompleted: atd.expectations.map(() => false),
       expectationData: newExpectationData(atd),
-      currentExpectation: 'None',
+      currentExpectation: NoneLabel,
       hints: false,
     },
   };
