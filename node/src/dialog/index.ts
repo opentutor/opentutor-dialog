@@ -7,7 +7,6 @@ The full terms of this copyright and license should always be found in the root 
 import Dialog, { Prompt, Expectation } from 'dialog/dialog-data';
 import SessionData, {
   addClassifierGrades,
-  ExpectationData,
   ExpectationStatus,
   NoneLabel,
   SessionHistory,
@@ -23,7 +22,6 @@ import OpenTutorResponse, {
   createTextResponse,
   ResponseType,
 } from './response-data';
-import { expectation } from 'sinon';
 
 const goodThreshold: number =
   Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
@@ -496,12 +494,11 @@ function handleHints(
 }
 
 function calculateQuality(
-  expectationData: ExpectationData,
   sessionHistory: SessionHistory,
   expectationIndex: number,
   expectationName: string
 ) {
-  let qualityOfUtterancesForExpecation: number[] = [];
+  const qualityOfUtterancesForExpecation: number[] = [];
 
   const baseQuality = 0.5;
 
@@ -536,7 +533,7 @@ function calculateQuality(
 }
 
 export function calculateScore(sdp: SessionData, atd: Dialog): number {
-  let expectationScores: number[] = [];
+  const expectationScores: number[] = [];
   const c = 0.002;
 
   for (
@@ -550,7 +547,6 @@ export function calculateScore(sdp: SessionData, atd: Dialog): number {
     } else {
       expectationScores.push(
         calculateQuality(
-          currentElement,
           sdp.sessionHistory,
           index,
           atd.expectations[index].expectation
