@@ -4,7 +4,7 @@ import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
   name:
-    'lesson1 part 15: test scoring when the user gets the right answer for an expectation after getting one hint.',
+    'lesson1 part 16: test scoring when the user gets the right answer for an expectation after getting one hint.',
   lessonId: 'q1',
   expectedScore: 2.23 / 3,
   expectedRequestResponses: [
