@@ -8,7 +8,6 @@ import Dialog, { Prompt, Expectation } from 'dialog/dialog-data';
 import SessionData, {
   addClassifierGrades,
   ExpectationStatus,
-  NoneLabel,
   SessionHistory,
 } from './session-data';
 import {

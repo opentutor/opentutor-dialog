@@ -16,8 +16,6 @@ import OpenTutorResponse, { TextData } from 'dialog/response-data';
 const SESSION_SECURITY_KEY =
   process.env.SESSION_SECURITY_KEY || 'qLUMYtBWTVtn3vVGtGZ5';
 
-export const NoneLabel = 'None';
-
 export interface SessionData {
   sessionId: string;
   sessionHistory: SessionHistory;
