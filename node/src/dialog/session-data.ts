@@ -38,7 +38,7 @@ export interface SessionDto {
 export interface DialogState {
   expectationsCompleted: boolean[];
   expectationData: ExpectationData[];
-  currentExpectation: string;
+  currentExpectation: number;
   hints: boolean;
 }
 
@@ -59,7 +59,7 @@ export interface ExpectationData {
 
 export interface UserResponse {
   text: string;
-  activeExpectation: string;
+  activeExpectation: number;
 }
 
 export interface SessionHistory {
@@ -133,7 +133,7 @@ export function newSession(atd: Dialog, sessionId = ''): SessionData {
     dialogState: {
       expectationsCompleted: atd.expectations.map(() => false),
       expectationData: newExpectationData(atd),
-      currentExpectation: NoneLabel,
+      currentExpectation: -1,
       hints: false,
     },
   };

@@ -58,20 +58,11 @@ export function pickRandom<T>(a: T[], forceVariant = -1): T {
   }
 }
 
-function setActiveExpecation(atd: Dialog, sdp: SessionData) {
+function setActiveExpecation(sdp: SessionData) {
   //find the current active expecation and log it.
-  for (
-    let index = 0;
-    index < sdp.dialogState.expectationData.length;
-    index = index + 1
-  ) {
-    const expectationData = sdp.dialogState.expectationData[index];
-    const expectation = atd.expectations[index];
-
-    if (expectationData.status == ExpectationStatus.Active) {
-      sdp.dialogState.currentExpectation = expectation.expectation;
-    }
-  }
+  sdp.dialogState.currentExpectation = sdp.dialogState.expectationData.findIndex(
+    (e) => e.status === ExpectationStatus.Active
+  );
 }
 
 export async function processUserResponse(
@@ -240,7 +231,7 @@ export async function processUserResponse(
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Active;
-    setActiveExpecation(atd, sdp);
+    setActiveExpecation(sdp);
 
     responses.push(
       createTextResponse(
@@ -296,13 +287,12 @@ export function toNextExpectation(
 ): OpenTutorResponse[] {
   //give positive feedback, and ask next expectation question
   let answer: OpenTutorResponse[] = [];
-
   if (sdp.dialogState.expectationsCompleted.indexOf(false) != -1) {
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
-    setActiveExpecation(atd, sdp);
+    setActiveExpecation(sdp);
     answer.push(createTextResponse(pickRandom(atd.hintStart)));
     if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
@@ -352,8 +342,7 @@ function handlePrompt(
       expectationResults[index]
     );
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
-    sdp.dialogState.expectationData[index].numPrompts =
-      sdp.dialogState.expectationData[index].numPrompts + 1;
+    sdp.dialogState.expectationData[index].numPrompts += 1;
 
     return [
       createTextResponse(
@@ -372,8 +361,7 @@ function handlePrompt(
       expectationResults[index]
     );
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
-    sdp.dialogState.expectationData[index].numPrompts =
-      sdp.dialogState.expectationData[index].numPrompts + 1;
+    sdp.dialogState.expectationData[index].numPrompts += 1;
     return [createTextResponse(p.answer, ResponseType.Text)].concat(
       toNextExpectation(atd, sdp)
     );
@@ -393,8 +381,7 @@ function handleHints(
   let alternateExpectationMet = false;
   let expectedExpectationMet = false;
 
-  sdp.dialogState.expectationData[expectationId].numHints =
-    sdp.dialogState.expectationData[expectationId].numHints + 1;
+  sdp.dialogState.expectationData[expectationId].numHints += 1;
 
   //check if any other expectations were met
   expectationResults.forEach((e, id) => {
@@ -518,8 +505,7 @@ function handleHints(
 
 function calculateQuality(
   sessionHistory: SessionHistory,
-  expectationIndex: number,
-  expectationName: string
+  expectationIndex: number
 ) {
   const qualityOfUtterancesForExpecation: number[] = [];
 
@@ -534,8 +520,8 @@ function calculateQuality(
     const classiferGrade = sessionHistory.classifierGrades[index];
 
     if (
-      userResponse.activeExpectation == expectationName ||
-      userResponse.activeExpectation == NoneLabel
+      userResponse.activeExpectation == expectationIndex ||
+      userResponse.activeExpectation == -1
     ) {
       let classifierScore =
         classiferGrade.expectationResults[expectationIndex].score;
@@ -549,10 +535,10 @@ function calculateQuality(
       qualityOfUtterancesForExpecation.push(quality);
     }
   }
-  const result =
+  return (
     qualityOfUtterancesForExpecation.reduce((a, b) => a + b, 0) /
-    qualityOfUtterancesForExpecation.length;
-  return result;
+    qualityOfUtterancesForExpecation.length
+  );
 }
 
 export function calculateScore(sdp: SessionData, atd: Dialog): number {
@@ -568,13 +554,7 @@ export function calculateScore(sdp: SessionData, atd: Dialog): number {
     if (currentElement.satisfied) {
       expectationScores.push(1 - c * currentElement.numHints);
     } else {
-      expectationScores.push(
-        calculateQuality(
-          sdp.sessionHistory,
-          index,
-          atd.expectations[index].expectation
-        )
-      );
+      expectationScores.push(calculateQuality(sdp.sessionHistory, index));
     }
   }
 

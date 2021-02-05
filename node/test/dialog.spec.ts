@@ -26,7 +26,6 @@ import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
 import { randomFunctionSet, randomFunctionRestore } from 'dialog';
-import { Console } from 'console';
 
 const sandbox = sinon.createSandbox();
 
@@ -288,9 +287,8 @@ describe('dialog', async () => {
         }
         expect(response.body).to.have.property('completed');
         if (response.body.completed) {
-          if (ex.expectedScore != undefined) {
-            expect(response.body).to.have.property('score');
-            expect(response.body.score).to.equal(ex.expectedScore);
+          if (typeof ex.expectedScore !== 'undefined') {
+            expect(response.body).to.have.property('score', ex.expectedScore);
           }
         }
         sessionObj = response.body.sessionInfo;
@@ -317,7 +315,7 @@ describe('dialog', async () => {
     const validSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [false],
-        currentExpectation: 'None',
+        currentExpectation: -1,
         expectationData: [
           {
             ideal: '',
@@ -366,7 +364,7 @@ describe('dialog', async () => {
     const completedSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [true],
-        currentExpectation: 'None',
+        currentExpectation: -1,
         hints: false,
         expectationData: [],
       },
