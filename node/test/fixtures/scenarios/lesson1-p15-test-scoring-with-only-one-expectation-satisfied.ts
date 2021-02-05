@@ -4,8 +4,9 @@ import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
   name:
-    'lesson1 part 8: this does hints, prompts and assert for every expectation.',
+    'lesson1 part 15: test scoring when the user gets the right answer for an expectation after getting one hint.',
   lessonId: 'q1',
+  expectedScore: 2.23 / 3,
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',
@@ -215,7 +216,7 @@ export const scenario: DialogScenario = {
             expectationResults: [
               { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 1.0 },
             ],
             speechActs: {
               metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
@@ -227,51 +228,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Not really.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'See if you can get this',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Prompt,
-          data: {
-            text:
-              'Integrity means doing the right thing even when it is _____ ?',
-          },
-        },
-      ],
-    },
-    {
-      userInput: 'idk',
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-              profanity: { evaluation: Evaluation.Good, score: 0.5 },
-            },
-          },
-        },
-      },
-      expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'unpopular',
+            text: 'Great.',
           },
         },
         {

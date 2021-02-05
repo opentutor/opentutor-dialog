@@ -4,8 +4,9 @@ import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
   name:
-    'lesson1 part 8: this does hints, prompts and assert for every expectation.',
+    'lesson1 part 14: test scoring when no answers are correct.',
   lessonId: 'q1',
+  expectedScore: 2 / 3,
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',

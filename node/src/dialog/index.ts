@@ -534,7 +534,7 @@ function calculateQuality(
 
 export function calculateScore(sdp: SessionData, atd: Dialog): number {
   const expectationScores: number[] = [];
-  const c = 0.002;
+  const c = 0.02;
 
   for (
     let index = 0;
