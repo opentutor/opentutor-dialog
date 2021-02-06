@@ -188,8 +188,8 @@ export async function processUserResponse(
   if (
     expectationResults.every(
       (x) =>
-        (x.score < goodThreshold && x.evaluation == Evaluation.Good) ||
-        (x.score < badThreshold && x.evaluation == Evaluation.Bad)
+        (x.score < goodThreshold && x.evaluation === Evaluation.Good) ||
+        (x.score < badThreshold && x.evaluation === Evaluation.Bad)
     )
   ) {
     //answer did not match any expectation, guide user through expectations
@@ -510,30 +510,22 @@ function calculateQuality(
 
   const baseQuality = 0.5;
 
-  for (
-    let index = 0;
-    index < sessionHistory.userResponses.length;
-    index = index + 1
-  ) {
-    const userResponse = sessionHistory.userResponses[index];
-    const classiferGrade = sessionHistory.classifierGrades[index];
-
+  sessionHistory.userResponses.forEach((value, index) => {
     if (
-      userResponse.activeExpectation == expectationIndex ||
-      userResponse.activeExpectation == -1
+      value.activeExpectation === expectationIndex ||
+      value.activeExpectation === -1
     ) {
       let classifierScore =
-        classiferGrade.expectationResults[expectationIndex].score;
+        sessionHistory.classifierGrades[index].expectationResults[expectationIndex].score;
       if (
-        classiferGrade.expectationResults[expectationIndex].evaluation ==
+        sessionHistory.classifierGrades[index].expectationResults[expectationIndex].evaluation ===
         Evaluation.Bad
       ) {
         classifierScore = classifierScore * -1;
       }
-      const quality = baseQuality + classifierScore / 2;
-      qualityOfUtterancesForExpecation.push(quality);
+      qualityOfUtterancesForExpecation.push(baseQuality + classifierScore / 2);
     }
-  }
+  });
   return (
     qualityOfUtterancesForExpecation.reduce((a, b) => a + b, 0) /
     qualityOfUtterancesForExpecation.length
@@ -544,25 +536,19 @@ export function calculateScore(sdp: SessionData, atd: Dialog): number {
   const expectationScores: number[] = [];
   const c = 0.02;
 
-  for (
-    let index = 0;
-    index < sdp.dialogState.expectationData.length;
-    index = index + 1
-  ) {
-    const currentElement = sdp.dialogState.expectationData[index];
-    if (currentElement.satisfied) {
-      expectationScores.push(1 - c * currentElement.numHints);
+  sdp.dialogState.expectationData.forEach((value, index) => {
+    if (value.satisfied) {
+      expectationScores.push(1 - c * value.numHints);
     } else {
       expectationScores.push(calculateQuality(sdp.sessionHistory, index));
     }
-  }
-
+  })
   return (
     expectationScores.reduce((a, b) => a + b, 0) / expectationScores.length
   );
 }
 
 function normalizeScores(er: ExpectationResult) {
-  if (er.evaluation == Evaluation.Bad) return 1 - er.score;
+  if (er.evaluation === Evaluation.Bad) return 1 - er.score;
   else return er.score;
 }
