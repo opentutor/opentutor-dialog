@@ -516,10 +516,13 @@ function calculateQuality(
       value.activeExpectation === -1
     ) {
       let classifierScore =
-        sessionHistory.classifierGrades[index].expectationResults[expectationIndex].score;
+        sessionHistory.classifierGrades[index].expectationResults[
+          expectationIndex
+        ].score;
       if (
-        sessionHistory.classifierGrades[index].expectationResults[expectationIndex].evaluation ===
-        Evaluation.Bad
+        sessionHistory.classifierGrades[index].expectationResults[
+          expectationIndex
+        ].evaluation === Evaluation.Bad
       ) {
         classifierScore = classifierScore * -1;
       }
@@ -542,7 +545,7 @@ export function calculateScore(sdp: SessionData, atd: Dialog): number {
     } else {
       expectationScores.push(calculateQuality(sdp.sessionHistory, index));
     }
-  })
+  });
   return (
     expectationScores.reduce((a, b) => a + b, 0) / expectationScores.length
   );
