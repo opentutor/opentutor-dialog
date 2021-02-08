@@ -63,7 +63,7 @@ export function createGraphQLObject(
   const userResponses: Response[] = sdp.sessionHistory.userResponses.map(
     (r, index) => {
       return {
-        text: r,
+        text: r.text,
         expectationScores: expectationScores[index].expectationScore,
       };
     }
