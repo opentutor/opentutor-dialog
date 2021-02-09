@@ -4,8 +4,9 @@ import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
   name:
-    'lesson1 part 9: this tests that if a user answers another expectation while in a hint for a different expectation, system handles it well.',
+    'lesson1 part 16: test scoring when the user gets the right answer for an expectation after getting one hint.',
   lessonId: 'q1',
+  expectedScore: 2.23 / 3,
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',
@@ -50,13 +51,13 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: 'It may be harder to work with them.',
+      userInput: "I don't know",
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
               { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
@@ -67,13 +68,6 @@ export const scenario: DialogScenario = {
         },
       },
       expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.FeedbackNeutral,
-          data: {
-            text: "Good point! But let's focus on this part.",
-          },
-        },
         {
           author: 'them',
           type: ResponseType.Text,
@@ -126,13 +120,13 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text: "How can it affect you when you correct someone's behavior?",
+            text: 'How can it affect someone when you correct their behavior?',
           },
         },
       ],
     },
     {
-      userInput: 'idk',
+      userInput: "I don't know",
       mockClassifierResponse: {
         data: {
           output: {
@@ -168,7 +162,7 @@ export const scenario: DialogScenario = {
           type: ResponseType.Prompt,
           data: {
             text:
-              'Integrity means doing the right thing even when it is _____ ?',
+              'How can it affect someone emotionally when you correct their behavior?',
           },
         },
       ],
@@ -195,7 +189,48 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text: 'unpopular',
+            text: 'it may be harder to work with them',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'Consider this.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text: "How can it affect you when you correct someone's behavior?",
+          },
+        },
+      ],
+    },
+    {
+      userInput: 'idk',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 1.0 },
+            ],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackPositive,
+          data: {
+            text: 'Great.',
           },
         },
         {

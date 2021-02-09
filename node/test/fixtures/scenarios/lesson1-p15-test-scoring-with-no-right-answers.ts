@@ -3,9 +3,9 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name:
-    'lesson1 part 9: this tests that if a user answers another expectation while in a hint for a different expectation, system handles it well.',
+  name: 'lesson1 part 15: test scoring when no answers are correct.',
   lessonId: 'q1',
+  expectedScore: 2 / 3,
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',
@@ -50,13 +50,13 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: 'It may be harder to work with them.',
+      userInput: "I don't know",
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
               { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
@@ -67,13 +67,6 @@ export const scenario: DialogScenario = {
         },
       },
       expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.FeedbackNeutral,
-          data: {
-            text: "Good point! But let's focus on this part.",
-          },
-        },
         {
           author: 'them',
           type: ResponseType.Text,
@@ -113,6 +106,89 @@ export const scenario: DialogScenario = {
           type: ResponseType.Text,
           data: {
             text: 'peer pressure',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'Consider this.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text: 'How can it affect someone when you correct their behavior?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: "I don't know",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+            ],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegative,
+          data: {
+            text: 'Not really.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'See if you can get this',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Prompt,
+          data: {
+            text:
+              'How can it affect someone emotionally when you correct their behavior?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: 'idk',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+            ],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'it may be harder to work with them',
           },
         },
         {

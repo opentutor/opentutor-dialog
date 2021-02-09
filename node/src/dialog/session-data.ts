@@ -36,6 +36,7 @@ export interface SessionDto {
 export interface DialogState {
   expectationsCompleted: boolean[];
   expectationData: ExpectationData[];
+  currentExpectation: number;
   hints: boolean;
 }
 
@@ -48,12 +49,19 @@ export enum ExpectationStatus {
 export interface ExpectationData {
   ideal: string;
   score: number;
+  numHints: number;
+  numPrompts: number;
   satisfied: boolean;
   status: ExpectationStatus;
 }
 
+export interface UserResponse {
+  text: string;
+  activeExpectation: number;
+}
+
 export interface SessionHistory {
-  userResponses: string[];
+  userResponses: UserResponse[];
   classifierGrades: ClassifierResult[];
   userScores: number[];
   systemResponses: string[][];
@@ -83,7 +91,10 @@ export function dataToDto(d: SessionData): SessionDto {
 
 export function addUserDialog(sdp: SessionData, message: string): void {
   sdp.previousUserResponse = message;
-  sdp.sessionHistory.userResponses.push(message);
+  sdp.sessionHistory.userResponses.push({
+    text: message,
+    activeExpectation: sdp.dialogState.currentExpectation,
+  });
 }
 
 export function addTutorDialog(
@@ -107,7 +118,7 @@ function getHash(sh: string): string {
 
 export function newSession(atd: Dialog, sessionId = ''): SessionData {
   const sh = {
-    userResponses: new Array<string>(),
+    userResponses: new Array<UserResponse>(),
     systemResponses: new Array<string[]>(),
     userScores: new Array<number>(),
     classifierGrades: new Array<ClassifierResult>(),
@@ -120,6 +131,7 @@ export function newSession(atd: Dialog, sessionId = ''): SessionData {
     dialogState: {
       expectationsCompleted: atd.expectations.map(() => false),
       expectationData: newExpectationData(atd),
+      currentExpectation: -1,
       hints: false,
     },
   };
@@ -130,6 +142,9 @@ export function newExpectationData(atd: Dialog): ExpectationData[] {
     return {
       ideal: '',
       score: 0,
+      dialogScore: 0,
+      numPrompts: 0,
+      numHints: 0,
       satisfied: false,
       status: ExpectationStatus.None,
     };

@@ -8,6 +8,7 @@ import Dialog, { Prompt, Expectation } from 'dialog/dialog-data';
 import SessionData, {
   addClassifierGrades,
   ExpectationStatus,
+  SessionHistory,
 } from './session-data';
 import {
   evaluate,
@@ -34,17 +35,33 @@ export function beginDialog(atd: Dialog): OpenTutorResponse[] {
   ];
 }
 
-// We need a random generator that is safe to mock
-// and the only way could figure out to make sinon mocking work (w ts)
-// is to put it in a class
-export class ScopedRandom {
-  static nextRandom(): number {
-    return Math.random();
+interface RandomFunction {
+  (): number;
+}
+let _random = Math.random;
+
+export function randomFunctionSet(f: RandomFunction): void {
+  _random = f;
+}
+
+export function randomFunctionRestore(): void {
+  _random = Math.random;
+}
+
+export function pickRandom<T>(a: T[], forceVariant = -1): T {
+  if (forceVariant >= 0) {
+    return a[forceVariant % a.length];
+  } else {
+    const randomNum = _random();
+    return a[Math.floor(randomNum * a.length)];
   }
 }
 
-export function pickRandom<T>(a: T[]): T {
-  return a[Math.floor(ScopedRandom.nextRandom() * a.length)];
+function setActiveExpecation(sdp: SessionData) {
+  //find the current active expecation and log it.
+  sdp.dialogState.currentExpectation = sdp.dialogState.expectationData.findIndex(
+    (e) => e.status === ExpectationStatus.Active
+  );
 }
 
 export async function processUserResponse(
@@ -107,7 +124,7 @@ export async function processUserResponse(
     speechActs['metacognitive'].evaluation === Evaluation.Good
   ) {
     //50 percent of the time it will use encouragement. Else, it will go on.
-    if (ScopedRandom.nextRandom() < 0.5) {
+    if (_random() < 0.5) {
       responses.push(
         createTextResponse(
           pickRandom(atd.confusionFeedback),
@@ -171,8 +188,8 @@ export async function processUserResponse(
   if (
     expectationResults.every(
       (x) =>
-        (x.score < goodThreshold && x.evaluation == Evaluation.Good) ||
-        (x.score < badThreshold && x.evaluation == Evaluation.Bad)
+        (x.score < goodThreshold && x.evaluation === Evaluation.Good) ||
+        (x.score < badThreshold && x.evaluation === Evaluation.Bad)
     )
   ) {
     //answer did not match any expectation, guide user through expectations
@@ -213,6 +230,7 @@ export async function processUserResponse(
     sdp.dialogState.hints = true;
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Active;
+    setActiveExpecation(sdp);
 
     responses.push(
       createTextResponse(
@@ -273,6 +291,7 @@ export function toNextExpectation(
     sdp.dialogState.expectationData[
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
+    setActiveExpecation(sdp);
     answer.push(createTextResponse(pickRandom(atd.hintStart)));
     if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
@@ -322,6 +341,7 @@ function handlePrompt(
       expectationResults[index]
     );
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
+    sdp.dialogState.expectationData[index].numPrompts += 1;
 
     return [
       createTextResponse(
@@ -340,6 +360,7 @@ function handlePrompt(
       expectationResults[index]
     );
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
+    sdp.dialogState.expectationData[index].numPrompts += 1;
     return [createTextResponse(p.answer, ResponseType.Text)].concat(
       toNextExpectation(atd, sdp)
     );
@@ -356,21 +377,22 @@ function handleHints(
 ) {
   const expectationId: number = atd.expectations.indexOf(e);
   const finalResponses: Array<OpenTutorResponse> = [];
+  let alternateExpectationMet = false;
+  let expectedExpectationMet = false;
+
+  sdp.dialogState.expectationData[expectationId].numHints += 1;
 
   //check if any other expectations were met
   expectationResults.forEach((e, id) => {
-    if (
-      e.evaluation === Evaluation.Good &&
-      e.score > goodThreshold &&
-      id != expectationId
-    ) {
-      //meets ANOTHER expectation
-      //add some neutral response
-      const neutralResponse = 'Good point! But lets focus on this part.';
-      finalResponses.push(
-        createTextResponse(neutralResponse, ResponseType.FeedbackNeutral)
-      );
-      updateCompletedExpectations(expectationResults, sdp, atd);
+    if (e.evaluation === Evaluation.Good && e.score > goodThreshold) {
+      if (id !== expectationId) {
+        //meets ANOTHER expectation
+        //add some neutral response
+        alternateExpectationMet = true;
+        updateCompletedExpectations(expectationResults, sdp, atd);
+      } else {
+        expectedExpectationMet = true;
+      }
     }
   });
   if (
@@ -401,24 +423,43 @@ function handleHints(
 
     if (e.hints.indexOf(h) < e.hints.length - 1) {
       //another hint exists, use that.
-      finalResponses.push(
-        createTextResponse(
-          pickRandom(atd.neutralFeedback),
-          ResponseType.FeedbackNeutral
-        )
-      );
+      if (alternateExpectationMet && !expectedExpectationMet) {
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.goodPointButFeedback),
+            ResponseType.FeedbackNeutral
+          )
+        );
+      } else {
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.neutralFeedback),
+            ResponseType.FeedbackNeutral
+          )
+        );
+      }
+
       finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       finalResponses.push(
         createTextResponse(e.hints[e.hints.indexOf(h) + 1], ResponseType.Hint)
       );
       return finalResponses;
     } else if (e.prompts[0]) {
-      finalResponses.push(
-        createTextResponse(
-          pickRandom(atd.negativeFeedback),
-          ResponseType.FeedbackNegative
-        )
-      );
+      if (alternateExpectationMet && !expectedExpectationMet) {
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.goodPointButFeedback),
+            ResponseType.FeedbackNeutral
+          )
+        );
+      } else {
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.negativeFeedback),
+            ResponseType.FeedbackNegative
+          )
+        );
+      }
       finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
       finalResponses.push(
         createTextResponse(pickRandom(e.prompts).prompt, ResponseType.Prompt)
@@ -436,6 +477,18 @@ function handleHints(
       );
       sdp.dialogState.expectationData[index].status =
         ExpectationStatus.Complete;
+
+      if (alternateExpectationMet && !expectedExpectationMet) {
+        return finalResponses
+          .concat([
+            createTextResponse(
+              pickRandom(atd.goodPointButOutOfHintsFeedback),
+              ResponseType.Text
+            ),
+            createTextResponse(e.expectation, ResponseType.Text),
+          ])
+          .concat(toNextExpectation(atd, sdp));
+      }
       return finalResponses
         .concat([
           createTextResponse(
@@ -449,17 +502,56 @@ function handleHints(
   }
 }
 
+function calculateQuality(
+  sessionHistory: SessionHistory,
+  expectationIndex: number
+) {
+  const qualityOfUtterancesForExpecation: number[] = [];
+
+  const baseQuality = 0.5;
+
+  sessionHistory.userResponses.forEach((value, index) => {
+    if (
+      value.activeExpectation === expectationIndex ||
+      value.activeExpectation === -1
+    ) {
+      let classifierScore =
+        sessionHistory.classifierGrades[index].expectationResults[
+          expectationIndex
+        ].score;
+      if (
+        sessionHistory.classifierGrades[index].expectationResults[
+          expectationIndex
+        ].evaluation === Evaluation.Bad
+      ) {
+        classifierScore = classifierScore * -1;
+      }
+      qualityOfUtterancesForExpecation.push(baseQuality + classifierScore / 2);
+    }
+  });
+  return (
+    qualityOfUtterancesForExpecation.reduce((a, b) => a + b, 0) /
+    qualityOfUtterancesForExpecation.length
+  );
+}
+
 export function calculateScore(sdp: SessionData, atd: Dialog): number {
-  return Math.max(
-    0.0,
-    Math.min(
-      1.0,
-      (atd.expectations.length / sdp.sessionHistory.userResponses.length) * 1.0
-    )
+  const expectationScores: number[] = [];
+  const c = 0.02;
+
+  sdp.dialogState.expectationData.forEach((value, index) => {
+    if (value.satisfied) {
+      expectationScores.push(1 - c * value.numHints);
+    } else {
+      expectationScores.push(calculateQuality(sdp.sessionHistory, index));
+    }
+  });
+  return (
+    expectationScores.reduce((a, b) => a + b, 0) / expectationScores.length
   );
 }
 
 function normalizeScores(er: ExpectationResult) {
-  if (er.evaluation == Evaluation.Bad) return 1 - er.score;
+  if (er.evaluation === Evaluation.Bad) return 1 - er.score;
   else return er.score;
 }

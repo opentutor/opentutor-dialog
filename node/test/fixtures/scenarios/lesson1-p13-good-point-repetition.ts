@@ -1,16 +1,37 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
+import { POSITIVE_FEEDBACK } from 'dialog/dialog-data';
 
-//navy integrity perfect answer
+const expectVariantIndex = 1;
+const variantRandom = expectVariantIndex / POSITIVE_FEEDBACK.length;
+
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 1',
+  name:
+    'lesson1 part 13: if more than one unexpected expectation is fulfilled along with the expected expectation, only the positive feedback should be given.',
   lessonId: 'q1',
-  expectedScore: 1.0,
   expectedRequestResponses: [
     {
-      userInput:
-        "Peer pressure can cause you to allow inappropriate behavior. If you correct someone's behavior, you may get them in trouble or it may be harder to work with them. Enforcing the rules can make you unpopular.",
+      userInput: 'Rules apply differently to the group',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Bad, score: 1.0 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
+            ],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [],
+    },
+    {
+      userInput: 'It may be harder to work with them.',
       mockClassifierResponse: {
         data: {
           output: {
@@ -26,12 +47,14 @@ export const scenario: DialogScenario = {
           },
         },
       },
+      nextRandom: variantRandom,
+      expectExactMatchResponse: true,
       expectedResponse: [
         {
           author: 'them',
           type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Great.',
+            text: POSITIVE_FEEDBACK[expectVariantIndex],
           },
         },
         {
@@ -46,8 +69,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            text: `When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.`,
           },
         },
         {

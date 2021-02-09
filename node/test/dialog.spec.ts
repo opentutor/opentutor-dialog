@@ -14,6 +14,7 @@ import {
   SessionData,
   SessionDto,
   ExpectationStatus,
+  UserResponse,
 } from 'dialog/session-data';
 import OpenTutorResponse from 'dialog/response-data';
 import { ResponseType, TextData } from 'dialog/response-data';
@@ -24,11 +25,14 @@ import { DialogScenario } from 'test/fixtures/types';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
-import { ScopedRandom } from 'dialog';
+import { randomFunctionSet, randomFunctionRestore } from 'dialog';
+
+const sandbox = sinon.createSandbox();
 
 describe('dialog', async () => {
   let app: Express;
   let mockAxios: MockAxios;
+  let mockNextRandom: sinon.SinonStub<number[]>;
   const allScenarios: DialogScenario[] = await findAllScenarios();
 
   beforeEach(async () => {
@@ -36,14 +40,20 @@ describe('dialog', async () => {
       app = await createApp();
       mockAxios = new MockAxios(axios);
     }
-    sinon.stub(ScopedRandom, 'nextRandom').returns(0);
+    mockNextRandom = sandbox.stub().returns(0);
+    randomFunctionSet(mockNextRandom);
   });
 
   afterEach(() => {
     if (mockAxios) {
       mockAxios.reset();
     }
-    sinon.restore();
+    // NO version of sinon sandboxing seems to work without error, so hacked below
+    // if (mockNextRandom) {
+    //   (SCOPED_RANDOM.nextRandom as any).restore();
+    //   mockNextRandom.restore();
+    // }
+    randomFunctionRestore();
   });
 
   const currentFlowLesson: Lesson = {
@@ -131,6 +141,67 @@ describe('dialog', async () => {
     ],
   };
 
+  const noPromptsLesson: Lesson = {
+    name: 'Current Flow2',
+    lessonId: 'q3',
+    intro: 'Here is a question about integrity, a key Navy attribute.',
+    question: 'What are the challenges to demonstrating integrity in a group?',
+    expectations: [
+      {
+        expectation:
+          'Peer pressure can cause you to allow inappropriate behavior.',
+        hints: [
+          {
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          },
+        ],
+        prompts: [],
+      },
+      {
+        expectation:
+          "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+        hints: [
+          {
+            text: 'How can it affect someone when you correct their behavior?',
+          },
+        ],
+        prompts: [],
+      },
+      {
+        expectation: 'Enforcing the rules can make you unpopular.',
+        hints: [
+          {
+            text: "How can it affect you when you correct someone's behavior?",
+          },
+        ],
+        prompts: [],
+      },
+    ],
+    conclusion: [
+      'Peer pressure can push you to allow and participate in inappropriate behavior.',
+      "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+      'However, integrity means speaking out even when it is unpopular.',
+    ],
+  };
+
+  const lessonById: Record<string, Lesson> = {
+    q1: navyIntegrityLesson,
+    q2: currentFlowLesson,
+    q3: noPromptsLesson,
+  };
+
+  function findLessonForGqlQuery(query: string): Lesson {
+    let lessonId = query.includes('q1')
+      ? 'q1'
+      : query.includes('q2')
+      ? 'q2'
+      : query.includes('q3')
+      ? 'q3'
+      : 'ok fix this properly with a regex already';
+    return lessonById[lessonId];
+  }
+
   allScenarios.forEach((ex) => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       if (mockAxios) {
@@ -140,10 +211,12 @@ describe('dialog', async () => {
         });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
-          } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { me: { lesson: currentFlowLesson } } }];
+          const lessonData = findLessonForGqlQuery(reqBody.query);
+          if (lessonData) {
+            return [
+              200,
+              { data: { me:{ lesson: findLessonForGqlQuery(reqBody.query) }} },
+            ];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -174,12 +247,14 @@ describe('dialog', async () => {
             return [200, { API_SECRET: 'api_secret' }];
           });
           mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-            const reqBody = JSON.parse(config.data);
-            if ((reqBody.query as string).includes('q1')) {
-              return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
-            } else if ((reqBody.query as string).includes('q2')) {
-              return [200, { data: { me: { lesson: currentFlowLesson } } }];
-            } else {
+            const reqBody = JSON.parse(config.data); 
+            const lessonData = findLessonForGqlQuery(reqBody.query);
+             if (lessonData) {
+               return [
+                 200,
+                 { data: { me:{ lesson: findLessonForGqlQuery(reqBody.query) }} },
+               ];
+             }else {
               const errData: LResponseObject = {
                 data: {
                   me: {
@@ -203,18 +278,29 @@ describe('dialog', async () => {
               ];
             });
         }
+        mockNextRandom.returns(reqRes.nextRandom || 0);
         const response = await postSession(ex.lessonId, app, {
           message: reqRes.userInput,
           username: 'testuser',
           sessionInfo: sessionObj,
           lessonId: ex.lessonId,
         });
+
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property('response');
-        expect(response.body.response).to.deep.include.members(
-          reqRes.expectedResponse
-        );
+        if (reqRes.expectExactMatchResponse) {
+          expect(response.body.response).to.deep.equal(reqRes.expectedResponse);
+        } else {
+          expect(response.body.response).to.deep.include.members(
+            reqRes.expectedResponse
+          );
+        }
         expect(response.body).to.have.property('completed');
+        if (response.body.completed) {
+          if (typeof ex.expectedScore !== 'undefined') {
+            expect(response.body).to.have.property('score', ex.expectedScore);
+          }
+        }
         sessionObj = response.body.sessionInfo;
       }
     });
@@ -241,22 +327,29 @@ describe('dialog', async () => {
     const validSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [false],
+        currentExpectation: -1,
         expectationData: [
           {
             ideal: '',
             score: 0,
+            numHints: 0,
+            numPrompts: 0,
             satisfied: false,
             status: ExpectationStatus.None,
           },
           {
             ideal: '',
             score: 0,
+            numHints: 0,
+            numPrompts: 0,
             satisfied: false,
             status: ExpectationStatus.None,
           },
           {
             ideal: '',
             score: 0,
+            numHints: 0,
+            numPrompts: 0,
             satisfied: false,
             status: ExpectationStatus.None,
           },
@@ -270,7 +363,7 @@ describe('dialog', async () => {
             'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
           ],
         ],
-        userResponses: new Array<string>(),
+        userResponses: new Array<UserResponse>(),
         userScores: new Array<number>(),
       },
       sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
@@ -283,6 +376,7 @@ describe('dialog', async () => {
     const completedSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [true],
+        currentExpectation: -1,
         hints: false,
         expectationData: [],
       },
@@ -293,7 +387,7 @@ describe('dialog', async () => {
             'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
           ],
         ],
-        userResponses: new Array<string>(),
+        userResponses: new Array<UserResponse>(),
         userScores: new Array<number>(),
       },
       sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',

@@ -17,6 +17,8 @@ export default interface Dialog {
   positiveFeedback: string[];
   negativeFeedback: string[];
   neutralFeedback: string[];
+  goodPointButFeedback: string[];
+  goodPointButOutOfHintsFeedback: string[];
   perfectFeedback: string[];
   pump: string[];
   pumpBlank: string[];
@@ -38,6 +40,41 @@ export interface Expectation {
   prompts: Prompt[];
 }
 
+export const FEEDBACK_GOOD_POINT_BUT = [
+  "Good point! But let's focus on this part.",
+  `That's true. Now consider this...`,
+  `Yes and let's get this other point...`,
+];
+
+export const FEEDBACK_NEGATIVE = [
+  'Not really.',
+  "I don't think so.",
+  'No.',
+  "I'm not so sure about that.",
+  "I don't think that is right.",
+];
+
+export const PROMPT_START = [
+  'See if you can get this',
+  'Try this.',
+  'What about this.',
+  'See if you know the answer to this.',
+];
+
+export const POSITIVE_FEEDBACK = [
+  'Great.',
+  'Good.',
+  'Right.',
+  "Yeah, that's right.",
+  'Excellent.',
+  'Correct.',
+];
+
+export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [
+  'Good point, though I was actually thinking about another piece.',
+  "That's a good point, but I had another part in mind.",
+];
+
 export function convertLessonDataToATData(lessonData: Lesson): Dialog {
   const defaultData: Dialog = {
     lessonId: '',
@@ -52,23 +89,12 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'If you give me some sort of an answer, we can at least start from there and build.',
       "It's okay. Just say your best guess and we'll go from there.",
     ],
-    positiveFeedback: [
-      'Great.',
-      'Good.',
-      'Right.',
-      "Yeah, that's right.",
-      'Excellent.',
-      'Correct.',
-    ],
+    positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
-    negativeFeedback: [
-      'Not really.',
-      "I don't think so.",
-      'No.',
-      "I'm not so sure about that.",
-      "I don't think that is right.",
-    ],
+    negativeFeedback: FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
+    goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
+    goodPointButOutOfHintsFeedback: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
     pump: [
       "Let's work through this together.",
       'And can you add to that?',
@@ -81,14 +107,9 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'Consider this.',
       'Let me help you a little.',
       'Think about this.',
-      'Lets work through this together.',
+      "Let's work through this together.",
     ],
-    promptStart: [
-      'See if you can get this',
-      'Try this.',
-      'What about this.',
-      'See if you know the answer to this.',
-    ],
+    promptStart: PROMPT_START,
     profanityFeedback: [
       "Okay, let's calm down.",
       "Let's calm down and focus on the problem.",
