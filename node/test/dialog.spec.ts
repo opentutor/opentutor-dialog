@@ -215,7 +215,9 @@ describe('dialog', async () => {
           if (lessonData) {
             return [
               200,
-              { data: { me:{ lesson: findLessonForGqlQuery(reqBody.query) }} },
+              {
+                data: { me: { lesson: findLessonForGqlQuery(reqBody.query) } },
+              },
             ];
           } else {
             const errData: LResponseObject = {
@@ -247,14 +249,18 @@ describe('dialog', async () => {
             return [200, { API_SECRET: 'api_secret' }];
           });
           mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-            const reqBody = JSON.parse(config.data); 
+            const reqBody = JSON.parse(config.data);
             const lessonData = findLessonForGqlQuery(reqBody.query);
-             if (lessonData) {
-               return [
-                 200,
-                 { data: { me:{ lesson: findLessonForGqlQuery(reqBody.query) }} },
-               ];
-             }else {
+            if (lessonData) {
+              return [
+                200,
+                {
+                  data: {
+                    me: { lesson: findLessonForGqlQuery(reqBody.query) },
+                  },
+                },
+              ];
+            } else {
               const errData: LResponseObject = {
                 data: {
                   me: {
