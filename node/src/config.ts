@@ -6,9 +6,9 @@ The full terms of this copyright and license should always be found in the root 
 */
 
 export async function getClientID(): Promise<string> {
-    return process.env.GOOGLE_CLIENT_ID;
+  return process.env.GOOGLE_CLIENT_ID;
 }
 
 export async function getApiKey(): Promise<string> {
-    return process.env.API_SECRET;
+  return process.env.API_SECRET;
 }
