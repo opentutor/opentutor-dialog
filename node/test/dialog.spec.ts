@@ -57,7 +57,7 @@ describe('dialog', async () => {
   });
 
   const currentFlowLesson: Lesson = {
-    lessonName: 'Current Flow',
+    name: 'Current Flow',
     lessonId: 'q2',
     intro:
       '_user_, this is a warm up question on the behavior of P-N junction diodes.',
@@ -81,7 +81,7 @@ describe('dialog', async () => {
   };
 
   const navyIntegrityLesson: Lesson = {
-    lessonName: 'Current Flow',
+    name: 'Current Flow',
     lessonId: 'q1',
     intro: 'Here is a question about integrity, a key Navy attribute.',
     question: 'What are the challenges to demonstrating integrity in a group?',
@@ -142,7 +142,7 @@ describe('dialog', async () => {
   };
 
   const noPromptsLesson: Lesson = {
-    lessonName: 'Current Flow2',
+    name: 'Current Flow2',
     lessonId: 'q3',
     intro: 'Here is a question about integrity, a key Navy attribute.',
     question: 'What are the challenges to demonstrating integrity in a group?',
@@ -206,18 +206,25 @@ describe('dialog', async () => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       if (mockAxios) {
         mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           const lessonData = findLessonForGqlQuery(reqBody.query);
           if (lessonData) {
             return [
               200,
-              { data: { lesson: findLessonForGqlQuery(reqBody.query) } },
+              {
+                data: { me: { lesson: findLessonForGqlQuery(reqBody.query) } },
+              },
             ];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -238,18 +245,27 @@ describe('dialog', async () => {
       for (const reqRes of ex.expectedRequestResponses) {
         if (mockAxios) {
           mockAxios.reset();
+          mockAxios.onGet('/config').reply(() => {
+            return [200, { API_SECRET: 'api_secret' }];
+          });
           mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
             const reqBody = JSON.parse(config.data);
-            if ((reqBody.query as string).includes('q1')) {
-              return [200, { data: { lesson: navyIntegrityLesson } }];
-            } else if ((reqBody.query as string).includes('q2')) {
-              return [200, { data: { lesson: currentFlowLesson } }];
-            } else if ((reqBody.query as string).includes('q3')) {
-              return [200, { data: { lesson: noPromptsLesson } }];
+            const lessonData = findLessonForGqlQuery(reqBody.query);
+            if (lessonData) {
+              return [
+                200,
+                {
+                  data: {
+                    me: { lesson: findLessonForGqlQuery(reqBody.query) },
+                  },
+                },
+              ];
             } else {
               const errData: LResponseObject = {
                 data: {
-                  lesson: null,
+                  me: {
+                    lesson: null,
+                  },
                 },
               };
               return [404, errData];
@@ -301,13 +317,15 @@ describe('dialog', async () => {
 
     const lessonData: LessonResponse = {
       data: {
-        lesson: {
-          lessonName: 'navyIntegrity',
-          lessonId: 'navyIntegrity',
-          intro: 'intro',
-          question: 'main',
-          expectations: [],
-          conclusion: ['a'],
+        me: {
+          lesson: {
+            name: 'navyIntegrity',
+            lessonId: 'navyIntegrity',
+            intro: 'intro',
+            question: 'main',
+            expectations: [],
+            conclusion: ['a'],
+          },
         },
       },
     };
@@ -401,7 +419,7 @@ describe('dialog', async () => {
           return [200, {}];
         });
         mockAxios.onPost('/graphql').reply(() => {
-          return [200, { data: { lesson: navyIntegrityLesson } }];
+          return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
         });
       }
       const responseStartSession = await postDialog('q1', app, {
@@ -428,7 +446,7 @@ describe('dialog', async () => {
           return [200, {}];
         });
         mockAxios.onPost('/graphql').reply(() => {
-          return [200, { data: { lesson: navyIntegrityLesson } }];
+          return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
         });
       }
       const responseStartSession = await postDialog('q1', app, {
@@ -454,16 +472,21 @@ describe('dialog', async () => {
         mockAxios.onPost('/classifier').reply((_) => {
           return [200, {}];
         });
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
+            return [200, { data: { me: { lesson: currentFlowLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -484,16 +507,21 @@ describe('dialog', async () => {
         mockAxios.onPost('/classifier').reply((_) => {
           return [404, {}];
         });
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
+            return [200, { data: { me: { lesson: currentFlowLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -519,7 +547,9 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const errData: LResponseObject = {
             data: {
-              lesson: null,
+              me: {
+                lesson: null,
+              },
             },
           };
           return [200, errData];
@@ -559,16 +589,21 @@ describe('dialog', async () => {
             },
           ];
         });
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
+            return [200, { data: { me: { lesson: currentFlowLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -617,16 +652,21 @@ describe('dialog', async () => {
             },
           ];
         });
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
+            return [200, { data: { me: { lesson: currentFlowLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -646,16 +686,21 @@ describe('dialog', async () => {
     it('sends the session information when session is started, along with initial dialog', async () => {
       if (mockAxios) {
         mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
+            return [200, { data: { me: { lesson: currentFlowLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -679,16 +724,21 @@ describe('dialog', async () => {
     it('accepts and uses a session id passed by user', async () => {
       if (mockAxios) {
         mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { lesson: currentFlowLesson } }];
+            return [200, { data: { me: { lesson: currentFlowLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -757,6 +807,9 @@ describe('dialog', async () => {
     it('successfully sends a request to the graphql endpoint for data', async () => {
       if (mockAxios) {
         mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           return [200, lessonData];
         });
@@ -776,14 +829,19 @@ describe('dialog', async () => {
     it('responds with a random positive feedback message from a set of messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -828,14 +886,19 @@ describe('dialog', async () => {
     it('responds with a random negative feedback message from a set of messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -880,14 +943,19 @@ describe('dialog', async () => {
     it('responds with a random neutral feedback message from a set of messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
@@ -931,14 +999,19 @@ describe('dialog', async () => {
     it('responds with random hint start message and prompt start message from a set of messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { lesson: navyIntegrityLesson } }];
+            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
           } else {
             const errData: LResponseObject = {
               data: {
-                lesson: null,
+                me: {
+                  lesson: null,
+                },
               },
             };
             return [404, errData];
