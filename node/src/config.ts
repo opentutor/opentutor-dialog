@@ -5,10 +5,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 
-export async function getClientID(): Promise<string> {
+export function getClientID(): string {
   return process.env.GOOGLE_CLIENT_ID;
 }
 
-export async function getApiKey(): Promise<string> {
+export function getApiKey(): string {
   return process.env.API_SECRET;
 }

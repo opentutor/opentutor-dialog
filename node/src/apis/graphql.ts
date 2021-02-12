@@ -92,7 +92,7 @@ export async function sendGraphQLRequest(
   logger.debug(
     `graphql request to ${GRAPHQL_ENDPOINT}: ${JSON.stringify(request)}`
   );
-  const API_SECRET = await getApiKey();
+  const API_SECRET = getApiKey();
   const session = encodeURI(JSON.stringify(request));
   const headers = {
     'opentutor-api-req': 'true',
