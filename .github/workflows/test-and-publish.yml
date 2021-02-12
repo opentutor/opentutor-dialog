@@ -45,7 +45,7 @@ jobs:
       - name: docker tag
         id: tag
         run: |
-          IMAGE_TAG=${GITHUB_SHA::8}
+          IMAGE_TAG=${GITHUB_SHA}
           echo ::set-output name=image_tag::${IMAGE_TAG}
       - name: docker login
         run: docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -58,4 +58,4 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: docker tag "uscictdocker/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "uscictdocker/opentutor-dialog:latest"
       - name: docker push
-        run: docker push uscictdocker/opentutor-dialog
+        run: docker push --all-tags uscictdocker/opentutor-dialog
