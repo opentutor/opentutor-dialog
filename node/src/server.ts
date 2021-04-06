@@ -14,7 +14,7 @@ import { logger } from 'utils/logging';
 /**
  * Normalize a port into a number, string, or false.
  */
-function normalizePort(val: any) {
+function normalizePort(val: string): string | number | boolean {
   const port = parseInt(val, 10);
   if (isNaN(port)) {
     // named pipe
@@ -32,6 +32,7 @@ async function serverStart() {
   const port = normalizePort(process.env.PORT || '3000');
   app.set('port', port);
   const server = http.createServer(app);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   server.on('error', (error: any) => {
     if (error.syscall !== 'listen') {
       throw error;

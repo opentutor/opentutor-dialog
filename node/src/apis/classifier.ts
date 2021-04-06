@@ -5,7 +5,6 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios from 'axios';
-import { logger } from 'utils/logging';
 
 const CLASSIFIER_ENDPOINT = process.env.CLASSIFIER_ENDPOINT || '/classifier';
 
@@ -51,25 +50,11 @@ export interface ClassifierResponse {
 export async function evaluate(
   request: ClassfierRequest
 ): Promise<ClassifierResponse> {
-  logger.debug(
-    `classifier request to ${CLASSIFIER_ENDPOINT}: ${JSON.stringify(request)}`
-  );
   const response = await axios.post<ClassifierResponse>(
     CLASSIFIER_ENDPOINT,
     request
   );
-  logger.debug(`classifier result: ${JSON.stringify(response.data)}`);
-  const result = response.data;
-  if (
-    !result.output.expectationResults &&
-    (result.output as any).expectation_results
-  ) {
-    logger.warn(
-      `fix the snake case in classifer response!: ${JSON.stringify(result)}`
-    );
-    result.output.expectationResults = (result.output as any).expectation_results;
-  }
-  return result;
+  return response.data;
 }
 
 export default {

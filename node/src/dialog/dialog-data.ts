@@ -25,7 +25,6 @@ export default interface Dialog {
   hintStart: string[];
   promptStart: string[];
   profanityFeedback: string[];
-  media: any;
   originalXml: string;
 }
 
@@ -119,7 +118,6 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       "Hey, easy there. We're both here to help you learn.",
     ],
     pumpBlank: ["I'll give you some more time."],
-    media: {},
     originalXml: '',
   };
 
