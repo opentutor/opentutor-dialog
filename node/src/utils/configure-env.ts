@@ -29,6 +29,7 @@ function findAndDecryptEnvEnc() {
       );
       return;
     }
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('dotenvenc')(envPassword);
   }
 }
