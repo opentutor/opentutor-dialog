@@ -470,7 +470,7 @@ describe('dialog', async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onPost('/classifier').reply((_) => {
-          return [200, {}];
+          return [500, {}];
         });
         mockAxios.onGet('/config').reply(() => {
           return [200, { API_SECRET: 'api_secret' }];

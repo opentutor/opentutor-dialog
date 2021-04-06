@@ -28,7 +28,7 @@ export default async function createApp(): Promise<Express> {
   app.use('/', (await import('routes')).default);
   app.use(
     (
-      err: any,
+      err: any, // eslint-disable-line @typescript-eslint/no-explicit-any
       req: Request,
       res: Response,
       next: NextFunction // eslint-disable-line @typescript-eslint/no-unused-vars
