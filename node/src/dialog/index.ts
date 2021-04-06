@@ -535,7 +535,7 @@ function calculateQuality(
   );
 }
 
-export function calculateScore(sdp: SessionData, atd: Dialog): number {
+export function calculateScore(sdp: SessionData): number {
   const expectationScores: number[] = [];
   const c = 0.02;
 

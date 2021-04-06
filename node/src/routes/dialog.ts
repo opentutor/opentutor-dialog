@@ -122,7 +122,7 @@ router.post(
         completed: msg.find((m) => m.type === ResponseType.Closing)
           ? true
           : false,
-        score: calculateScore(sessionData, atd),
+        score: calculateScore(sessionData),
         expectationActive: currentExpectation,
       });
     } catch (err) {
