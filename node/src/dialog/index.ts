@@ -26,6 +26,9 @@ const goodThreshold: number =
   Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
 const badThreshold: number =
   Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
+const goodMetacognitiveThreshold: number = 
+  Number.parseFloat(process.env.GOOD_METACOGNITIVE_THRESHOLD) || 0.8;
+
 
 //this should begin by sending the question prompt
 export function beginDialog(atd: Dialog): OpenTutorResponse[] {
@@ -120,8 +123,11 @@ export async function processUserResponse(
     );
     return responses;
   } else if (
-    speechActs['metacognitive'].score > goodThreshold &&
-    speechActs['metacognitive'].evaluation === Evaluation.Good
+    speechActs['metacognitive'].score > goodMetacognitiveThreshold &&
+    speechActs['metacognitive'].evaluation === Evaluation.Good &&
+    expectationResults.every(
+      (x) => x.evaluation === Evaluation.Good && x.score <= goodThreshold
+    )
   ) {
     //50 percent of the time it will use encouragement. Else, it will go on.
     if (_random() < 0.5) {
