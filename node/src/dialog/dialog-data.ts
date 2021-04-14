@@ -14,6 +14,7 @@ export default interface Dialog {
   questionText: string;
   recapText: string[];
   confusionFeedback: string[];
+  confusionFeedbackWithHint: string[];
   positiveFeedback: string[];
   negativeFeedback: string[];
   neutralFeedback: string[];
@@ -87,6 +88,10 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
       'Please try to answer at least part of the question.',
       'If you give me some sort of an answer, we can at least start from there and build.',
       "It's okay. Just say your best guess and we'll go from there.",
+    ],
+    confusionFeedbackWithHint: [
+      'this is a placeholder utterance',
+      'this is another placeholder',
     ],
     positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],

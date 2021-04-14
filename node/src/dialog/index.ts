@@ -140,7 +140,7 @@ export async function processUserResponse(
     } else {
       responses.push(
         createTextResponse(
-          pickRandom(atd.confusionFeedback),
+          pickRandom(atd.confusionFeedbackWithHint),
           ResponseType.Encouragement
         )
       );
