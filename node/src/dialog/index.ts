@@ -26,9 +26,8 @@ const goodThreshold: number =
   Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
 const badThreshold: number =
   Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
-const goodMetacognitiveThreshold: number = 
+const goodMetacognitiveThreshold: number =
   Number.parseFloat(process.env.GOOD_METACOGNITIVE_THRESHOLD) || 0.8;
-
 
 //this should begin by sending the question prompt
 export function beginDialog(atd: Dialog): OpenTutorResponse[] {

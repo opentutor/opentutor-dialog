@@ -3,8 +3,7 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name:
-    'lesson1 part 17: test metacognitive response',
+  name: 'lesson1 part 17: test metacognitive response',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -29,11 +28,12 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Encouragement,
           data: {
-            text: 'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+            text:
+              'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
           },
         },
       ],
-    }, 
+    },
   ],
 };
 
