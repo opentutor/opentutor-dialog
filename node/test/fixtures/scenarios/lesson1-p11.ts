@@ -30,7 +30,7 @@ export const scenario: DialogScenario = {
           type: ResponseType.Encouragement,
           data: {
             text:
-              'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
+              'That\'s okay, can you type a bit more about what you are thinking?',
           },
         },
       ],

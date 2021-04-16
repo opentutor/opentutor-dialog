@@ -31,7 +31,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Encouragement,
           data: {
-            text: 'this is another placeholder',
+            text: 'Don\'t worry if you aren\'t sure. We\'ll work on one piece at a time.',
           },
         },
         {
