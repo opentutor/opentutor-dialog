@@ -91,6 +91,7 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     confusionFeedbackWithHint: [
       "That's okay. Let's focus on one part of the problem.",
       "Don't worry if you aren't sure. We'll work on one piece at a time.",
+      "That's an okay place to start. Let's try this part together.",
     ],
     positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],

@@ -32,7 +32,7 @@ export const scenario: DialogScenario = {
           type: ResponseType.Encouragement,
           data: {
             text:
-              "Don't worry if you aren't sure. We'll work on one piece at a time.",
+              "That's an okay place to start. Let's try this part together.",
           },
         },
         {
