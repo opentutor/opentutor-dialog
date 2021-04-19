@@ -111,8 +111,8 @@ export async function processUserResponse(
 
   //check if user used profanity or metacog response
   if (
-    speechActs['profanity'].score > goodThreshold &&
-    speechActs['profanity'].evaluation === Evaluation.Good
+    speechActs?.profanity?.score > goodThreshold &&
+    speechActs?.profanity?.evaluation === Evaluation.Good
   ) {
     responses.push(
       createTextResponse(
@@ -122,8 +122,8 @@ export async function processUserResponse(
     );
     return responses;
   } else if (
-    speechActs['metacognitive'].score > goodMetacognitiveThreshold &&
-    speechActs['metacognitive'].evaluation === Evaluation.Good &&
+    speechActs?.metacognitive?.score > goodMetacognitiveThreshold &&
+    speechActs?.metacognitive?.evaluation === Evaluation.Good &&
     expectationResults.every(
       (x) => x.evaluation === Evaluation.Good && x.score <= goodThreshold
     )
