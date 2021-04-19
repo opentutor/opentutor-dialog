@@ -4,11 +4,13 @@ import { ResponseType } from 'dialog/response-data';
 
 //navy integrity perfect answer
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 11: metacognitive response test',
+  name:
+    'lesson1 part 17: metacognitive response test 2. other half of the random response.',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
       userInput: 'I dont know',
+      nextRandom: 0.99,
       mockClassifierResponse: {
         data: {
           output: {
@@ -30,7 +32,29 @@ export const scenario: DialogScenario = {
           type: ResponseType.Encouragement,
           data: {
             text:
-              "That's okay, can you type a bit more about what you are thinking?",
+              "That's an okay place to start. Let's try this part together.",
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNeutral,
+          data: {
+            text: 'Okay.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: "Let's work through this together.",
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           },
         },
       ],

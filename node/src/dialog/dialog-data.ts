@@ -14,6 +14,7 @@ export default interface Dialog {
   questionText: string;
   recapText: string[];
   confusionFeedback: string[];
+  confusionFeedbackWithHint: string[];
   positiveFeedback: string[];
   negativeFeedback: string[];
   neutralFeedback: string[];
@@ -83,10 +84,14 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     questionText: '',
     recapText: [],
     confusionFeedback: [
-      'Some people get confused at this point. Try typing whatever you are thinking and we will go from there.',
-      'Please try to answer at least part of the question.',
-      'If you give me some sort of an answer, we can at least start from there and build.',
-      "It's okay. Just say your best guess and we'll go from there.",
+      "That's okay, can you type a bit more about what you are thinking?",
+      "That's all right. Give your best guess and we'll go from there.",
+      "Even if you're not sure about everything you need to answer, just type what you know. Can you say a bit more?",
+    ],
+    confusionFeedbackWithHint: [
+      "That's okay. Let's focus on one part of the problem.",
+      "Don't worry if you aren't sure. We'll work on one piece at a time.",
+      "That's an okay place to start. Let's try this part together.",
     ],
     positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
