@@ -144,6 +144,7 @@ export async function processUserResponse(
           ResponseType.Encouragement
         )
       );
+      return responses.concat(toNextExpectation(atd, sdp));
     }
   }
 
