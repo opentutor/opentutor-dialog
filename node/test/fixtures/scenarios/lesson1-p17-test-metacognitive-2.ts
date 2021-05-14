@@ -37,20 +37,6 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
-          data: {
-            text: 'Okay.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: "Let's work through this together.",
-          },
-        },
-        {
-          author: 'them',
           type: ResponseType.Hint,
           data: {
             text:
