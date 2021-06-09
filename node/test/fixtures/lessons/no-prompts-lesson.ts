@@ -1,6 +1,6 @@
 import { Lesson } from 'apis/lessons';
 
-export const noPromptsLesson: Lesson = {
+export const lesson: Lesson = {
     name: 'Current Flow2',
     lessonId: 'q3',
     intro: 'Here is a question about integrity, a key Navy attribute.',
@@ -43,3 +43,5 @@ export const noPromptsLesson: Lesson = {
       'However, integrity means speaking out even when it is unpopular.',
     ],
   };
+
+  export default lesson;

@@ -1,6 +1,6 @@
 import { Lesson } from 'apis/lessons';
 
-export const currentFlowLesson: Lesson = {
+export const lesson: Lesson = {
     name: 'Current Flow',
     lessonId: 'q2',
     intro:
@@ -23,3 +23,5 @@ export const currentFlowLesson: Lesson = {
       "Let's try a different problem.",
     ],
   };
+
+  export default lesson;

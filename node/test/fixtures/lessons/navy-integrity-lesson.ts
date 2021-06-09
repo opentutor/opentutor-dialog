@@ -1,6 +1,6 @@
 import { Lesson } from 'apis/lessons';
 
-export const navyIntegrityLesson: Lesson = {
+export const lesson: Lesson = {
     name: 'Current Flow',
     lessonId: 'q1',
     intro: 'Here is a question about integrity, a key Navy attribute.',
@@ -60,3 +60,5 @@ export const navyIntegrityLesson: Lesson = {
       'However, integrity means speaking out even when it is unpopular.',
     ],
   };
+
+  export default lesson;
