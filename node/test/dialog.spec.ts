@@ -37,11 +37,10 @@ describe('dialog', async () => {
   const allScenarios: DialogScenario[] = await findAllScenarios();
   const allLessons: Lesson[] = await findAllLessons();
 
-  const lessonById: Record<string, Lesson> = {}
+  const lessonById: Record<string, Lesson> = {};
   allLessons.forEach((lesson) => {
     lessonById[lesson.lessonId] = lesson;
   });
-
 
   beforeEach(async () => {
     if (!MOCKING_DISABLED) {

@@ -8,9 +8,7 @@ export async function findAll(): Promise<Lesson[]> {
     .filter((fname) => fname.endsWith('.ts') && fname !== 'index.ts');
   const lessons = [];
   for (const lf of lessonFiles) {
-    lessons.push(
-      (await import(path.join(__dirname, lf))).default as Lesson
-    );
+    lessons.push((await import(path.join(__dirname, lf))).default as Lesson);
   }
   return lessons;
 }
