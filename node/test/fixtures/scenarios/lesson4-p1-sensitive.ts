@@ -29,16 +29,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackNegativeSensitive,
           data: {
-            text: 'Not really.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Consider this.',
+            text: 'Think about this.',
           },
         },
         {
@@ -46,13 +39,109 @@ export const scenario: DialogScenario = {
           type: ResponseType.Hint,
           data: {
             text:
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
           },
         },
       ],
     },
     {
-      userInput: "it doesn't, you wouldn't be affected",
+      userInput:
+        "it doesn't, you wouldn't be affected",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [{ evaluation: Evaluation.Bad, score: 1.0 }],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegativeSensitive,
+          data: {
+            text: 'Think about this.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text:
+            'Are they more likely to just "find another way" or to not attempt suicide later?',
+          },
+        },
+      ],
+    },
+    {
+      userInput:
+        "they will",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [{ evaluation: Evaluation.Bad, score: 1.0 }],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegativeSensitive,
+          data: {
+            text: 'Think about this.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text:
+            'Compared to before they lost their means to commit suicide (e.g., a gun), how does their risk change?',
+          },
+        },
+      ],
+    },
+    {
+      userInput:
+        "their risk doesn't change",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [{ evaluation: Evaluation.Bad, score: 1.0 }],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegativeSensitive,
+          data: {
+            text: 'Think about this.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text:
+            'Compared to before they lost their means to commit suicide (e.g., a gun), how does their risk change?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: "",
       mockClassifierResponse: {
         data: {
           output: {
@@ -82,7 +171,7 @@ export const scenario: DialogScenario = {
           type: ResponseType.Text,
           data: {
             text:
-              'Peer pressure can cause you to allow inappropriate behavior.',
+            'The person is still at risk compared to other people.',
           },
         },
       ],

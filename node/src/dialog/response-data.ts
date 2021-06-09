@@ -28,6 +28,7 @@ export enum ResponseType {
   Prompt = 'prompt',
   FeedbackPositive = 'feedbackPositive',
   FeedbackNegative = 'feedbackNegative',
+  FeedbackNegativeSensitive = 'feedbackNegativeSensitive',
   FeedbackNeutral = 'feedbackNeutral',
   Profanity = 'profanity',
   Encouragement = 'encouragement',

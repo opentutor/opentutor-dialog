@@ -70,6 +70,9 @@ describe('dialog', async () => {
       ? 'q2'
       : query.includes('q3')
       ? 'q3'
+      // look into gql query difference?
+      // : query.includes('q4')
+      // ? 'q4'
       : 'ok fix this properly with a regex already';
     return lessonById[lessonId];
   }
