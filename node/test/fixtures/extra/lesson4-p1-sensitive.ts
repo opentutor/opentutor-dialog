@@ -9,7 +9,7 @@ const variantRandom =
   FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED.length;
 
 export const scenario: DialogScenario = {
-  name: 'lesson4 part 1: sensitive dialog scenario',
+  name: 'uses sensitive version of negative feedback when lesson is sensitive',
   lessonId: 'q4',
   expectedRequestResponses: [
     {
@@ -29,7 +29,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegativeSensitive,
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Think about this.',
           },
@@ -61,7 +61,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegativeSensitive,
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Think about this.',
           },
@@ -93,7 +93,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegativeSensitive,
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Think about this.',
           },
@@ -125,7 +125,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegativeSensitive,
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Think about this.',
           },

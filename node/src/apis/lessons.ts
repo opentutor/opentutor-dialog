@@ -30,7 +30,7 @@ export interface Lesson {
   question: string;
   expectations: LessonExpectation[];
   conclusion: string[] | string;
-  // isSensitive?: boolean;
+  isSensitive?: boolean;
 }
 
 export interface LessonWrapper {

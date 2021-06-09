@@ -33,6 +33,7 @@ export const lesson: Lesson = {
     'This means that removing guns, pills, or other ways to commit suicide are very important.',
     'However, a person with suicidal thoughts is still at-risk and they should receive professional help to decrease their risk and improve their quality of life.',
   ],
+  isSensitive: true
 };
 
 export default lesson;

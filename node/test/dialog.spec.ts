@@ -70,9 +70,8 @@ describe('dialog', async () => {
       ? 'q2'
       : query.includes('q3')
       ? 'q3'
-      // look into gql query difference?
-      // : query.includes('q4')
-      // ? 'q4'
+      : query.includes('q4')
+      ? 'q4'
       : 'ok fix this properly with a regex already';
     return lessonById[lessonId];
   }
@@ -950,6 +949,63 @@ describe('dialog', async () => {
         'What about this.',
         'See if you know the answer to this.',
       ]);
+    });
+
+    it('responds with a random sensitive negative feedback message when lesson is sensitive', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q4')) {
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        message: 'bad answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonId,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNegative)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf([  'Think about this.', "I'm not sure about that.", "That isn't what I had in mind.", 'Not quite, I was thinking about something different.']);
     });
   });
 });
