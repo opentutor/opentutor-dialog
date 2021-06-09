@@ -35,7 +35,15 @@ describe('dialog', async () => {
   let mockAxios: MockAxios;
   let mockNextRandom: sinon.SinonStub<number[]>;
   const allScenarios: DialogScenario[] = await findAllScenarios();
-  const lessonById: Record<string, Lesson> = await findAllLessons();
+  const allLessons: Lesson[] = await findAllLessons();
+  // const lessonById: Record<string, Lesson> = await findAllLessons();
+
+  const lessonById: Record<string, Lesson> = {}
+  allLessons.forEach((lesson) => {
+    lessonById[lesson.lessonId] = lesson;
+    console.log('id: ' + lesson.lessonId);
+  });
+
 
   beforeEach(async () => {
     if (!MOCKING_DISABLED) {
