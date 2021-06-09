@@ -15,13 +15,13 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: "2", evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: "3", evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: "4", evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
-              metacognitive: { evaluation: Evaluation.Good, score: 1.0 },
-              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: { expectationId: "", evaluation: Evaluation.Good, score: 1.0 },
+              profanity: { expectationId: "",evaluation: Evaluation.Good, score: 0.5 },
             },
           },
         },
