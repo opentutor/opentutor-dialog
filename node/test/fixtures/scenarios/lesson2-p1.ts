@@ -12,10 +12,20 @@ export const scenario: DialogScenario = {
       mockClassifierResponse: {
         data: {
           output: {
-            expectationResults: [{ expectationId: "1", evaluation: Evaluation.Good, score: 1.0 }],
+            expectationResults: [
+              { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
+            ],
             speechActs: {
-              metacognitive: { expectationId: "", evaluation: Evaluation.Good, score: 0.5 },
-              profanity: { expectationId: "", evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
             },
           },
         },

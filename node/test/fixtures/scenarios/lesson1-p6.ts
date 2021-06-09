@@ -13,13 +13,21 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { expectationId: "2", evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: "3", evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: "4", evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
+              { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
-              metacognitive: { expectationId: "metacognitive", evaluation: Evaluation.Good, score: 0.5 },
-              profanity: { expectationId: "profanity", evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: {
+                expectationId: 'metacognitive',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: 'profanity',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
             },
           },
         },
@@ -54,13 +62,21 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { expectationId: "2", evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: "3", evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: "4", evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
-              metacognitive: { expectationId: "metacognitive", evaluation: Evaluation.Good, score: 0.5 },
-              profanity: { expectationId: "profanity", evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: {
+                expectationId: 'metacognitive',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: 'profanity',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
             },
           },
         },
@@ -96,13 +112,21 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { expectationId: "2", evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: "3", evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: "4", evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '3', evaluation: Evaluation.Good, score: 1.0 },
+              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
-              metacognitive: { expectationId: "metacognitive", evaluation: Evaluation.Good, score: 0.5 },
-              profanity: { expectationId: "profanity", evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: {
+                expectationId: 'metacognitive',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: 'profanity',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
             },
           },
         },
