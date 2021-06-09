@@ -13,6 +13,7 @@ export interface Hint {
 }
 
 export interface LessonExpectation {
+  expectationId:string;
   expectation: string;
   hints: Hint[];
   prompts?: LessonPrompt[];

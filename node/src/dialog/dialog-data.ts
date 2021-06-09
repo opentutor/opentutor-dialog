@@ -35,6 +35,7 @@ export interface Prompt {
 }
 
 export interface Expectation {
+  expectationId:string;
   expectation: string;
   hints: string[];
   prompts: Prompt[];
@@ -141,6 +142,7 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
 
   defaultData.expectations = lessonData.expectations.map((exp) => {
     return {
+      expectationId: exp.expectationId,
       expectation: exp.expectation,
       hints: exp.hints.map((h) => h.text),
       prompts: exp.prompts

@@ -21,6 +21,7 @@ export interface ClassifierConfig {
 }
 
 export interface Expectation {
+  expectationId: string;
   ideal: string;
 }
 export enum Evaluation {
@@ -29,6 +30,7 @@ export enum Evaluation {
 }
 
 export interface ExpectationResult {
+  expectationId: string;
   evaluation: Evaluation;
   score: number;
 }

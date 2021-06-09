@@ -65,6 +65,7 @@ describe('dialog', async () => {
       'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
     expectations: [
       {
+        expectationId: "1",
         expectation: 'Current flows in the same direction as the arrow.',
         hints: [
           {
@@ -87,6 +88,7 @@ describe('dialog', async () => {
     question: 'What are the challenges to demonstrating integrity in a group?',
     expectations: [
       {
+        expectationId:"2",
         expectation:
           'Peer pressure can cause you to allow inappropriate behavior.',
         hints: [
@@ -103,6 +105,7 @@ describe('dialog', async () => {
         ],
       },
       {
+        expectationId:"3",
         expectation:
           "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
         hints: [
@@ -119,6 +122,7 @@ describe('dialog', async () => {
         ],
       },
       {
+        expectationId: "4",
         expectation: 'Enforcing the rules can make you unpopular.',
         hints: [
           {
@@ -148,6 +152,7 @@ describe('dialog', async () => {
     question: 'What are the challenges to demonstrating integrity in a group?',
     expectations: [
       {
+        expectationId: "5",
         expectation:
           'Peer pressure can cause you to allow inappropriate behavior.',
         hints: [
@@ -159,6 +164,7 @@ describe('dialog', async () => {
         prompts: [],
       },
       {
+        expectationId: "6",
         expectation:
           "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
         hints: [
@@ -169,6 +175,7 @@ describe('dialog', async () => {
         prompts: [],
       },
       {
+        expectationId: "7",
         expectation: 'Enforcing the rules can make you unpopular.',
         hints: [
           {
