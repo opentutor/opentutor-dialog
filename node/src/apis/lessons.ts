@@ -30,6 +30,7 @@ export interface Lesson {
   question: string;
   expectations: LessonExpectation[];
   conclusion: string[] | string;
+  // isSensitive?: boolean;
 }
 
 export interface LessonWrapper {
@@ -76,6 +77,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
                 text
               }
             }
+            isSensitive
           }  
         }
       }

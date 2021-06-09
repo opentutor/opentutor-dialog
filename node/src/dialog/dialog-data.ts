@@ -17,7 +17,6 @@ export default interface Dialog {
   confusionFeedbackWithHint: string[];
   positiveFeedback: string[];
   negativeFeedback: string[];
-  sensitiveNegativeFeedback?: string[];
   neutralFeedback: string[];
   goodPointButFeedback: string[];
   goodPointButOutOfHintsFeedback: string[];
@@ -103,8 +102,8 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     ],
     positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
-    negativeFeedback: FEEDBACK_NEGATIVE,
-    sensitiveNegativeFeedback: SENSITIVE_NEGATIVE_FEEDBACK,
+    // negativeFeedback: (lessonData.isSensitive ? SENSITIVE_NEGATIVE_FEEDBACK : FEEDBACK_NEGATIVE),
+    negativeFeedback:  FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
