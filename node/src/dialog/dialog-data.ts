@@ -35,7 +35,7 @@ export interface Prompt {
 }
 
 export interface Expectation {
-  expectationId:string;
+  expectationId: string;
   expectation: string;
   hints: string[];
   prompts: Prompt[];
