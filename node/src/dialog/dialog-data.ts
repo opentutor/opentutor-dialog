@@ -71,8 +71,8 @@ export const POSITIVE_FEEDBACK = [
 ];
 
 export const SENSITIVE_NEGATIVE_FEEDBACK = [
-  'Think about this.',
   "I'm not sure about that.",
+  'Think about this.',
   "That isn't what I had in mind.",
   'Not quite, I was thinking about something different.',
 ];
@@ -102,8 +102,9 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     ],
     positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
-    // negativeFeedback: (lessonData.isSensitive ? SENSITIVE_NEGATIVE_FEEDBACK : FEEDBACK_NEGATIVE),
-    negativeFeedback:  FEEDBACK_NEGATIVE,
+    negativeFeedback: lessonData.isSensitive
+      ? SENSITIVE_NEGATIVE_FEEDBACK
+      : FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,

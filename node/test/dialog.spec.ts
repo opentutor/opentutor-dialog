@@ -950,6 +950,61 @@ describe('dialog', async () => {
         'See if you know the answer to this.',
       ]);
     });
+  });
+
+  describe('Sensitive Lesson', () => {
+    const lessonId = 'q4';
+
+    const validSessionData: SessionData = {
+      dialogState: {
+        expectationsCompleted: [false],
+        currentExpectation: -1,
+        expectationData: [
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+        ],
+        hints: false,
+      },
+      sessionHistory: {
+        classifierGrades: new Array<ClassifierResult>(),
+        systemResponses: [
+          [
+            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+          ],
+        ],
+        userResponses: new Array<UserResponse>(),
+        userScores: new Array<number>(),
+      },
+      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+      previousUserResponse: '',
+      previousSystemResponse: [
+        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+      ],
+    };
+
+    const validSessionDto = dataToDto(validSessionData);
 
     it('responds with a random sensitive negative feedback message when lesson is sensitive', async () => {
       if (mockAxios) {
@@ -959,8 +1014,10 @@ describe('dialog', async () => {
         });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q4')) {
-            return [200, { data: { me: { lesson: lessonById.q1 } } }];
+          console.log(reqBody);
+          console.log(reqBody.query as string);
+          if ((reqBody.query as string).includes('q1')) {
+            return [200, { data: { me: { lesson: lessonById.q4 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -973,7 +1030,7 @@ describe('dialog', async () => {
           }
         });
         mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
+          console.log(config.data);
           return [
             200,
             {
@@ -1005,7 +1062,12 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNegative)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([  'Think about this.', "I'm not sure about that.", "That isn't what I had in mind.", 'Not quite, I was thinking about something different.']);
+      ).to.be.oneOf([
+        'Think about this.',
+        "I'm not sure about that.",
+        "That isn't what I had in mind.",
+        'Not quite, I was thinking about something different.',
+      ]);
     });
   });
 });
