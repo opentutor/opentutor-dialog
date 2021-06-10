@@ -24,6 +24,7 @@ export interface Response {
 }
 
 interface ExpectationScore {
+  expectationId: string;
   classifierGrade: string;
   graderGrade: string;
 }
@@ -53,6 +54,7 @@ export function createGraphQLObject(
       return {
         expectationScore: r.expectationResults.map((e) => {
           return {
+            expectationId: e.expectationId,
             classifierGrade: e.evaluation.toString(),
             graderGrade: '',
           };
