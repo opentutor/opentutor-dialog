@@ -1016,7 +1016,7 @@ describe('dialog', async () => {
           const reqBody = JSON.parse(config.data);
           console.log(reqBody);
           console.log(reqBody.query as string);
-          if ((reqBody.query as string).includes('q1')) {
+          if ((reqBody.query as string).includes('q4')) {
             return [200, { data: { me: { lesson: lessonById.q4 } } }];
           } else {
             const errData: LResponseObject = {
