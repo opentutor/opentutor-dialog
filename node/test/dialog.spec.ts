@@ -1014,8 +1014,6 @@ describe('dialog', async () => {
         });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
-          console.log(reqBody);
-          console.log(reqBody.query as string);
           if ((reqBody.query as string).includes('q4')) {
             return [200, { data: { me: { lesson: lessonById.q4 } } }];
           } else {
@@ -1030,7 +1028,6 @@ describe('dialog', async () => {
           }
         });
         mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          console.log(config.data);
           return [
             200,
             {
@@ -1068,6 +1065,62 @@ describe('dialog', async () => {
         "That isn't what I had in mind.",
         'Not quite, I was thinking about something different.',
       ]);
+    });
+
+    it('responds with a random neutral feedback message when the confidence is below 90% and the lesson is sensitive', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q4')) {
+            return [200, { data: { me: { lesson: lessonById.q4 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 0.7 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        message: 'bad answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonId,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNegative)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
     });
   });
 });
