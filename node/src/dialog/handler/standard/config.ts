@@ -79,7 +79,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
     negativeFeedback:
-      lessonData.lessonType?.toLowerCase() == 'sensitive'
+      lessonData.lessonType === 'sensitive'
         ? SENSITIVE_NEGATIVE_FEEDBACK
         : FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
@@ -112,7 +112,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     originalXml: '',
     goodThreshold: goodThreshold,
     badThreshold:
-      lessonData.lessonType?.toLowerCase() == 'sensitive'
+      lessonData.lessonType === 'sensitive'
         ? sensitiveBadThreshold
         : badThreshold,
     goodMetacognitiveThreshold: goodMetacognitiveThreshold,
