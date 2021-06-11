@@ -42,7 +42,7 @@ export async function processUserResponse(
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
   try {
-    const expectations: CExpectation[] = atd.expectations.map((exp) => {
+    atd.expectations.map((exp) => {
       return {
         ideal: exp.expectation,
       } as CExpectation;

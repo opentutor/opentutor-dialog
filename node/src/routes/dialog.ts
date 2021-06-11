@@ -63,7 +63,6 @@ router.post(
         response: messages,
       });
     } catch (err) {
-      console.error(err);
       logger.error(err);
       return next(err);
     }
