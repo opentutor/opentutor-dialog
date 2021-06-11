@@ -102,9 +102,10 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     ],
     positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
-    negativeFeedback: lessonData.isSensitive
-      ? SENSITIVE_NEGATIVE_FEEDBACK
-      : FEEDBACK_NEGATIVE,
+    negativeFeedback:
+      lessonData.lessonType?.toLowerCase() == 'sensitive'
+        ? SENSITIVE_NEGATIVE_FEEDBACK
+        : FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
