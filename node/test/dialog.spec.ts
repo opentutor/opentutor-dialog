@@ -1118,7 +1118,7 @@ describe('dialog', async () => {
       expect(response.body).to.have.property('response');
       expect(
         (response.body.response as OpenTutorResponse[])
-          .filter((m) => m.type == ResponseType.FeedbackNegative)
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
           .map((m) => (m.data as TextData).text)[0]
       ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
     });

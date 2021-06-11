@@ -37,6 +37,9 @@ export interface DialogConfig {
   promptStart: string[];
   profanityFeedback: string[];
   originalXml: string;
+  goodThreshold: number;
+  badThreshold: number;
+  goodMetacognitiveThreshold: number;
 }
 
 export default DialogConfig;

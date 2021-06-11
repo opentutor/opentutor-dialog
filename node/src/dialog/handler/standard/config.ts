@@ -7,6 +7,15 @@ The full terms of this copyright and license should always be found in the root 
 import { Lesson } from 'apis/lessons';
 import { DialogConfig } from './types';
 
+const goodThreshold: number =
+  Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
+const badThreshold: number =
+  Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
+const sensitiveBadThreshold: number =
+  Number.parseFloat(process.env.SENSITIVE_BAD_THRESHOLD) || 0.9;
+const goodMetacognitiveThreshold: number =
+  Number.parseFloat(process.env.GOOD_METACOGNITIVE_THRESHOLD) || 0.8;
+
 export const FEEDBACK_GOOD_POINT_BUT = [
   "Good point! But let's focus on this part.",
   `That's true. Now consider this...`,
@@ -101,6 +110,12 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     ],
     pumpBlank: ["I'll give you some more time."],
     originalXml: '',
+    goodThreshold: goodThreshold,
+    badThreshold:
+      lessonData.lessonType?.toLowerCase() == 'sensitive'
+        ? sensitiveBadThreshold
+        : badThreshold,
+    goodMetacognitiveThreshold: goodMetacognitiveThreshold,
   };
 
   try {

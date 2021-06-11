@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import Dialog, { Prompt, Expectation } from './types'
+import Dialog, { Prompt, Expectation } from './types';
 import SessionData, {
   addClassifierGrades,
   ExpectationStatus,
@@ -27,13 +27,6 @@ import { DialogHandler } from '../types';
 import { Lesson } from 'apis/lessons';
 import DialogConfig from './types';
 import { toConfig } from './config';
-
-const goodThreshold: number =
-  Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
-const badThreshold: number =
-  Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
-const goodMetacognitiveThreshold: number =
-  Number.parseFloat(process.env.GOOD_METACOGNITIVE_THRESHOLD) || 0.8;
 
 function setActiveExpecation(sdp: SessionData) {
   //find the current active expecation and log it.
@@ -87,7 +80,7 @@ export async function processUserResponse(
 
   //check if user used profanity or metacog response
   if (
-    speechActs?.profanity?.score > goodThreshold &&
+    speechActs?.profanity?.score > atd.goodThreshold &&
     speechActs?.profanity?.evaluation === Evaluation.Good
   ) {
     responses.push(
@@ -98,10 +91,10 @@ export async function processUserResponse(
     );
     return responses;
   } else if (
-    speechActs?.metacognitive?.score > goodMetacognitiveThreshold &&
+    speechActs?.metacognitive?.score > atd.goodMetacognitiveThreshold &&
     speechActs?.metacognitive?.evaluation === Evaluation.Good &&
     expectationResults.every(
-      (x) => x.evaluation === Evaluation.Good && x.score <= goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score <= atd.goodThreshold
     )
   ) {
     //50 percent of the time it will use encouragement. Else, it will go on.
@@ -152,7 +145,7 @@ export async function processUserResponse(
 
   if (
     expectationResults.every(
-      (x) => x.evaluation === Evaluation.Good && x.score > goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
     )
   ) {
     //perfect answer
@@ -170,8 +163,8 @@ export async function processUserResponse(
   if (
     expectationResults.every(
       (x) =>
-        (x.score < goodThreshold && x.evaluation === Evaluation.Good) ||
-        (x.score < badThreshold && x.evaluation === Evaluation.Bad)
+        (x.score < atd.goodThreshold && x.evaluation === Evaluation.Good) ||
+        (x.score < atd.badThreshold && x.evaluation === Evaluation.Bad)
     )
   ) {
     //answer did not match any expectation, guide user through expectations
@@ -185,7 +178,7 @@ export async function processUserResponse(
   }
   if (
     expectationResults.find(
-      (x) => x.evaluation === Evaluation.Good && x.score > goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
     )
   ) {
     //matched atleast one specific expectation
@@ -200,13 +193,13 @@ export async function processUserResponse(
   }
   if (
     expectationResults.find(
-      (x) => x.evaluation === Evaluation.Bad && x.score > badThreshold
+      (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
     )
   ) {
     //bad answer. use hint
     const expectationId = expectationResults.indexOf(
       expectationResults.find(
-        (x) => x.evaluation === Evaluation.Bad && x.score > badThreshold
+        (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
       )
     );
     sdp.dialogState.hints = true;
@@ -245,7 +238,7 @@ function updateCompletedExpectations(
   for (i = 0; i < expectationResults.length; i++) {
     if (
       expectationResults[i].evaluation === Evaluation.Good &&
-      expectationResults[i].score > goodThreshold
+      expectationResults[i].score > atd.goodThreshold
     ) {
       expectationIds.push(i);
     }
@@ -311,7 +304,7 @@ function handlePrompt(
     expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
       .evaluation === Evaluation.Good &&
     expectationResults[sdp.dialogState.expectationsCompleted.indexOf(false)]
-      .score > goodThreshold
+      .score > atd.goodThreshold
   ) {
     //prompt completed successfully
     const index = sdp.dialogState.expectationsCompleted.indexOf(false);
@@ -366,7 +359,7 @@ function handleHints(
 
   //check if any other expectations were met
   expectationResults.forEach((e, id) => {
-    if (e.evaluation === Evaluation.Good && e.score > goodThreshold) {
+    if (e.evaluation === Evaluation.Good && e.score > atd.goodThreshold) {
       if (id !== expectationId) {
         //meets ANOTHER expectation
         //add some neutral response
@@ -379,7 +372,7 @@ function handleHints(
   });
   if (
     expectationResults[expectationId].evaluation === Evaluation.Good &&
-    expectationResults[expectationId].score > goodThreshold
+    expectationResults[expectationId].score > atd.goodThreshold
   ) {
     //hint answered successfully
     updateCompletedExpectations(expectationResults, sdp, atd);
