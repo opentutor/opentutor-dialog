@@ -5,40 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { Lesson } from 'apis/lessons';
-
-export default interface Dialog {
-  rootExpectationId: number;
-  lessonId: string;
-  expectations: Expectation[];
-  questionIntro: string;
-  questionText: string;
-  recapText: string[];
-  confusionFeedback: string[];
-  confusionFeedbackWithHint: string[];
-  positiveFeedback: string[];
-  negativeFeedback: string[];
-  neutralFeedback: string[];
-  goodPointButFeedback: string[];
-  goodPointButOutOfHintsFeedback: string[];
-  perfectFeedback: string[];
-  pump: string[];
-  pumpBlank: string[];
-  hintStart: string[];
-  promptStart: string[];
-  profanityFeedback: string[];
-  originalXml: string;
-}
-
-export interface Prompt {
-  prompt: string;
-  answer: string;
-}
-
-export interface Expectation {
-  expectation: string;
-  hints: string[];
-  prompts: Prompt[];
-}
+import { DialogConfig } from './types';
 
 export const FEEDBACK_GOOD_POINT_BUT = [
   "Good point! But let's focus on this part.",
@@ -82,8 +49,8 @@ export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [
   "That's a good point, but I had another part in mind.",
 ];
 
-export function convertLessonDataToATData(lessonData: Lesson): Dialog {
-  const defaultData: Dialog = {
+export function toConfig(lessonData: Lesson): DialogConfig {
+  const defaultData: DialogConfig = {
     lessonId: '',
     rootExpectationId: 0,
     expectations: [],

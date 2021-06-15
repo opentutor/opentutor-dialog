@@ -26,7 +26,7 @@ import { DialogScenario } from 'test/fixtures/types';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
-import { randomFunctionSet, randomFunctionRestore } from 'dialog';
+import { randomFunctionSet, randomFunctionRestore } from 'dialog/random';
 
 const sandbox = sinon.createSandbox();
 
@@ -1014,8 +1014,6 @@ describe('dialog', async () => {
         });
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
-          console.log(reqBody);
-          console.log(reqBody.query as string);
           if ((reqBody.query as string).includes('q4')) {
             return [200, { data: { me: { lesson: lessonById.q4 } } }];
           } else {
@@ -1030,7 +1028,6 @@ describe('dialog', async () => {
           }
         });
         mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          console.log(config.data);
           return [
             200,
             {

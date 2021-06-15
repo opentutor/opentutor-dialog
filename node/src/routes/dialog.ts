@@ -6,8 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import express, { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
-import { beginDialog, calculateScore, processUserResponse } from 'dialog';
-import OpenTutorData, { convertLessonDataToATData } from 'dialog/dialog-data';
+import { calculateScore } from 'dialog';
 import 'dialog/response-data';
 import {
   addTutorDialog,
@@ -20,11 +19,12 @@ import {
   ExpectationStatus,
   SessionDto,
 } from 'dialog/session-data';
-import { sendGraphQLRequest } from 'apis/graphql';
+import { updateSession } from 'apis/graphql';
 import Joi from '@hapi/joi';
 import logger from 'utils/logging';
 import { getLessonData } from 'apis/lessons';
 import { ResponseType } from 'dialog/response-data';
+import { handlerFor } from 'dialog/handler';
 
 const router = express.Router({ mergeParams: true });
 
@@ -49,17 +49,18 @@ router.post(
       if (Boolean(error)) {
         return next(createError(400, error));
       }
-      const atd: OpenTutorData = convertLessonDataToATData(
-        await getLessonData(lessonId)
-      );
+      const lesson = await getLessonData(lessonId);
+      const handler = await handlerFor(lesson);
+      const sdp = newSession(lesson, body.sessionId);
+      const messages = await handler.beginDialog();
+      // const atd: OpenTutorData = convertLessonDataToATData();
       //new sessionDataPacket
-      const sdp = newSession(atd, body.sessionId);
-      addTutorDialog(sdp, beginDialog(atd));
+      addTutorDialog(sdp, messages);
       res.send({
         status: 200,
         lessonId: lessonId,
         sessionInfo: dataToDto(sdp),
-        response: beginDialog(atd),
+        response: messages,
       });
     } catch (err) {
       logger.error(err);
@@ -100,14 +101,13 @@ router.post(
       ) {
         return res.status(410).send();
       }
-      const atd: OpenTutorData = convertLessonDataToATData(
-        await getLessonData(lessonId)
-      );
-      if (!atd) return res.status(404).send();
+      const lesson = await getLessonData(lessonId);
+      if (!lesson) return res.status(404).send();
+      const handler = await handlerFor(lesson);
       addUserDialog(sessionData, message);
-      const msg = await processUserResponse(lessonId, atd, sessionData);
+      const msg = await handler.process(sessionData);
       addTutorDialog(sessionData, msg);
-      const graphQLResponse = sendGraphQLRequest(atd, sessionData, username)
+      const graphQLResponse = updateSession(lesson, sessionData, username)
         ? true
         : false;
       const currentExpectation = sessionData.dialogState.expectationData.findIndex(

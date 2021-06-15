@@ -13,7 +13,7 @@
     "test:all": "npm run test:format && npm run test:lint && npm run test:audit && npm run test:types && npm test",
     "test:audit": "npm audit --audit-level=moderate --production",
     "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx}'",
-    "test:lint": "eslint src --ext ts --ext js",
+    "test:lint": "eslint src --ext ts --ext js --max-warnings=0",
     "test:types": "tsc --noEmit",
     "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
     "test:license": "license-check-and-add check -f license-config.json"
