@@ -9,7 +9,7 @@ import SessionData, {
   addClassifierGrades,
   ExpectationStatus,
   SessionHistory,
-} from './session-data';
+} from 'dialog/session-data';
 import {
   evaluate,
   ClassifierResponse,
@@ -20,7 +20,12 @@ import {
 import OpenTutorResponse, {
   createTextResponse,
   ResponseType,
-} from './response-data';
+} from 'dialog/response-data';
+
+import { DialogHandler } from '../types';
+import { Lesson } from 'apis/lessons';
+import DialogConfig from './types';
+import { toConfig } from './config';
 
 const goodThreshold: number =
   Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
@@ -30,12 +35,12 @@ const goodMetacognitiveThreshold: number =
   Number.parseFloat(process.env.GOOD_METACOGNITIVE_THRESHOLD) || 0.8;
 
 //this should begin by sending the question prompt
-export function beginDialog(atd: Dialog): OpenTutorResponse[] {
-  return [
-    createTextResponse(atd.questionIntro, ResponseType.Opening),
-    createTextResponse(atd.questionText, ResponseType.MainQuestion),
-  ];
-}
+// export function beginDialog(atd: Dialog): OpenTutorResponse[] {
+//   return [
+//     createTextResponse(atd.questionIntro, ResponseType.Opening),
+//     createTextResponse(atd.questionText, ResponseType.MainQuestion),
+//   ];
+// }
 
 interface RandomFunction {
   (): number;
@@ -560,4 +565,31 @@ export function calculateScore(sdp: SessionData): number {
 function normalizeScores(er: ExpectationResult) {
   if (er.evaluation === Evaluation.Bad) return 1 - er.score;
   else return er.score;
+}
+
+export class StandardDialogHandler implements DialogHandler {
+  config: DialogConfig;
+  lesson: Lesson;
+
+  constructor(lesson: Lesson) {
+    this.lesson = lesson;
+    this.config = toConfig(lesson);
+  }
+
+  async beginDialog(): Promise<OpenTutorResponse[]> {
+    if (this.config) {
+      throw new Error('config not loaded');
+    }
+    return [
+      createTextResponse(this.config.questionIntro, ResponseType.Opening),
+      createTextResponse(this.config.questionText, ResponseType.MainQuestion),
+    ];
+  }
+
+  async process(sdp: SessionData): Promise<OpenTutorResponse[]> {
+    if (this.config) {
+      throw new Error('not loaded');
+    }
+    return processUserResponse(this.lesson.lessonId, this.config, sdp);
+  }
 }

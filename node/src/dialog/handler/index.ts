@@ -1,31 +1,7 @@
-import Dialog, { Prompt, Expectation } from 'dialog/dialog-data';
-import SessionData, {
-  addClassifierGrades,
-  ExpectationStatus,
-  SessionHistory,
-} from 'dialog/session-data';
-import {
-  ClassifierResponse,
-} from 'apis/classifier';
-import OpenTutorResponse, {
-} from 'dialog/response-data';
+import { DialogHandler } from './types';
+import { StandardDialogHandler } from './standard';
+import { Lesson } from 'apis/lessons';
 
-interface DialogHandler {
-  process(
-    lessonId: string,
-    atd: Dialog,
-    sdp: SessionData,
-    classifierResult: ClassifierResponse
-  ): OpenTutorResponse[];
-}
-
-class DefaultDialogHandler implements DialogHandler {
-  process(
-    lessonId: string,
-    atd: Dialog,
-    sdp: SessionData,
-    classifierResult: ClassifierResponse
-  ): OpenTutorResponse[] {
-    return [];
-  }
+export async function handlerFor(lesson: Lesson): Promise<DialogHandler> {
+  return new StandardDialogHandler(lesson);
 }
