@@ -61,9 +61,10 @@ export function pickRandom<T>(a: T[], forceVariant = -1): T {
 
 function setActiveExpecation(sdp: SessionData) {
   //find the current active expecation and log it.
-  sdp.dialogState.currentExpectation = sdp.dialogState.expectationData.findIndex(
-    (e) => e.status === ExpectationStatus.Active
-  );
+  sdp.dialogState.currentExpectation =
+    sdp.dialogState.expectationData.findIndex(
+      (e) => e.status === ExpectationStatus.Active
+    );
 }
 
 export async function processUserResponse(
