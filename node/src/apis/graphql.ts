@@ -48,8 +48,8 @@ export function createGraphQLObject(
   sdp: SessionData,
   username: string
 ): GraphQLRequest {
-  const expectationScores: ExpectationScores[] = sdp.sessionHistory.classifierGrades.map(
-    (r) => {
+  const expectationScores: ExpectationScores[] =
+    sdp.sessionHistory.classifierGrades.map((r) => {
       return {
         expectationScore: r.expectationResults.map((e) => {
           return {
@@ -58,8 +58,7 @@ export function createGraphQLObject(
           };
         }),
       };
-    }
-  );
+    });
 
   const userResponses: Response[] = sdp.sessionHistory.userResponses.map(
     (r, index) => {
