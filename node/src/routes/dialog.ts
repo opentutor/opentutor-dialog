@@ -25,6 +25,7 @@ import Joi from '@hapi/joi';
 import logger from 'utils/logging';
 import { getLessonData } from 'apis/lessons';
 import { ResponseType } from 'dialog/response-data';
+import { handlerFor } from 'dialog/handler';
 
 const router = express.Router({ mergeParams: true });
 
@@ -49,19 +50,21 @@ router.post(
       if (Boolean(error)) {
         return next(createError(400, error));
       }
-      const atd: OpenTutorData = convertLessonDataToATData(
-        await getLessonData(lessonId)
-      );
+      const lesson = await getLessonData(lessonId);
+      const handler = await handlerFor(lesson);
+      const sdp = newSession(lesson, body.sessionId);
+      const messages = await handler.beginDialog();
+      // const atd: OpenTutorData = convertLessonDataToATData();
       //new sessionDataPacket
-      const sdp = newSession(atd, body.sessionId);
-      addTutorDialog(sdp, beginDialog(atd));
+      addTutorDialog(sdp, messages);
       res.send({
         status: 200,
         lessonId: lessonId,
         sessionInfo: dataToDto(sdp),
-        response: beginDialog(atd),
+        response: messages,
       });
     } catch (err) {
+      console.error(err);
       logger.error(err);
       return next(err);
     }

@@ -577,7 +577,7 @@ export class StandardDialogHandler implements DialogHandler {
   }
 
   async beginDialog(): Promise<OpenTutorResponse[]> {
-    if (this.config) {
+    if (!this.config) {
       throw new Error('config not loaded');
     }
     return [
@@ -587,7 +587,7 @@ export class StandardDialogHandler implements DialogHandler {
   }
 
   async process(sdp: SessionData): Promise<OpenTutorResponse[]> {
-    if (this.config) {
+    if (!this.config) {
       throw new Error('not loaded');
     }
     return processUserResponse(this.lesson.lessonId, this.config, sdp);
