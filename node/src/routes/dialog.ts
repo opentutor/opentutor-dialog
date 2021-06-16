@@ -20,7 +20,7 @@ import {
   ExpectationStatus,
   SessionDto,
 } from 'dialog/session-data';
-import { sendGraphQLRequest } from 'apis/graphql';
+import { updateSession } from 'apis/graphql';
 import Joi from '@hapi/joi';
 import logger from 'utils/logging';
 import { getLessonData } from 'apis/lessons';
@@ -103,14 +103,16 @@ router.post(
       ) {
         return res.status(410).send();
       }
-      const atd: OpenTutorData = convertLessonDataToATData(
-        await getLessonData(lessonId)
-      );
-      if (!atd) return res.status(404).send();
+      const lesson = await getLessonData(lessonId);
+      if (!lesson) return res.status(404).send();
+      const handler = await handlerFor(lesson);
+      // const atd: OpenTutorData = convertLessonDataToATData();
+      // if (!atd) return res.status(404).send();
       addUserDialog(sessionData, message);
-      const msg = await processUserResponse(lessonId, atd, sessionData);
+      const msg = await handler.process(sessionData);
+      // const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);
-      const graphQLResponse = sendGraphQLRequest(atd, sessionData, username)
+      const graphQLResponse = updateSession(lesson, sessionData, username)
         ? true
         : false;
       const currentExpectation = sessionData.dialogState.expectationData.findIndex(

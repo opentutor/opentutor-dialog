@@ -26,7 +26,7 @@ import { DialogScenario } from 'test/fixtures/types';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
-import { randomFunctionSet, randomFunctionRestore } from 'dialog';
+import { randomFunctionSet, randomFunctionRestore } from 'dialog/random';
 
 const sandbox = sinon.createSandbox();
 

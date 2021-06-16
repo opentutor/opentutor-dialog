@@ -22,6 +22,8 @@ import OpenTutorResponse, {
   ResponseType,
 } from './response-data';
 
+import { nextRandom, pickRandom } from './random';
+
 const goodThreshold: number =
   Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
 const badThreshold: number =
@@ -35,28 +37,6 @@ export function beginDialog(atd: Dialog): OpenTutorResponse[] {
     createTextResponse(atd.questionIntro, ResponseType.Opening),
     createTextResponse(atd.questionText, ResponseType.MainQuestion),
   ];
-}
-
-interface RandomFunction {
-  (): number;
-}
-let _random = Math.random;
-
-export function randomFunctionSet(f: RandomFunction): void {
-  _random = f;
-}
-
-export function randomFunctionRestore(): void {
-  _random = Math.random;
-}
-
-export function pickRandom<T>(a: T[], forceVariant = -1): T {
-  if (forceVariant >= 0) {
-    return a[forceVariant % a.length];
-  } else {
-    const randomNum = _random();
-    return a[Math.floor(randomNum * a.length)];
-  }
 }
 
 function setActiveExpecation(sdp: SessionData) {
@@ -129,7 +109,7 @@ export async function processUserResponse(
     )
   ) {
     //50 percent of the time it will use encouragement. Else, it will go on.
-    if (_random() < 0.5) {
+    if (nextRandom() < 0.5) {
       responses.push(
         createTextResponse(
           pickRandom(atd.confusionFeedback),

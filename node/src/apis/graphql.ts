@@ -9,6 +9,7 @@ import { logger } from 'utils/logging';
 import OpenTutorData from 'dialog/dialog-data';
 import SessionData from 'dialog/session-data';
 import { getApiKey } from 'config';
+import { Lesson } from './lessons';
 
 export interface GraphQLRequest {
   sessionId: string;
@@ -43,8 +44,8 @@ interface Expectation {
 
 const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
 
-export function createGraphQLObject(
-  atd: OpenTutorData,
+function toGqlRequest(
+  lesson: Lesson,
   sdp: SessionData,
   username: string
 ): GraphQLRequest {
@@ -73,22 +74,22 @@ export function createGraphQLObject(
   return {
     sessionId: sdp.sessionId,
     username: username,
-    lessonId: atd.lessonId,
+    lessonId: lesson.lessonId,
     question: {
-      text: atd.questionText,
-      expectations: atd.expectations.map((e) => {
+      text: lesson.question,
+      expectations: lesson.expectations.map((e) => {
         return { text: e.expectation } as Expectation;
       }),
     },
     userResponses: userResponses,
   };
 }
-export async function sendGraphQLRequest(
-  atd: OpenTutorData,
+export async function updateSession(
+  lesson: Lesson,
   sdp: SessionData,
   username: string
 ): Promise<string> {
-  const request: GraphQLRequest = createGraphQLObject(atd, sdp, username);
+  const request: GraphQLRequest = toGqlRequest(lesson, sdp, username);
   logger.debug(
     `graphql request to ${GRAPHQL_ENDPOINT}: ${JSON.stringify(request)}`
   );
@@ -116,5 +117,5 @@ export async function sendGraphQLRequest(
 }
 
 export default {
-  sendGraphQLRequest,
+  updateSession,
 };

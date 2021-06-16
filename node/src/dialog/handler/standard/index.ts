@@ -21,6 +21,7 @@ import OpenTutorResponse, {
   createTextResponse,
   ResponseType,
 } from 'dialog/response-data';
+import { pickRandom, nextRandom } from 'dialog/random';
 
 import { DialogHandler } from '../types';
 import { Lesson } from 'apis/lessons';
@@ -33,36 +34,6 @@ const badThreshold: number =
   Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
 const goodMetacognitiveThreshold: number =
   Number.parseFloat(process.env.GOOD_METACOGNITIVE_THRESHOLD) || 0.8;
-
-//this should begin by sending the question prompt
-// export function beginDialog(atd: Dialog): OpenTutorResponse[] {
-//   return [
-//     createTextResponse(atd.questionIntro, ResponseType.Opening),
-//     createTextResponse(atd.questionText, ResponseType.MainQuestion),
-//   ];
-// }
-
-interface RandomFunction {
-  (): number;
-}
-let _random = Math.random;
-
-export function randomFunctionSet(f: RandomFunction): void {
-  _random = f;
-}
-
-export function randomFunctionRestore(): void {
-  _random = Math.random;
-}
-
-export function pickRandom<T>(a: T[], forceVariant = -1): T {
-  if (forceVariant >= 0) {
-    return a[forceVariant % a.length];
-  } else {
-    const randomNum = _random();
-    return a[Math.floor(randomNum * a.length)];
-  }
-}
 
 function setActiveExpecation(sdp: SessionData) {
   //find the current active expecation and log it.
@@ -134,7 +105,7 @@ export async function processUserResponse(
     )
   ) {
     //50 percent of the time it will use encouragement. Else, it will go on.
-    if (_random() < 0.5) {
+    if (nextRandom() < 0.5) {
       responses.push(
         createTextResponse(
           pickRandom(atd.confusionFeedback),
