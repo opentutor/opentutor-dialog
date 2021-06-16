@@ -6,8 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import express, { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
-import { beginDialog, calculateScore, processUserResponse } from 'dialog';
-import OpenTutorData, { convertLessonDataToATData } from 'dialog/dialog-data';
+import { calculateScore } from 'dialog';
 import 'dialog/response-data';
 import {
   addTutorDialog,

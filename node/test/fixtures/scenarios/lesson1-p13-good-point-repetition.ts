@@ -1,7 +1,7 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
-import { POSITIVE_FEEDBACK } from 'dialog/dialog-data';
+import { POSITIVE_FEEDBACK } from 'dialog/handler/standard/config';
 
 const expectVariantIndex = 1;
 const variantRandom = expectVariantIndex / POSITIVE_FEEDBACK.length;
