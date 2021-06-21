@@ -71,7 +71,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.FeedbackNeutral, // or pump instead (50% of the time)
           data: {
-            text: "Ok.",
+            text: 'Ok.',
           },
         },
         {
@@ -94,7 +94,7 @@ export const scenario: DialogScenario = {
           type: ResponseType.Hint,
           data: {
             // expectation text
-            text: "How can it affect someone when you correct their behavior?",
+            text: 'How can it affect someone when you correct their behavior?',
           },
         },
       ],
@@ -136,8 +136,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              "How can it affect you when you correct someone's behavior?",
+            text: "How can it affect you when you correct someone's behavior?",
           },
         },
       ],
@@ -162,7 +161,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative, 
+          type: ResponseType.FeedbackNegative,
           data: {
             text: "I'm not sure about that.",
           },

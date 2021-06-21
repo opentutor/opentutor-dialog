@@ -29,8 +29,7 @@ export const lesson: Lesson = {
       expectation: 'Enforcing the rules can make you unpopular.',
       hints: [
         {
-          text:
-          "How can it affect you when you correct someone's behavior?",
+          text: "How can it affect you when you correct someone's behavior?",
         },
       ],
     },
