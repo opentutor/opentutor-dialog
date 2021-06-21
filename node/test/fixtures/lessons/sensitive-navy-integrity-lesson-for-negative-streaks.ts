@@ -30,7 +30,7 @@ export const lesson: Lesson = {
       hints: [
         {
           text:
-            "How might others percieve you when you correct someone's behavior?",
+          "How can it affect you when you correct someone's behavior?",
         },
       ],
     },

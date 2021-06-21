@@ -4,7 +4,7 @@ import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
   name:
-    'navy integrity training - does not give negative feedback more than two times in a row',
+    'navy integrity training - does not give negative feedback if user has recieved negative feedback in past two cycles',
   lessonId: 'q6',
   expectedRequestResponses: [
     {
@@ -32,13 +32,13 @@ export const scenario: DialogScenario = {
             text: "I'm not sure about that.",
           },
         },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Consider this.',
-          },
-        },
+        // {
+        //   author: 'them',
+        //   type: ResponseType.Text,
+        //   data: {
+        //     text: 'Consider this.',
+        //   },
+        // },
         {
           author: 'them',
           type: ResponseType.Hint,
@@ -69,9 +69,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackNeutral, // or pump instead (50% of the time)
           data: {
-            text: "I'm not sure about that.",
+            text: "Ok.",
           },
         },
         {
@@ -84,16 +84,23 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'Consider this.',
+          },
+        },
+        {
+          author: 'them',
           type: ResponseType.Hint,
           data: {
             // expectation text
-            text: "How can it affect you when you correct someone's behavior?",
+            text: "How can it affect someone when you correct their behavior?",
           },
         },
       ],
     },
     {
-      userInput: 'I will not be affected',
+      userInput: 'They will not be affected',
       mockClassifierResponse: {
         data: {
           output: {
@@ -130,7 +137,7 @@ export const scenario: DialogScenario = {
           type: ResponseType.Hint,
           data: {
             text:
-              "How might others percieve you when you correct someone's behavior?",
+              "How can it affect you when you correct someone's behavior?",
           },
         },
       ],
@@ -155,9 +162,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral, // or pump
+          type: ResponseType.FeedbackNegative, 
           data: {
-            text: 'Ok.',
+            text: "I'm not sure about that.",
           },
         },
         {

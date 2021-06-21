@@ -74,6 +74,8 @@ describe('dialog', async () => {
       ? 'q4'
       : query.includes('q5')
       ? 'q5'
+      : query.includes('q6')
+      ? 'q6'
       : 'ok fix this properly with a regex already';
     return lessonById[lessonId];
   }
