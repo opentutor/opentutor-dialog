@@ -8,8 +8,7 @@ export const scenario: DialogScenario = {
   lessonId: 'q6',
   expectedRequestResponses: [
     {
-      userInput:
-        "Rules apply differently to the group",
+      userInput: 'Rules apply differently to the group',
       mockClassifierResponse: {
         data: {
           output: {
@@ -79,7 +78,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text: 
+            text:
               'Peer pressure can cause you to allow inappropriate behavior.',
           },
         },
@@ -87,8 +86,8 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text: // expectation text
-              "How can it affect you when you correct someone's behavior?",
+            // expectation text
+            text: "How can it affect you when you correct someone's behavior?",
           },
         },
       ],
@@ -122,7 +121,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text: 
+            text:
               "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
           },
         },
@@ -131,7 +130,7 @@ export const scenario: DialogScenario = {
           type: ResponseType.Hint,
           data: {
             text:
-            "How might others percieve you when you correct someone's behavior?",
+              "How might others percieve you when you correct someone's behavior?",
           },
         },
       ],
@@ -158,15 +157,14 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.FeedbackNeutral, // or pump
           data: {
-            text: "Ok.",
+            text: 'Ok.',
           },
         },
         {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text:
-              'Enforcing the rules can make you unpopular.',
+            text: 'Enforcing the rules can make you unpopular.',
           },
         },
         {
@@ -181,7 +179,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           data: {
             text:
-            "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+              "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
           },
           type: 'closing',
         },
@@ -189,7 +187,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           data: {
             text:
-            'However, integrity means speaking out even when it is unpopular.',
+              'However, integrity means speaking out even when it is unpopular.',
           },
           type: 'closing',
         },
