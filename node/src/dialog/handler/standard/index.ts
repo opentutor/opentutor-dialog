@@ -72,7 +72,7 @@ export async function processUserResponse(
   }
   // check if negative feedback was given during last 2 cycles for sensitive lessons
   if (
-    atd.lessonType === 'sensitive' &&
+    atd.dialogCategory === 'sensitive' &&
     sdp.sessionHistory.systemResponses.length >= 2
   ) {
     if (

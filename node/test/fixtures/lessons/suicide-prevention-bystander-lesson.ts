@@ -43,7 +43,7 @@ export const lesson: Lesson = {
     'Most people do not attempt suicide again if their plan is interrupted or if they survive a suicide attempt. This means that removing guns, pills, or other ways to commit suicide are very important.',
     'However, a person with suicidal thoughts is still at-risk and they should receive professional help to decrease their risk and improve their quality of life.',
   ],
-  lessonType: 'sensitive',
+  dialogCategory: 'sensitive',
 };
 
 export default lesson;
