@@ -41,7 +41,7 @@ export async function processUserResponse(
   sdp: SessionData
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
-  let negativeFeedbackAllowed: boolean = true;
+  let negativeFeedbackAllowed = true;
   try {
     atd.expectations.map((exp) => {
       return {
@@ -70,9 +70,7 @@ export async function processUserResponse(
           }
     );
   }
-  // console.log('prev sys response: ', sdp.previousSystemResponse)
-  // console.log('session history: ', sdp.sessionHistory);
-  // if sensitive, check if there was negative feedback during last 2 cycles
+  // check if negative feedback was given during last 2 cycles for sensitive lessons
   if (
     atd.lessonType === 'sensitive' &&
     sdp.sessionHistory.systemResponses.length >= 2
@@ -86,7 +84,6 @@ export async function processUserResponse(
           )
         )
     ) {
-      console.log('no negative feedback allowed');
       negativeFeedbackAllowed = false;
     }
   }
@@ -238,21 +235,6 @@ export async function processUserResponse(
     setActiveExpecation(sdp);
 
     responses.push(handleNegativeFeedback(negativeFeedbackAllowed, atd));
-    // if (negativeFeedbackAllowed){
-    //   responses.push(
-    //     createTextResponse(
-    //       pickRandom(atd.negativeFeedback),
-    //       ResponseType.FeedbackNegative
-    //     )
-    //   );
-    // } else { //TODO: add random choice of prompt 50% of the time
-    //   responses.push(
-    //     createTextResponse(
-    //       pickRandom(atd.neutralFeedback),
-    //       ResponseType.FeedbackNeutral
-    //     )
-    //   );
-    // }
     responses.push(
       createTextResponse(pickRandom(atd.hintStart)),
       createTextResponse(
@@ -345,7 +327,6 @@ function handleNegativeFeedback(negativeFeedbackAllowed: boolean, atd: Dialog) {
         ResponseType.FeedbackNeutral
       );
     } else {
-      //TODO: add random choice of prompt 50% of the time
       return createTextResponse(pickRandom(atd.pump), ResponseType.Text);
     }
   }

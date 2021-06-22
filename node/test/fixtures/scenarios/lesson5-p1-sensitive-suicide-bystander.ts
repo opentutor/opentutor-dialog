@@ -212,9 +212,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackNeutral,
           data: {
-            text: "I'm not sure about that.",
+            text: 'Ok.',
           },
         },
         {

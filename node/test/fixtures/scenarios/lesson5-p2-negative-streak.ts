@@ -62,7 +62,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral, // or pump instead (50% of the time)
+          type: ResponseType.FeedbackNeutral,
           data: {
             text: 'Ok.',
           },
@@ -112,7 +112,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral, // or pump instead (50% of the time)
+          type: ResponseType.FeedbackNeutral,
           data: {
             text: 'Ok.',
           },
@@ -142,7 +142,7 @@ export const scenario: DialogScenario = {
             expectationResults: [
               { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Bad, score: 0.5 },
-              { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
             ],
             speechActs: {
               metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
