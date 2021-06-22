@@ -116,6 +116,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? sensitiveBadThreshold
         : badThreshold,
     goodMetacognitiveThreshold: goodMetacognitiveThreshold,
+    lessonType: lessonData.lessonType,
   };
 
   try {

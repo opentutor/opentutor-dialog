@@ -32,13 +32,6 @@ export const scenario: DialogScenario = {
             text: "I'm not sure about that.",
           },
         },
-        // {
-        //   author: 'them',
-        //   type: ResponseType.Text,
-        //   data: {
-        //     text: 'Consider this.',
-        //   },
-        // },
         {
           author: 'them',
           type: ResponseType.Hint,

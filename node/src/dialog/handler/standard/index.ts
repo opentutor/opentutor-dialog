@@ -41,6 +41,7 @@ export async function processUserResponse(
   sdp: SessionData
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
+  let negativeFeedbackAllowed: boolean = true;
   try {
     atd.expectations.map((exp) => {
       return {
@@ -69,6 +70,27 @@ export async function processUserResponse(
           }
     );
   }
+  // console.log('prev sys response: ', sdp.previousSystemResponse)
+  // console.log('session history: ', sdp.sessionHistory);
+  // if sensitive, check if there was negative feedback during last 2 cycles
+  if (
+    atd.lessonType === 'sensitive' &&
+    sdp.sessionHistory.systemResponses.length >= 2
+  ) {
+    if (
+      sdp.sessionHistory.systemResponses
+        .slice(-2)
+        .find((prevRespones) =>
+          prevRespones.some((prevResponse) =>
+            atd.negativeFeedback.includes(prevResponse)
+          )
+        )
+    ) {
+      console.log('no negative feedback allowed');
+      negativeFeedbackAllowed = false;
+    }
+  }
+
   const expectationResults = classifierResult.output.expectationResults;
   const speechActs = classifierResult.output.speechActs;
   //add results to the session history
@@ -139,7 +161,15 @@ export async function processUserResponse(
   if (e && h) {
     //response is to a hint
     return responses.concat(
-      handleHints(lessonId, atd, sdp, expectationResults, e, h)
+      handleHints(
+        lessonId,
+        atd,
+        sdp,
+        expectationResults,
+        e,
+        h,
+        negativeFeedbackAllowed
+      )
     );
   }
 
@@ -207,12 +237,22 @@ export async function processUserResponse(
       ExpectationStatus.Active;
     setActiveExpecation(sdp);
 
-    responses.push(
-      createTextResponse(
-        pickRandom(atd.negativeFeedback),
-        ResponseType.FeedbackNegative
-      )
-    );
+    responses.push(handleNegativeFeedback(negativeFeedbackAllowed, atd));
+    // if (negativeFeedbackAllowed){
+    //   responses.push(
+    //     createTextResponse(
+    //       pickRandom(atd.negativeFeedback),
+    //       ResponseType.FeedbackNegative
+    //     )
+    //   );
+    // } else { //TODO: add random choice of prompt 50% of the time
+    //   responses.push(
+    //     createTextResponse(
+    //       pickRandom(atd.neutralFeedback),
+    //       ResponseType.FeedbackNeutral
+    //     )
+    //   );
+    // }
     responses.push(
       createTextResponse(pickRandom(atd.hintStart)),
       createTextResponse(
@@ -292,6 +332,25 @@ export function toNextExpectation(
   return answer;
 }
 
+function handleNegativeFeedback(negativeFeedbackAllowed: boolean, atd: Dialog) {
+  if (negativeFeedbackAllowed) {
+    return createTextResponse(
+      pickRandom(atd.negativeFeedback),
+      ResponseType.FeedbackNegative
+    );
+  } else {
+    if (nextRandom() < 0.5) {
+      return createTextResponse(
+        pickRandom(atd.neutralFeedback),
+        ResponseType.FeedbackNeutral
+      );
+    } else {
+      //TODO: add random choice of prompt 50% of the time
+      return createTextResponse(pickRandom(atd.pump), ResponseType.Text);
+    }
+  }
+}
+
 function handlePrompt(
   lessonId: string,
   atd: Dialog,
@@ -348,7 +407,8 @@ function handleHints(
   sdp: SessionData,
   expectationResults: ExpectationResult[],
   e: Expectation,
-  h: string
+  h: string,
+  negativeFeedbackAllowed: boolean
 ) {
   const expectationId: number = atd.expectations.indexOf(e);
   const finalResponses: Array<OpenTutorResponse> = [];
@@ -429,11 +489,14 @@ function handleHints(
         );
       } else {
         finalResponses.push(
-          createTextResponse(
-            pickRandom(atd.negativeFeedback),
-            ResponseType.FeedbackNegative
-          )
+          handleNegativeFeedback(negativeFeedbackAllowed, atd)
         );
+        // finalResponses.push(
+        //   createTextResponse(
+        //     pickRandom(atd.negativeFeedback),
+        //     ResponseType.FeedbackNegative
+        //   )
+        // );
       }
       finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
       finalResponses.push(
@@ -466,10 +529,11 @@ function handleHints(
       }
       return finalResponses
         .concat([
-          createTextResponse(
-            pickRandom(atd.negativeFeedback),
-            ResponseType.FeedbackNegative
-          ),
+          handleNegativeFeedback(negativeFeedbackAllowed, atd),
+          // createTextResponse(
+          //   pickRandom(atd.negativeFeedback),
+          //   ResponseType.FeedbackNegative
+          // ),
           createTextResponse(e.expectation, ResponseType.Text),
         ])
         .concat(toNextExpectation(atd, sdp));
