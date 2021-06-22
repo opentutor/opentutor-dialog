@@ -472,12 +472,6 @@ function handleHints(
         finalResponses.push(
           handleNegativeFeedback(negativeFeedbackAllowed, atd)
         );
-        // finalResponses.push(
-        //   createTextResponse(
-        //     pickRandom(atd.negativeFeedback),
-        //     ResponseType.FeedbackNegative
-        //   )
-        // );
       }
       finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
       finalResponses.push(
@@ -511,10 +505,6 @@ function handleHints(
       return finalResponses
         .concat([
           handleNegativeFeedback(negativeFeedbackAllowed, atd),
-          // createTextResponse(
-          //   pickRandom(atd.negativeFeedback),
-          //   ResponseType.FeedbackNegative
-          // ),
           createTextResponse(e.expectation, ResponseType.Text),
         ])
         .concat(toNextExpectation(atd, sdp));
