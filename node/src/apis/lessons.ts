@@ -69,6 +69,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
             id
             lessonId
             intro
+            dialogCategory
             question
             conclusion
             expectations {
@@ -77,7 +78,6 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
                 text
               }
             }
-            lessonType
           }  
         }
       }

@@ -42,6 +42,7 @@ export const lesson: Lesson = {
     "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
     'However, integrity means speaking out even when it is unpopular.',
   ],
+  lessonType: 'default',
 };
 
 export default lesson;

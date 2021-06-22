@@ -203,6 +203,7 @@ describe('dialog', async () => {
             question: 'main',
             expectations: [],
             conclusion: ['a'],
+            lessonType: 'default',
           },
         },
       },
