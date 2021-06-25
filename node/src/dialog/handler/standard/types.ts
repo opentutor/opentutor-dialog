@@ -40,7 +40,7 @@ export interface DialogConfig {
   goodThreshold: number;
   badThreshold: number;
   goodMetacognitiveThreshold: number;
-  lessonType: 'default' | 'sensitive';
+  dialogCategory: 'default' | 'sensitive';
 }
 
 export default DialogConfig;

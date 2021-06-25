@@ -30,7 +30,7 @@ export interface Lesson {
   question: string;
   expectations: LessonExpectation[];
   conclusion: string[] | string;
-  lessonType?: 'sensitive' | 'default';
+  dialogCategory?: 'sensitive' | 'default';
 }
 
 export interface LessonWrapper {
