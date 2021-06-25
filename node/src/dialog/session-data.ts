@@ -9,7 +9,7 @@ import hmacSHA512 from 'crypto-js/hmac-sha512';
 import Base64 from 'crypto-js/enc-base64';
 import 'dialog/response-data';
 import { v4 as uuidv4 } from 'uuid';
-import Dialog from './dialog-data';
+import { Lesson } from 'apis/lessons';
 import { ClassifierResult } from 'apis/classifier';
 import OpenTutorResponse, { TextData } from 'dialog/response-data';
 
@@ -116,7 +116,7 @@ function getHash(sh: string): string {
   return Base64.stringify(hmacSHA512(sha256(sh), SESSION_SECURITY_KEY));
 }
 
-export function newSession(atd: Dialog, sessionId = ''): SessionData {
+export function newSession(lesson: Lesson, sessionId = ''): SessionData {
   const sh = {
     userResponses: new Array<UserResponse>(),
     systemResponses: new Array<string[]>(),
@@ -129,16 +129,16 @@ export function newSession(atd: Dialog, sessionId = ''): SessionData {
     previousUserResponse: '',
     previousSystemResponse: [],
     dialogState: {
-      expectationsCompleted: atd.expectations.map(() => false),
-      expectationData: newExpectationData(atd),
+      expectationsCompleted: lesson.expectations.map(() => false),
+      expectationData: newExpectationData(lesson),
       currentExpectation: -1,
       hints: false,
     },
   };
 }
 
-export function newExpectationData(atd: Dialog): ExpectationData[] {
-  return atd.expectations.map(() => {
+export function newExpectationData(lesson: Lesson): ExpectationData[] {
+  return lesson.expectations.map(() => {
     return {
       ideal: '',
       score: 0,
