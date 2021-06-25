@@ -84,7 +84,8 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         : FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
-    goodPointButOutOfHintsFeedback: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
+    goodPointButOutOfHintsFeedback:
+      FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
     pump: [
       "Let's work through this together.",
       'And can you add to that?',

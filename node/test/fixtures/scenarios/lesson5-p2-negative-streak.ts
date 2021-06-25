@@ -3,8 +3,7 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name:
-    'navy integrity training - does not give negative feedback if user has recieved negative feedback in past two cycles',
+  name: 'navy integrity training - does not give negative feedback if user has recieved negative feedback in past two cycles',
   lessonId: 'q6',
   expectedRequestResponses: [
     {
@@ -36,8 +35,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           },
         },
       ],
@@ -71,8 +69,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text:
-              'Peer pressure can cause you to allow inappropriate behavior.',
+            text: 'Peer pressure can cause you to allow inappropriate behavior.',
           },
         },
         {
@@ -121,8 +118,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text:
-              "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+            text: "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
           },
         },
         {
@@ -169,24 +165,21 @@ export const scenario: DialogScenario = {
         {
           author: 'them',
           data: {
-            text:
-              'Peer pressure can push you to allow and participate in inappropriate behavior.',
+            text: 'Peer pressure can push you to allow and participate in inappropriate behavior.',
           },
           type: 'closing',
         },
         {
           author: 'them',
           data: {
-            text:
-              "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
           },
           type: 'closing',
         },
         {
           author: 'them',
           data: {
-            text:
-              'However, integrity means speaking out even when it is unpopular.',
+            text: 'However, integrity means speaking out even when it is unpopular.',
           },
           type: 'closing',
         },

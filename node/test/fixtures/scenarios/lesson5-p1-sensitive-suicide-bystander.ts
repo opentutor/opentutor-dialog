@@ -3,8 +3,7 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name:
-    'suicide prevention bystander training - uses sensitive negative responses for lesson marked as sensistive',
+  name: 'suicide prevention bystander training - uses sensitive negative responses for lesson marked as sensistive',
   lessonId: 'q5',
   expectedRequestResponses: [
     {
@@ -43,8 +42,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
+            text: 'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
           },
         },
       ],
@@ -77,8 +75,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Are they more likely to just "find another way" or to not attempt suicide later?',
+            text: 'Are they more likely to just "find another way" or to not attempt suicide later?',
           },
         },
       ],
@@ -111,8 +108,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Compared to before they lost their means to commit suicide (e.g., a gun), how does their risk change?',
+            text: 'Compared to before they lost their means to commit suicide (e.g., a gun), how does their risk change?',
           },
         },
       ],
@@ -145,16 +141,14 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text:
-              'They will be much less likely to commit suicide and will probably not attempt suicide later.',
+            text: 'They will be much less likely to commit suicide and will probably not attempt suicide later.',
           },
         },
         {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Compared to other people, how likely is this person to commit suicide?',
+            text: 'Compared to other people, how likely is this person to commit suicide?',
           },
         },
       ],
@@ -187,8 +181,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'After removing the means for suicide, how likely are they to commit suicide versus other people?',
+            text: 'After removing the means for suicide, how likely are they to commit suicide versus other people?',
           },
         },
       ],
@@ -227,16 +220,14 @@ export const scenario: DialogScenario = {
         {
           author: 'them',
           data: {
-            text:
-              'Most people do not attempt suicide again if their plan is interrupted or if they survive a suicide attempt. This means that removing guns, pills, or other ways to commit suicide are very important.',
+            text: 'Most people do not attempt suicide again if their plan is interrupted or if they survive a suicide attempt. This means that removing guns, pills, or other ways to commit suicide are very important.',
           },
           type: 'closing',
         },
         {
           author: 'them',
           data: {
-            text:
-              'However, a person with suicidal thoughts is still at-risk and they should receive professional help to decrease their risk and improve their quality of life.',
+            text: 'However, a person with suicidal thoughts is still at-risk and they should receive professional help to decrease their risk and improve their quality of life.',
           },
           type: 'closing',
         },

@@ -43,8 +43,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           },
         },
       ],
@@ -160,8 +159,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Prompt,
           data: {
-            text:
-              'How can it affect someone emotionally when you correct their behavior?',
+            text: 'How can it affect someone emotionally when you correct their behavior?',
           },
         },
       ],
@@ -243,8 +241,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Prompt,
           data: {
-            text:
-              'Integrity means doing the right thing even when it is _____ ?',
+            text: 'Integrity means doing the right thing even when it is _____ ?',
           },
         },
       ],
@@ -278,24 +275,21 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              'Peer pressure can push you to allow and participate in inappropriate behavior.',
+            text: 'Peer pressure can push you to allow and participate in inappropriate behavior.',
           },
         },
         {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
           },
         },
         {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              'However, integrity means speaking out even when it is unpopular.',
+            text: 'However, integrity means speaking out even when it is unpopular.',
           },
         },
         ,
