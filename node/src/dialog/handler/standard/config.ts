@@ -46,6 +46,13 @@ export const POSITIVE_FEEDBACK = [
   'Correct.',
 ];
 
+export const SENSITIVE_POSITIVE_FEEDBACK = [
+  'Right.',
+  "Yeah, that's right.",
+  'Correct.',
+  "That's correct.",
+];
+
 export const SENSITIVE_NEGATIVE_FEEDBACK = [
   "I'm not sure about that.",
   'Think about this.',
@@ -76,7 +83,10 @@ export function toConfig(lessonData: Lesson): DialogConfig {
       "Don't worry if you aren't sure. We'll work on one piece at a time.",
       "That's an okay place to start. Let's try this part together.",
     ],
-    positiveFeedback: POSITIVE_FEEDBACK,
+    positiveFeedback:
+      lessonData.lessonType === 'sensitive'
+        ? SENSITIVE_POSITIVE_FEEDBACK
+        : POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
     negativeFeedback:
       lessonData.dialogCategory === 'sensitive'
