@@ -53,8 +53,6 @@ router.post(
       const handler = await handlerFor(lesson);
       const sdp = newSession(lesson, body.sessionId);
       const messages = await handler.beginDialog();
-      // const atd: OpenTutorData = convertLessonDataToATData();
-      //new sessionDataPacket
       addTutorDialog(sdp, messages);
       res.send({
         status: 200,
@@ -104,11 +102,8 @@ router.post(
       const lesson = await getLessonData(lessonId);
       if (!lesson) return res.status(404).send();
       const handler = await handlerFor(lesson);
-      // const atd: OpenTutorData = convertLessonDataToATData();
-      // if (!atd) return res.status(404).send();
       addUserDialog(sessionData, message);
       const msg = await handler.process(sessionData);
-      // const msg = await processUserResponse(lessonId, atd, sessionData);
       addTutorDialog(sessionData, msg);
       const graphQLResponse = updateSession(lesson, sessionData, username)
         ? true
