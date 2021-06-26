@@ -21,11 +21,12 @@ import { ResponseType, TextData } from 'dialog/response-data';
 import { ClassifierResult, Evaluation } from 'apis/classifier';
 import { LessonResponse, LResponseObject, Lesson } from 'apis/lessons';
 import { findAll as findAllScenarios } from 'test/fixtures/scenarios';
+import { findAll as findAllLessons } from 'test/fixtures/lessons';
 import { DialogScenario } from 'test/fixtures/types';
 import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
-import { randomFunctionSet, randomFunctionRestore } from 'dialog';
+import { randomFunctionSet, randomFunctionRestore } from 'dialog/random';
 
 const sandbox = sinon.createSandbox();
 
@@ -34,6 +35,12 @@ describe('dialog', async () => {
   let mockAxios: MockAxios;
   let mockNextRandom: sinon.SinonStub<number[]>;
   const allScenarios: DialogScenario[] = await findAllScenarios();
+  const allLessons: Lesson[] = await findAllLessons();
+
+  const lessonById: Record<string, Lesson> = {};
+  allLessons.forEach((lesson) => {
+    lessonById[lesson.lessonId] = lesson;
+  });
 
   beforeEach(async () => {
     if (!MOCKING_DISABLED) {
@@ -56,138 +63,6 @@ describe('dialog', async () => {
     randomFunctionRestore();
   });
 
-  const currentFlowLesson: Lesson = {
-    name: 'Current Flow',
-    lessonId: 'q2',
-    intro:
-      '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-    question:
-      'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-    expectations: [
-      {
-        expectation: 'Current flows in the same direction as the arrow.',
-        hints: [
-          {
-            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-          },
-        ],
-      },
-    ],
-    conclusion: [
-      'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-      "Let's try a different problem.",
-    ],
-  };
-
-  const navyIntegrityLesson: Lesson = {
-    name: 'Current Flow',
-    lessonId: 'q1',
-    intro: 'Here is a question about integrity, a key Navy attribute.',
-    question: 'What are the challenges to demonstrating integrity in a group?',
-    expectations: [
-      {
-        expectation:
-          'Peer pressure can cause you to allow inappropriate behavior.',
-        hints: [
-          {
-            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-          },
-        ],
-        prompts: [
-          {
-            prompt: 'What might cause you to lower your standards?',
-            answer: 'peer pressure',
-          },
-        ],
-      },
-      {
-        expectation:
-          "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-        hints: [
-          {
-            text: 'How can it affect someone when you correct their behavior?',
-          },
-        ],
-        prompts: [
-          {
-            prompt:
-              'How can it affect someone emotionally when you correct their behavior?',
-            answer: 'it may be harder to work with them',
-          },
-        ],
-      },
-      {
-        expectation: 'Enforcing the rules can make you unpopular.',
-        hints: [
-          {
-            text: "How can it affect you when you correct someone's behavior?",
-          },
-        ],
-        prompts: [
-          {
-            prompt:
-              'Integrity means doing the right thing even when it is _____ ?',
-            answer: 'unpopular',
-          },
-        ],
-      },
-    ],
-    conclusion: [
-      'Peer pressure can push you to allow and participate in inappropriate behavior.',
-      "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
-      'However, integrity means speaking out even when it is unpopular.',
-    ],
-  };
-
-  const noPromptsLesson: Lesson = {
-    name: 'Current Flow2',
-    lessonId: 'q3',
-    intro: 'Here is a question about integrity, a key Navy attribute.',
-    question: 'What are the challenges to demonstrating integrity in a group?',
-    expectations: [
-      {
-        expectation:
-          'Peer pressure can cause you to allow inappropriate behavior.',
-        hints: [
-          {
-            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-          },
-        ],
-        prompts: [],
-      },
-      {
-        expectation:
-          "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-        hints: [
-          {
-            text: 'How can it affect someone when you correct their behavior?',
-          },
-        ],
-        prompts: [],
-      },
-      {
-        expectation: 'Enforcing the rules can make you unpopular.',
-        hints: [
-          {
-            text: "How can it affect you when you correct someone's behavior?",
-          },
-        ],
-        prompts: [],
-      },
-    ],
-    conclusion: [
-      'Peer pressure can push you to allow and participate in inappropriate behavior.',
-      "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
-      'However, integrity means speaking out even when it is unpopular.',
-    ],
-  };
-
-  const lessonById: Record<string, Lesson> = {
-    q1: navyIntegrityLesson,
-    q2: currentFlowLesson,
-    q3: noPromptsLesson,
-  };
-
   function findLessonForGqlQuery(query: string): Lesson {
     let lessonId = query.includes('q1')
       ? 'q1'
@@ -195,6 +70,12 @@ describe('dialog', async () => {
       ? 'q2'
       : query.includes('q3')
       ? 'q3'
+      : query.includes('q4')
+      ? 'q4'
+      : query.includes('q5')
+      ? 'q5'
+      : query.includes('q6')
+      ? 'q6'
       : 'ok fix this properly with a regex already';
     return lessonById[lessonId];
   }
@@ -322,6 +203,7 @@ describe('dialog', async () => {
             question: 'main',
             expectations: [],
             conclusion: ['a'],
+            dialogCategory: 'default',
           },
         },
       },
@@ -416,7 +298,7 @@ describe('dialog', async () => {
           return [200, {}];
         });
         mockAxios.onPost('/graphql').reply(() => {
-          return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+          return [200, { data: { me: { lesson: lessonById.q1 } } }];
         });
       }
       const responseStartSession = await postDialog('q1', app, {
@@ -443,7 +325,7 @@ describe('dialog', async () => {
           return [200, {}];
         });
         mockAxios.onPost('/graphql').reply(() => {
-          return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+          return [200, { data: { me: { lesson: lessonById.q1 } } }];
         });
       }
       const responseStartSession = await postDialog('q1', app, {
@@ -475,9 +357,9 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { me: { lesson: currentFlowLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q2 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -510,9 +392,9 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { me: { lesson: currentFlowLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q2 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -592,9 +474,9 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { me: { lesson: currentFlowLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q2 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -655,9 +537,9 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { me: { lesson: currentFlowLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q2 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -689,9 +571,9 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { me: { lesson: currentFlowLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q2 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -727,9 +609,9 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { me: { lesson: currentFlowLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q2 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -832,7 +714,7 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -889,7 +771,7 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -946,7 +828,7 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -1002,7 +884,7 @@ describe('dialog', async () => {
         mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
           if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: navyIntegrityLesson } } }];
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
           } else {
             const errData: LResponseObject = {
               data: {
@@ -1072,6 +954,178 @@ describe('dialog', async () => {
         'What about this.',
         'See if you know the answer to this.',
       ]);
+    });
+  });
+
+  describe('Sensitive Lesson', () => {
+    const lessonId = 'q4';
+
+    const validSessionData: SessionData = {
+      dialogState: {
+        expectationsCompleted: [false],
+        currentExpectation: -1,
+        expectationData: [
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+        ],
+        hints: false,
+      },
+      sessionHistory: {
+        classifierGrades: new Array<ClassifierResult>(),
+        systemResponses: [
+          [
+            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+          ],
+        ],
+        userResponses: new Array<UserResponse>(),
+        userScores: new Array<number>(),
+      },
+      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+      previousUserResponse: '',
+      previousSystemResponse: [
+        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+      ],
+    };
+
+    const validSessionDto = dataToDto(validSessionData);
+
+    it('responds with a random sensitive negative feedback message when lesson is sensitive', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q4')) {
+            return [200, { data: { me: { lesson: lessonById.q4 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        message: 'bad answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonId,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNegative)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf([
+        'Think about this.',
+        "I'm not sure about that.",
+        "That isn't what I had in mind.",
+        'Not quite, I was thinking about something different.',
+      ]);
+    });
+
+    it('responds with a random neutral feedback message when the confidence is below 90% and the lesson is sensitive', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q4')) {
+            return [200, { data: { me: { lesson: lessonById.q4 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 0.7 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        message: 'bad answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonId,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
     });
   });
 });

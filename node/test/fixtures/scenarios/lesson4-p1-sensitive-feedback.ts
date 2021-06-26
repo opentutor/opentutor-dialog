@@ -1,14 +1,10 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
-import { FEEDBACK_GOOD_POINT_BUT } from 'dialog/handler/standard/config';
-
-const expectVariantIndex = 1;
-const variantRandom = expectVariantIndex / FEEDBACK_GOOD_POINT_BUT.length;
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 12: there is more than one variation of the "good point but" server message',
-  lessonId: 'q1',
+  name: 'uses sensitive negative responses for lesson marked as sensistive',
+  lessonId: 'q4',
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',
@@ -27,16 +23,38 @@ export const scenario: DialogScenario = {
           },
         },
       },
-      expectedResponse: [],
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegative,
+          data: {
+            text: "I'm not sure about that.",
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'Consider this.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          },
+        },
+      ],
     },
     {
-      userInput: 'It may be harder to work with them.',
+      userInput: 'Peer pressure',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
               { evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
@@ -46,15 +64,19 @@ export const scenario: DialogScenario = {
           },
         },
       },
-      nextRandom: variantRandom,
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackPositive,
           data: {
-            // this whole scenario is about
-            // testing we get this "variant" good-point-but response
-            text: FEEDBACK_GOOD_POINT_BUT[expectVariantIndex],
+            text: 'Great.',
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Hint,
+          data: {
+            text: 'How can it affect someone when you correct their behavior?',
           },
         },
       ],

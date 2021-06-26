@@ -5,40 +5,16 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { Lesson } from 'apis/lessons';
+import { DialogConfig } from './types';
 
-export default interface Dialog {
-  rootExpectationId: number;
-  lessonId: string;
-  expectations: Expectation[];
-  questionIntro: string;
-  questionText: string;
-  recapText: string[];
-  confusionFeedback: string[];
-  confusionFeedbackWithHint: string[];
-  positiveFeedback: string[];
-  negativeFeedback: string[];
-  neutralFeedback: string[];
-  goodPointButFeedback: string[];
-  goodPointButOutOfHintsFeedback: string[];
-  perfectFeedback: string[];
-  pump: string[];
-  pumpBlank: string[];
-  hintStart: string[];
-  promptStart: string[];
-  profanityFeedback: string[];
-  originalXml: string;
-}
-
-export interface Prompt {
-  prompt: string;
-  answer: string;
-}
-
-export interface Expectation {
-  expectation: string;
-  hints: string[];
-  prompts: Prompt[];
-}
+const goodThreshold: number =
+  Number.parseFloat(process.env.GOOD_THRESHOLD) || 0.6;
+const badThreshold: number =
+  Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
+const sensitiveBadThreshold: number =
+  Number.parseFloat(process.env.SENSITIVE_BAD_THRESHOLD) || 0.9;
+const goodMetacognitiveThreshold: number =
+  Number.parseFloat(process.env.GOOD_METACOGNITIVE_THRESHOLD) || 0.8;
 
 export const FEEDBACK_GOOD_POINT_BUT = [
   "Good point! But let's focus on this part.",
@@ -70,13 +46,20 @@ export const POSITIVE_FEEDBACK = [
   'Correct.',
 ];
 
+export const SENSITIVE_NEGATIVE_FEEDBACK = [
+  "I'm not sure about that.",
+  'Think about this.',
+  "That isn't what I had in mind.",
+  'Not quite, I was thinking about something different.',
+];
+
 export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [
   'Good point, though I was actually thinking about another piece.',
   "That's a good point, but I had another part in mind.",
 ];
 
-export function convertLessonDataToATData(lessonData: Lesson): Dialog {
-  const defaultData: Dialog = {
+export function toConfig(lessonData: Lesson): DialogConfig {
+  const defaultData: DialogConfig = {
     lessonId: '',
     rootExpectationId: 0,
     expectations: [],
@@ -95,7 +78,10 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     ],
     positiveFeedback: POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
-    negativeFeedback: FEEDBACK_NEGATIVE,
+    negativeFeedback:
+      lessonData.dialogCategory === 'sensitive'
+        ? SENSITIVE_NEGATIVE_FEEDBACK
+        : FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback:
@@ -125,6 +111,13 @@ export function convertLessonDataToATData(lessonData: Lesson): Dialog {
     ],
     pumpBlank: ["I'll give you some more time."],
     originalXml: '',
+    goodThreshold: goodThreshold,
+    badThreshold:
+      lessonData.dialogCategory === 'sensitive'
+        ? sensitiveBadThreshold
+        : badThreshold,
+    goodMetacognitiveThreshold: goodMetacognitiveThreshold,
+    dialogCategory: lessonData.dialogCategory,
   };
 
   try {
