@@ -1,14 +1,14 @@
 DIALOG_ENDPOINT?="http://localhost/dialog"
 
-PHONY: docker-build
+.PHONY: docker-build
 docker-build:
 	cd node \
 	&& $(MAKE) docker-build
 
-PHONY: format
-format:
+.PHONY: pretty
+pretty:
 	cd node \
-	&& $(MAKE) format
+	&& $(MAKE) pretty
 
 .PHONY: run
 run:
@@ -25,17 +25,17 @@ test-endpoint:
 	cd node \
 	&& MOCKING_DISABLED=1 DIALOG_ENDPOINT=$(DIALOG_ENDPOINT) $(MAKE) test
 
-PHONY: test-all
+.PHONY: test-all
 test-all:
 	cd node \
 	&& $(MAKE) test-all
 
-PHONY: test-format
+.PHONY: test-format
 test-format:
 	cd node \
 	&& $(MAKE) test-format
 
-PHONY: test-lint
+.PHONY: test-lint
 test-lint:
 	cd node \
 	&& $(MAKE) test-lint
@@ -51,6 +51,11 @@ LICENSE_HEADER:
 .PHONY: license
 license: LICENSE LICENSE_HEADER
 	cd node && npm run license:fix
+
+.PHONY: format
+format: LICENSE LICENSE_HEADER
+	cd node \
+	&& npm run license:fix && $(MAKE) pretty
 
 .PHONY: test-license
 test-license: LICENSE LICENSE_HEADER

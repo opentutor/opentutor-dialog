@@ -7,8 +7,8 @@ docker-build:
 		-t $(DOCKER_IMAGE) \
 	.
 
-.PHONY: format
-format: node_modules/prettier
+.PHONY: pretty
+pretty: node_modules/prettier
 	npm run format
 
 .PHONY: lint-fix
