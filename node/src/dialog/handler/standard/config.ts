@@ -84,7 +84,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
       "That's an okay place to start. Let's try this part together.",
     ],
     positiveFeedback:
-      lessonData.lessonType === 'sensitive'
+      lessonData.dialogCategory === 'sensitive'
         ? SENSITIVE_POSITIVE_FEEDBACK
         : POSITIVE_FEEDBACK,
     perfectFeedback: ['Nicely done!', 'You got it!'],
