@@ -3,7 +3,8 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 6: this simply tests hints, prompts and assert but not for the first expectation',
+  name:
+    'lesson1 part 6: this simply tests hints, prompts and assert but not for the first expectation',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -83,7 +84,8 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Prompt,
           data: {
-            text: 'How can it affect someone emotionally when you correct their behavior?',
+            text:
+              'How can it affect someone emotionally when you correct their behavior?',
           },
         },
       ],

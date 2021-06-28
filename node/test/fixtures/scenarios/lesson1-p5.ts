@@ -42,7 +42,8 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           },
         },
       ],

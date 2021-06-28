@@ -12,13 +12,16 @@ export const lesson: Lesson = {
         'They will be much less likely to commit suicide and will probably not attempt suicide later.',
       hints: [
         {
-          text: 'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
+          text:
+            'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
         },
         {
-          text: 'Are they more likely to just "find another way" or to not attempt suicide later?',
+          text:
+            'Are they more likely to just "find another way" or to not attempt suicide later?',
         },
         {
-          text: 'Compared to before they lost their means to commit suicide (e.g., a gun), how does their risk change?',
+          text:
+            'Compared to before they lost their means to commit suicide (e.g., a gun), how does their risk change?',
         },
       ],
     },
@@ -26,10 +29,12 @@ export const lesson: Lesson = {
       expectation: 'The person is still at risk compared to other people.',
       hints: [
         {
-          text: 'Compared to other people, how likely is this person to commit suicide?',
+          text:
+            'Compared to other people, how likely is this person to commit suicide?',
         },
         {
-          text: 'After removing the means for suicide, how likely are they to commit suicide versus other people?',
+          text:
+            'After removing the means for suicide, how likely are they to commit suicide versus other people?',
         },
       ],
     },

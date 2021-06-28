@@ -1243,7 +1243,7 @@ describe('dialog', async () => {
           ],
           [
             "That isn't what I had in mind.",
-            "Why might you allow bad behavior in a group that you normally would not allow yourself to do?",
+            'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           ],
         ],
         userResponses: [
@@ -1379,7 +1379,8 @@ describe('dialog', async () => {
         'What else?',
         'Anything else?',
         'Could you elaborate on that a little?',
-        'Can you add anything to that?',]);
+        'Can you add anything to that?',
+      ]);
     });
   });
 });
