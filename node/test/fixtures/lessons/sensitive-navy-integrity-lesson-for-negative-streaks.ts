@@ -11,8 +11,7 @@ export const lesson: Lesson = {
         'Peer pressure can cause you to allow inappropriate behavior.',
       hints: [
         {
-          text:
-            'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
         },
       ],
     },

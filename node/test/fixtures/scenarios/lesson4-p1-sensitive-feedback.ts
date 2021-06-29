@@ -3,8 +3,7 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name:
-    'uses sensitive negative and sensitive positive responses for lesson marked as sensistive',
+  name: 'uses sensitive negative and sensitive positive responses for lesson marked as sensistive',
   lessonId: 'q4',
   expectedRequestResponses: [
     {
@@ -43,8 +42,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           },
         },
       ],

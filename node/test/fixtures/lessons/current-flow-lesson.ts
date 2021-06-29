@@ -12,8 +12,7 @@ export const lesson: Lesson = {
       expectation: 'Current flows in the same direction as the arrow.',
       hints: [
         {
-          text:
-            'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
         },
       ],
     },
