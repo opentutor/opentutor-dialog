@@ -34,7 +34,7 @@ describe('dialog', async () => {
   let app: Express;
   let mockAxios: MockAxios;
   let mockNextRandom: sinon.SinonStub<number[]>;
-  const allScenarios: DialogScenario[] = await findAllScenarios();
+  let allScenarios: DialogScenario[] = await findAllScenarios();
   const allLessons: Lesson[] = await findAllLessons();
 
   const lessonById: Record<string, Lesson> = {};
@@ -903,13 +903,33 @@ describe('dialog', async () => {
             {
               output: {
                 expectationResults: [
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
+                  {
+                    expectationId: '2',
+                    evaluation: Evaluation.Good,
+                    score: 0.5,
+                  },
+                  {
+                    expectationId: '3',
+                    evaluation: Evaluation.Good,
+                    score: 0.4,
+                  },
+                  {
+                    expectationId: '4',
+                    evaluation: Evaluation.Good,
+                    score: 0.4,
+                  },
                 ],
                 speechActs: {
-                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                  metacognitive: {
+                    expectationId: '',
+                    evaluation: Evaluation.Good,
+                    score: 0.5,
+                  },
+                  profanity: {
+                    expectationId: '',
+                    evaluation: Evaluation.Good,
+                    score: 0.5,
+                  },
                 },
               },
             },
@@ -1227,13 +1247,21 @@ describe('dialog', async () => {
         classifierGrades: [
           {
             expectationResults: [
-              { evaluation: Evaluation.Bad, score: 1.0 },
-              { evaluation: Evaluation.Good, score: 0.4 },
-              { evaluation: Evaluation.Good, score: 0.4 },
+              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 0.4 },
             ],
             speechActs: {
-              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
             },
           },
         ],

@@ -145,6 +145,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
 
   defaultData.expectations = lessonData.expectations.map((exp) => {
     return {
+      expectationId: exp.expectationId,
       expectation: exp.expectation,
       hints: exp.hints.map((h) => h.text),
       prompts: exp.prompts
