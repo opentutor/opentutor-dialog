@@ -3,8 +3,8 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'navy integrity training - does not give negative feedback if user has recieved negative feedback in past two cycles',
-  lessonId: 'q6',
+  name: 'navy integrity training - survey says style',
+  lessonId: 'q7',
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',
@@ -28,7 +28,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.FeedbackNegative,
           data: {
-            text: "I'm not sure about that.",
+            text: "Sorry, it looks like that wasn't on the board.",
           },
         },
         {
@@ -109,16 +109,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackNegative,
           data: {
-            text: 'Ok.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+            text: "We'll give you this one on the board.",
           },
         },
         {
@@ -152,14 +145,14 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.FeedbackNegative,
           data: {
-            text: "I'm not sure about that.",
+            text: "Sorry, it looks like that wasn't on the board.",
           },
         },
         {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text: 'Enforcing the rules can make you unpopular.',
+            text: 'Try again next time and see if you can get all the answers.',
           },
         },
         {

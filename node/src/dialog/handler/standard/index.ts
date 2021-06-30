@@ -309,7 +309,7 @@ export function toNextExpectation(
         answer = answer.concat(
           createTextResponse(
             'Try again next time and see if you can get all the answers.',
-            ResponseType.FeedbackNegative
+            ResponseType.Text
           )
         );
       }
