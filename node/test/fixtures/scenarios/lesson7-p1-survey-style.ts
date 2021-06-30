@@ -3,7 +3,7 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'navy integrity training - survey says style',
+  name: 'navy integrity training - survey says style with many bad responses',
   lessonId: 'q7',
   expectedRequestResponses: [
     {
@@ -67,9 +67,36 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: ResponseType.Text,
+          type: ResponseType.Prompt,
           data: {
-            text: 'Peer pressure can cause you to allow inappropriate behavior.',
+            text: 'What might cause you to lower your standards?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: 'There is nothing that would cause me to lower my standards.',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Bad, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+            ],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegative,
+          data: {
+            text: "We'll give you this one on the board.",
           },
         },
         {
@@ -90,7 +117,41 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: 'They will not be affected',
+      userInput: 'There is no affect',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
+              { evaluation: Evaluation.Good, score: 0.5 },
+            ],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegative,
+          data: {
+            text: "Sorry, it looks like that wasn't on the board.",
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Prompt,
+          data: {
+            text: 'How can it affect someone emotionally when you correct their behavior?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: 'They will not be affected at all',
       mockClassifierResponse: {
         data: {
           output: {
@@ -146,6 +207,40 @@ export const scenario: DialogScenario = {
           type: ResponseType.FeedbackNegative,
           data: {
             text: "Sorry, it looks like that wasn't on the board.",
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Prompt,
+          data: {
+            text: 'Integrity means doing the right thing even when it is _____ ?',
+          },
+        },
+      ],
+    },
+    {
+      userInput: "You don't have to do the right thing",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { evaluation: Evaluation.Good, score: 0.5 },
+              { evaluation: Evaluation.Bad, score: 0.5 },
+              { evaluation: Evaluation.Bad, score: 1.0 },
+            ],
+            speechActs: {
+              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackNegative,
+          data: {
+            text: "We'll give you this one on the board.",
           },
         },
         {

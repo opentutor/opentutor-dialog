@@ -180,9 +180,6 @@ export async function processUserResponse(
     updateCompletedExpectations(expectationResults, sdp, atd);
     responses.push(givePositiveFeedback(atd, sdp));
     responses.concat(giveClosingRemarks(atd, sdp));
-    // return responses.concat(
-    //   atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
-    // );
   }
   if (
     expectationResults.every(
@@ -362,12 +359,7 @@ function giveNegativeFeedback(
   expectationEnded: boolean,
   atd: Dialog
 ) {
-  if (atd.dialogStyle === 'survey_says' && expectationEnded) {
-    return createTextResponse(
-      "We'll give you this one on the board.",
-      ResponseType.FeedbackNegative
-    );
-  } else if (negativeFeedbackAllowed) {
+  if (negativeFeedbackAllowed) {
     return createTextResponse(
       pickRandom(atd.negativeFeedback),
       ResponseType.FeedbackNegative
@@ -423,9 +415,10 @@ function handlePrompt(
     );
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     sdp.dialogState.expectationData[index].numPrompts += 1;
-    return [createTextResponse(p.answer, ResponseType.Text)].concat(
-      toNextExpectation(atd, sdp)
-    );
+    return revealExpectation(p.answer, atd, sdp);
+    // return [createTextResponse(p.answer, ResponseType.Text)].concat(
+    //   toNextExpectation(atd, sdp)
+    // );
   }
 }
 
@@ -571,25 +564,34 @@ function handleHints(
             ResponseType.Text
           )
         );
-        if (atd.dialogStyle !== 'survey_says') {
-          finalResponses.push(
-            createTextResponse(e.expectation, ResponseType.Text)
-          );
-        }
-        return finalResponses.concat(toNextExpectation(atd, sdp));
+        return finalResponses.concat(
+          revealExpectation(e.expectation, atd, sdp)
+        );
       } else {
         finalResponses.push(
           giveNegativeFeedback(negativeFeedbackAllowed, true, atd)
         );
-        if (atd.dialogStyle !== 'survey_says') {
-          finalResponses.push(
-            createTextResponse(e.expectation, ResponseType.Text)
-          );
-        }
-        return finalResponses.concat(toNextExpectation(atd, sdp));
+        return finalResponses.concat(
+          revealExpectation(e.expectation, atd, sdp)
+        );
       }
     }
   }
+}
+
+function revealExpectation(answer: string, atd: Dialog, sdp: SessionData) {
+  let response: OpenTutorResponse[] = [];
+  if (atd.dialogStyle !== 'survey_says') {
+    response.push(createTextResponse(answer, ResponseType.Text));
+  } else {
+    response.push(
+      createTextResponse(
+        "We'll give you this one on the board.",
+        ResponseType.FeedbackNegative
+      )
+    );
+  }
+  return response.concat(toNextExpectation(atd, sdp));
 }
 
 function calculateQuality(

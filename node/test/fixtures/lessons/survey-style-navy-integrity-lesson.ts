@@ -17,7 +17,7 @@ export const lesson: Lesson = {
       prompts: [
         {
           prompt: 'What might cause you to lower your standards?',
-          answer: 'peer pressure',
+          answer: 'Peer pressure might cause you to lower your standards.',
         },
       ],
     },
@@ -33,7 +33,7 @@ export const lesson: Lesson = {
         {
           prompt:
             'How can it affect someone emotionally when you correct their behavior?',
-          answer: 'it may be harder to work with them',
+          answer: 'It may be harder to work with them',
         },
       ],
     },
