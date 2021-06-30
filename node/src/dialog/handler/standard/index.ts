@@ -179,9 +179,10 @@ export async function processUserResponse(
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
     responses.push(givePositiveFeedback(atd, sdp));
-    return responses.concat(
-      atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
-    );
+    responses.concat(giveClosingRemarks(atd, sdp));
+    // return responses.concat(
+    //   atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
+    // );
   }
   if (
     expectationResults.every(
@@ -300,47 +301,50 @@ export function toNextExpectation(
         createTextResponse('Think about the answer!', ResponseType.Hint)
       );
   } else {
-    if (atd.dialogStyle === 'survey_says') {
-      if (calculateScore(sdp) > 0.8) {
-        answer = answer.concat(
-          createTextResponse('Nice job!', ResponseType.FeedbackPositive)
-        );
-      } else {
-        answer = answer.concat(
-          createTextResponse(
-            'Try again next time and see if you can get all the answers.',
-            ResponseType.Text
-          )
-        );
-      }
-    }
-    //all expectations completed
-    answer = answer.concat(
-      atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
-    );
+    answer = answer.concat(giveClosingRemarks(atd, sdp));
   }
   return answer;
 }
 
-function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
-  if (sdp.dialogState.expectationsCompleted.indexOf(false) === -1) {
+function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
+  // Give feedback based on score and hints used for survey style
+  let answer: OpenTutorResponse[] = [];
+  if (atd.dialogStyle === 'survey_says') {
     if (
       atd.dialogCategory !== 'sensitive' &&
-      atd.dialogStyle === 'survey_says' &&
       !sdp.dialogState.expectationData.find((e) => e.numHints > 0)
     ) {
       // give highly positive feedback if all expectations were met with no hints in survey says style
-      return createTextResponse(
-        "Amazing! You got them all. Maybe you're the expert around here.",
-        ResponseType.FeedbackPositive
+      answer = answer.concat(
+        createTextResponse(
+          "Amazing! You got them all. Maybe you're the expert around here.",
+          ResponseType.FeedbackPositive
+        )
+      );
+    } else if (calculateScore(sdp) > 0.8) {
+      answer = answer.concat(
+        createTextResponse(
+          'Nice job, you did great!',
+          ResponseType.FeedbackPositive
+        )
       );
     } else {
-      return createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
+      answer = answer.concat(
+        createTextResponse(
+          'Try again next time and see if you can get all the answers.',
+          ResponseType.Text
+        )
       );
     }
-  } else if (atd.dialogStyle === 'survey_says') {
+  }
+  answer = answer.concat(
+    atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
+  );
+  return answer;
+}
+
+function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
+  if (atd.dialogStyle === 'survey_says') {
     return createTextResponse(
       pickRandom(atd.goodPointButFeedback),
       ResponseType.FeedbackPositive
@@ -561,38 +565,29 @@ function handleHints(
         ExpectationStatus.Complete;
 
       if (alternateExpectationMet && !expectedExpectationMet) {
-        if (atd.dialogStyle === 'survey_says') {
-          return finalResponses
-            .concat([
-              createTextResponse(
-                pickRandom(atd.goodPointButOutOfHintsFeedback),
-                ResponseType.Text
-              ),
-            ])
-            .concat(toNextExpectation(atd, sdp));
-        } else {
-          return finalResponses
-            .concat([
-              createTextResponse(
-                pickRandom(atd.goodPointButOutOfHintsFeedback),
-                ResponseType.Text
-              ),
-              createTextResponse(e.expectation, ResponseType.Text),
-            ])
-            .concat(toNextExpectation(atd, sdp));
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.goodPointButOutOfHintsFeedback),
+            ResponseType.Text
+          )
+        );
+        if (atd.dialogStyle !== 'survey_says') {
+          finalResponses.push(
+            createTextResponse(e.expectation, ResponseType.Text)
+          );
         }
-      } else if (atd.dialogStyle === 'survey_says') {
-        // do not write out expectation text in transcript, it will appear on the board
-        return finalResponses
-          .concat(giveNegativeFeedback(negativeFeedbackAllowed, true, atd))
-          .concat(toNextExpectation(atd, sdp));
+        return finalResponses.concat(toNextExpectation(atd, sdp));
+      } else {
+        finalResponses.push(
+          giveNegativeFeedback(negativeFeedbackAllowed, true, atd)
+        );
+        if (atd.dialogStyle !== 'survey_says') {
+          finalResponses.push(
+            createTextResponse(e.expectation, ResponseType.Text)
+          );
+        }
+        return finalResponses.concat(toNextExpectation(atd, sdp));
       }
-      return finalResponses
-        .concat([
-          giveNegativeFeedback(negativeFeedbackAllowed, true, atd),
-          createTextResponse(e.expectation, ResponseType.Text),
-        ])
-        .concat(toNextExpectation(atd, sdp));
     }
   }
 }

@@ -160,7 +160,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     defaultData.questionIntro = lessonData.intro;
     if (lessonData.dialogStyle === 'survey_says') {
       defaultData.questionIntro.concat(
-        ' The top ${lessonData.expectations.length} answers are on the board.'
+        ' Try to list the top ${lessonData.expectations.length} answers.'
       );
     }
     defaultData.questionText = lessonData.question;
