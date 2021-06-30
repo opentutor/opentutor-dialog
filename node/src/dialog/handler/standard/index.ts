@@ -178,7 +178,7 @@ export async function processUserResponse(
   ) {
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.push(givePositiveFeedback(atd, sdp));
+    responses.push(givePositiveFeedback(atd));
     responses.concat(giveClosingRemarks(atd, sdp));
   }
   if (
@@ -204,7 +204,7 @@ export async function processUserResponse(
   ) {
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.push(givePositiveFeedback(atd, sdp));
+    responses.push(givePositiveFeedback(atd));
     return responses.concat(toNextExpectation(atd, sdp));
   }
   if (
@@ -340,7 +340,7 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
   return answer;
 }
 
-function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
+function givePositiveFeedback(atd: Dialog) {
   if (atd.dialogStyle === 'survey_says') {
     return createTextResponse(
       pickRandom(atd.goodPointButFeedback),
@@ -402,7 +402,7 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     sdp.dialogState.expectationData[index].numPrompts += 1;
 
-    return [givePositiveFeedback(atd, sdp)].concat(toNextExpectation(atd, sdp));
+    return [givePositiveFeedback(atd)].concat(toNextExpectation(atd, sdp));
   } else {
     //prompt not answered correctly. Assert.
     const index = sdp.dialogState.expectationsCompleted.indexOf(false);
@@ -463,7 +463,7 @@ function handleHints(
     );
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Complete;
-    finalResponses.push(givePositiveFeedback(atd, sdp));
+    finalResponses.push(givePositiveFeedback(atd));
     return finalResponses.concat(toNextExpectation(atd, sdp));
   } else {
     //hint not answered correctly, send other hint if exists
@@ -580,7 +580,7 @@ function handleHints(
 }
 
 function revealExpectation(answer: string, atd: Dialog, sdp: SessionData) {
-  let response: OpenTutorResponse[] = [];
+  const response: OpenTutorResponse[] = [];
   if (atd.dialogStyle !== 'survey_says') {
     response.push(createTextResponse(answer, ResponseType.Text));
   } else {
