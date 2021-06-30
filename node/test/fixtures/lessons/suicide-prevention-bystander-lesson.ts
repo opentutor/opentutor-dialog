@@ -1,3 +1,9 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import { Lesson } from 'apis/lessons';
 
 export const lesson: Lesson = {
@@ -8,6 +14,7 @@ export const lesson: Lesson = {
     'If a person loses the means to commit suicide, such as not having their gun, how does this affect their suicide risk?',
   expectations: [
     {
+      expectationId: '0',
       expectation:
         'They will be much less likely to commit suicide and will probably not attempt suicide later.',
       hints: [
@@ -23,6 +30,7 @@ export const lesson: Lesson = {
       ],
     },
     {
+      expectationId: '1',
       expectation: 'The person is still at risk compared to other people.',
       hints: [
         {

@@ -1,3 +1,9 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import { Lesson } from 'apis/lessons';
 
 export const lesson: Lesson = {
@@ -7,6 +13,7 @@ export const lesson: Lesson = {
   question: 'What are the challenges to demonstrating integrity in a group?',
   expectations: [
     {
+      expectationId: '0',
       expectation:
         'Peer pressure can cause you to allow inappropriate behavior.',
       hints: [
@@ -16,6 +23,7 @@ export const lesson: Lesson = {
       ],
     },
     {
+      expectationId: '1',
       expectation:
         "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
       hints: [
@@ -25,6 +33,7 @@ export const lesson: Lesson = {
       ],
     },
     {
+      expectationId: '2',
       expectation: 'Enforcing the rules can make you unpopular.',
       hints: [
         {
