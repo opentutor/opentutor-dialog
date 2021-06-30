@@ -7,6 +7,7 @@ export const lesson: Lesson = {
   question: 'What are the challenges to demonstrating integrity in a group?',
   expectations: [
     {
+      expectationId: '0',
       expectation:
         'Peer pressure can cause you to allow inappropriate behavior.',
       hints: [
@@ -22,6 +23,7 @@ export const lesson: Lesson = {
       ],
     },
     {
+      expectationId: '1',
       expectation:
         "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
       hints: [
@@ -38,6 +40,7 @@ export const lesson: Lesson = {
       ],
     },
     {
+      expectationId: '2',
       expectation: 'Enforcing the rules can make you unpopular.',
       hints: [
         {
