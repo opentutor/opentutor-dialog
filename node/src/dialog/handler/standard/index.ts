@@ -178,12 +178,7 @@ export async function processUserResponse(
   ) {
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.push(
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      )
-    );
+    responses.push(givePositiveFeedback(atd, sdp));
     return responses.concat(
       atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
     );
@@ -211,12 +206,7 @@ export async function processUserResponse(
   ) {
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.push(
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      )
-    );
+    responses.push(givePositiveFeedback(atd, sdp));
     return responses.concat(toNextExpectation(atd, sdp));
   }
   if (
@@ -235,7 +225,7 @@ export async function processUserResponse(
       ExpectationStatus.Active;
     setActiveExpecation(sdp);
 
-    responses.push(handleNegativeFeedback(negativeFeedbackAllowed, false, atd));
+    responses.push(giveNegativeFeedback(negativeFeedbackAllowed, false, atd));
     // check that a pump was not just added to responses, if not use hint
     if (responses[responses.length - 1].type !== ResponseType.Hint) {
       responses.push(
@@ -310,6 +300,20 @@ export function toNextExpectation(
         createTextResponse('Think about the answer!', ResponseType.Hint)
       );
   } else {
+    if (atd.dialogStyle === 'survey_says') {
+      if (calculateScore(sdp) > 0.8) {
+        answer = answer.concat(
+          createTextResponse('Nice job!', ResponseType.FeedbackPositive)
+        );
+      } else {
+        answer = answer.concat(
+          createTextResponse(
+            'Try again next time and see if you can get all the answers.',
+            ResponseType.FeedbackNegative
+          )
+        );
+      }
+    }
     //all expectations completed
     answer = answer.concat(
       atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
@@ -318,12 +322,48 @@ export function toNextExpectation(
   return answer;
 }
 
-function handleNegativeFeedback(
+function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
+  if (sdp.dialogState.expectationsCompleted.indexOf(false) === -1) {
+    if (
+      atd.dialogCategory !== 'sensitive' &&
+      atd.dialogStyle === 'survey_says' &&
+      !sdp.dialogState.expectationData.find((e) => e.numHints > 0)
+    ) {
+      // give highly positive feedback if all expectations were met with no hints in survey says style
+      return createTextResponse(
+        "Amazing! You got them all. Maybe you're the expert around here.",
+        ResponseType.FeedbackPositive
+      );
+    } else {
+      return createTextResponse(
+        pickRandom(atd.positiveFeedback),
+        ResponseType.FeedbackPositive
+      );
+    }
+  } else if (atd.dialogStyle === 'survey_says') {
+    return createTextResponse(
+      pickRandom(atd.goodPointButFeedback),
+      ResponseType.FeedbackPositive
+    );
+  } else {
+    return createTextResponse(
+      pickRandom(atd.positiveFeedback),
+      ResponseType.FeedbackPositive
+    );
+  }
+}
+
+function giveNegativeFeedback(
   negativeFeedbackAllowed: boolean,
   expectationEnded: boolean,
   atd: Dialog
 ) {
-  if (negativeFeedbackAllowed) {
+  if (atd.dialogStyle === 'survey_says' && expectationEnded) {
+    return createTextResponse(
+      "We'll give you this one on the board.",
+      ResponseType.FeedbackNegative
+    );
+  } else if (negativeFeedbackAllowed) {
     return createTextResponse(
       pickRandom(atd.negativeFeedback),
       ResponseType.FeedbackNegative
@@ -366,12 +406,7 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     sdp.dialogState.expectationData[index].numPrompts += 1;
 
-    return [
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      ),
-    ].concat(toNextExpectation(atd, sdp));
+    return [givePositiveFeedback(atd, sdp)].concat(toNextExpectation(atd, sdp));
   } else {
     //prompt not answered correctly. Assert.
     const index = sdp.dialogState.expectationsCompleted.indexOf(false);
@@ -431,12 +466,7 @@ function handleHints(
     );
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Complete;
-    finalResponses.push(
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      )
-    );
+    finalResponses.push(givePositiveFeedback(atd, sdp));
     return finalResponses.concat(toNextExpectation(atd, sdp));
   } else {
     //hint not answered correctly, send other hint if exists
@@ -504,7 +534,7 @@ function handleHints(
         );
       } else {
         finalResponses.push(
-          handleNegativeFeedback(negativeFeedbackAllowed, false, atd)
+          giveNegativeFeedback(negativeFeedbackAllowed, false, atd)
         );
       }
       // check that a pump was not just added to responses, if not use prompt
@@ -531,19 +561,35 @@ function handleHints(
         ExpectationStatus.Complete;
 
       if (alternateExpectationMet && !expectedExpectationMet) {
+        if (atd.dialogStyle === 'survey_says') {
+          return finalResponses
+            .concat([
+              createTextResponse(
+                pickRandom(atd.goodPointButOutOfHintsFeedback),
+                ResponseType.Text
+              ),
+            ])
+            .concat(toNextExpectation(atd, sdp));
+        } else {
+          return finalResponses
+            .concat([
+              createTextResponse(
+                pickRandom(atd.goodPointButOutOfHintsFeedback),
+                ResponseType.Text
+              ),
+              createTextResponse(e.expectation, ResponseType.Text),
+            ])
+            .concat(toNextExpectation(atd, sdp));
+        }
+      } else if (atd.dialogStyle === 'survey_says') {
+        // do not write out expectation text in transcript, it will appear on the board
         return finalResponses
-          .concat([
-            createTextResponse(
-              pickRandom(atd.goodPointButOutOfHintsFeedback),
-              ResponseType.Text
-            ),
-            createTextResponse(e.expectation, ResponseType.Text),
-          ])
+          .concat(giveNegativeFeedback(negativeFeedbackAllowed, true, atd))
           .concat(toNextExpectation(atd, sdp));
       }
       return finalResponses
         .concat([
-          handleNegativeFeedback(negativeFeedbackAllowed, true, atd),
+          giveNegativeFeedback(negativeFeedbackAllowed, true, atd),
           createTextResponse(e.expectation, ResponseType.Text),
         ])
         .concat(toNextExpectation(atd, sdp));

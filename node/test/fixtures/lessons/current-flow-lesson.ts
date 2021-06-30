@@ -22,6 +22,7 @@ export const lesson: Lesson = {
     "Let's try a different problem.",
   ],
   dialogCategory: 'default',
+  dialogStyle: 'standard',
 };
 
 export default lesson;

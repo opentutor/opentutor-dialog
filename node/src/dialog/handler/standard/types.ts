@@ -41,6 +41,7 @@ export interface DialogConfig {
   badThreshold: number;
   goodMetacognitiveThreshold: number;
   dialogCategory: 'default' | 'sensitive';
+  dialogStyle: 'standard' | 'survey_says';
 }
 
 export default DialogConfig;

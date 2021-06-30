@@ -1,8 +1,8 @@
 import { Lesson } from 'apis/lessons';
 
 export const lesson: Lesson = {
-  name: 'Current Flow2',
-  lessonId: 'q3',
+  name: 'Current Flow',
+  lessonId: 'q7',
   intro: 'Here is a question about integrity, a key Navy attribute.',
   question: 'What are the challenges to demonstrating integrity in a group?',
   expectations: [
@@ -14,7 +14,12 @@ export const lesson: Lesson = {
           text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
         },
       ],
-      prompts: [],
+      prompts: [
+        {
+          prompt: 'What might cause you to lower your standards?',
+          answer: 'peer pressure',
+        },
+      ],
     },
     {
       expectation:
@@ -24,7 +29,13 @@ export const lesson: Lesson = {
           text: 'How can it affect someone when you correct their behavior?',
         },
       ],
-      prompts: [],
+      prompts: [
+        {
+          prompt:
+            'How can it affect someone emotionally when you correct their behavior?',
+          answer: 'it may be harder to work with them',
+        },
+      ],
     },
     {
       expectation: 'Enforcing the rules can make you unpopular.',
@@ -33,7 +44,13 @@ export const lesson: Lesson = {
           text: "How can it affect you when you correct someone's behavior?",
         },
       ],
-      prompts: [],
+      prompts: [
+        {
+          prompt:
+            'Integrity means doing the right thing even when it is _____ ?',
+          answer: 'unpopular',
+        },
+      ],
     },
   ],
   conclusion: [
@@ -42,7 +59,7 @@ export const lesson: Lesson = {
     'However, integrity means speaking out even when it is unpopular.',
   ],
   dialogCategory: 'default',
-  dialogStyle: 'standard',
+  dialogStyle: 'ssurvey_says',
 };
 
 export default lesson;

@@ -22,6 +22,13 @@ export const FEEDBACK_GOOD_POINT_BUT = [
   `Yes and let's get this other point...`,
 ];
 
+export const FEEDBACK_GOOD_POINT_BUT_MORE = [
+  "Good point! But there's more.",
+  `That's true. Now what is another answer?`,
+  `Yes and let's move on to another answer...`,
+  'Right! But there are more answers left.',
+];
+
 export const FEEDBACK_NEGATIVE = [
   'Not really.',
   "I don't think so.",
@@ -60,10 +67,23 @@ export const SENSITIVE_NEGATIVE_FEEDBACK = [
   'Not quite, I was thinking about something different.',
 ];
 
+export const SURVEY_STYLE_NEGATIVE_FEEDBACK = [
+  "Sorry, it looks like that wasn't on the board.",
+  "Sorry, we didn't match that in the list.",
+  "I'm sorry, that wasn't one of the answers on the board.",
+  "I'm sorry, we didn't find that answer in our list.",
+];
+
 export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [
-  'Good point, though I was actually thinking about another piece.',
+  'Good point, though I was actually thinking about another piece',
   "That's a good point, but I had another part in mind.",
 ];
+
+export const SURVEY_STYLE_FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED =
+  [
+    'Good point, that answer is here, though I was actually thinking about another piece. Both are on the board.',
+    "That's a good answer, but I had another in mind. Both are on the board.",
+  ];
 
 export function toConfig(lessonData: Lesson): DialogConfig {
   const defaultData: DialogConfig = {
@@ -91,9 +111,14 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     negativeFeedback:
       lessonData.dialogCategory === 'sensitive'
         ? SENSITIVE_NEGATIVE_FEEDBACK
+        : lessonData.dialogStyle === 'survey_says'
+        ? SURVEY_STYLE_NEGATIVE_FEEDBACK
         : FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
-    goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
+    goodPointButFeedback:
+      lessonData.dialogStyle === 'survey_says'
+        ? FEEDBACK_GOOD_POINT_BUT_MORE
+        : FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback:
       FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
     pump: [
@@ -128,10 +153,16 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         : badThreshold,
     goodMetacognitiveThreshold: goodMetacognitiveThreshold,
     dialogCategory: lessonData.dialogCategory,
+    dialogStyle: lessonData.dialogStyle,
   };
 
   try {
     defaultData.questionIntro = lessonData.intro;
+    if (lessonData.dialogStyle === 'survey_says') {
+      defaultData.questionIntro.concat(
+        ' The top ${lessonData.expectations.length} answers are on the board.'
+      );
+    }
     defaultData.questionText = lessonData.question;
     defaultData.lessonId = lessonData.lessonId;
     defaultData.recapText = Array.isArray(lessonData.conclusion)

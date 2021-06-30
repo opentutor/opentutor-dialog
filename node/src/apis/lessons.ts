@@ -30,7 +30,8 @@ export interface Lesson {
   question: string;
   expectations: LessonExpectation[];
   conclusion: string[] | string;
-  dialogCategory?: 'sensitive' | 'default';
+  dialogCategory: 'sensitive' | 'default';
+  dialogStyle: 'standard' | 'survey_says';
 }
 
 export interface LessonWrapper {
@@ -70,6 +71,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
             lessonId
             intro
             dialogCategory
+            dialogStyle
             question
             conclusion
             expectations {
