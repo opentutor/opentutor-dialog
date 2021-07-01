@@ -1247,13 +1247,21 @@ describe('dialog', async () => {
         classifierGrades: [
           {
             expectationResults: [
-              { evaluation: Evaluation.Bad, score: 1.0 },
-              { evaluation: Evaluation.Good, score: 0.4 },
-              { evaluation: Evaluation.Good, score: 0.4 },
+              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 0.4 },
             ],
             speechActs: {
-              metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-              profanity: { evaluation: Evaluation.Good, score: 0.5 },
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
             },
           },
         ],
