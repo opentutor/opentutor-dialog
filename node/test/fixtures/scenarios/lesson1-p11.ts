@@ -43,8 +43,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Encouragement,
           data: {
-            text:
-              "That's okay, can you type a bit more about what you are thinking?",
+            text: "That's okay, can you type a bit more about what you are thinking?",
           },
         },
       ],

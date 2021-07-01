@@ -13,8 +13,7 @@ const expectVariantIndex = 1;
 const variantRandom = expectVariantIndex / FEEDBACK_GOOD_POINT_BUT.length;
 
 export const scenario: DialogScenario = {
-  name:
-    'lesson1 part 12: there is more than one variation of the "good point but" server message',
+  name: 'lesson1 part 12: there is more than one variation of the "good point but" server message',
   lessonId: 'q1',
   expectedRequestResponses: [
     {

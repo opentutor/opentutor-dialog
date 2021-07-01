@@ -41,8 +41,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
+            text: 'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
           },
         },
         {

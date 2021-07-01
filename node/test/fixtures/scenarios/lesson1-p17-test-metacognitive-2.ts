@@ -10,8 +10,7 @@ import { ResponseType } from 'dialog/response-data';
 
 //navy integrity perfect answer
 export const scenario: DialogScenario = {
-  name:
-    'lesson1 part 17: metacognitive response test 2. other half of the random response.',
+  name: 'lesson1 part 17: metacognitive response test 2. other half of the random response.',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -45,16 +44,14 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Encouragement,
           data: {
-            text:
-              "That's an okay place to start. Let's try this part together.",
+            text: "That's an okay place to start. Let's try this part together.",
           },
         },
         {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text:
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           },
         },
       ],
