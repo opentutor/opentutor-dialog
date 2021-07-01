@@ -9,7 +9,7 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'uses sensitive negative responses for lesson marked as sensistive',
+  name: 'uses sensitive negative and sensitive positive responses for lesson marked as sensistive',
   lessonId: 'q4',
   expectedRequestResponses: [
     {
@@ -91,7 +91,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Great.',
+            text: 'Right.',
           },
         },
         {
