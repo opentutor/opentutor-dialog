@@ -26,7 +26,7 @@ import { pickRandom, nextRandom } from 'dialog/random';
 import { DialogHandler } from '../types';
 import { Lesson } from 'apis/lessons';
 import DialogConfig from './types';
-import { toConfig } from './config';
+import { toConfig, allowNegativeFeedback } from './config';
 
 function setActiveExpecation(sdp: SessionData) {
   //find the current active expecation and log it.
@@ -42,7 +42,6 @@ export async function processUserResponse(
   sdp: SessionData
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
-  let negativeFeedbackAllowed = true;
   try {
     atd.expectations.map((exp) => {
       return {
@@ -70,23 +69,6 @@ export async function processUserResponse(
             message: err.message,
           }
     );
-  }
-  // check if negative feedback was given during last 2 cycles for sensitive lessons
-  if (
-    atd.dialogCategory === 'sensitive' &&
-    sdp.sessionHistory.systemResponses.length >= 2
-  ) {
-    if (
-      sdp.sessionHistory.systemResponses
-        .slice(-2)
-        .find((prevRespones) =>
-          prevRespones.some((prevResponse) =>
-            atd.negativeFeedback.includes(prevResponse)
-          )
-        )
-    ) {
-      negativeFeedbackAllowed = false;
-    }
   }
 
   const expectationResults = classifierResult.output.expectationResults;
@@ -159,15 +141,7 @@ export async function processUserResponse(
   if (e && h) {
     //response is to a hint
     return responses.concat(
-      handleHints(
-        lessonId,
-        atd,
-        sdp,
-        expectationResults,
-        e,
-        h,
-        negativeFeedbackAllowed
-      )
+      handleHints(lessonId, atd, sdp, expectationResults, e, h)
     );
   }
 
@@ -223,7 +197,7 @@ export async function processUserResponse(
       ExpectationStatus.Active;
     setActiveExpecation(sdp);
 
-    responses.push(giveNegativeFeedback(negativeFeedbackAllowed, false, atd));
+    responses.push(giveNegativeFeedback(false, atd, sdp));
     // check that a pump was not just added to responses, if not use hint
     if (responses[responses.length - 1].type !== ResponseType.Hint) {
       responses.push(
@@ -306,11 +280,8 @@ export function toNextExpectation(
 function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
   // Give feedback based on score and hints used for survey style
   let answer: OpenTutorResponse[] = [];
-  if (atd.dialogStyle === 'survey_says') {
-    if (
-      atd.dialogCategory !== 'sensitive' &&
-      !sdp.dialogState.expectationData.find((e) => e.numHints > 0)
-    ) {
+  if (atd.hasSummaryFeedback) {
+    if (!sdp.dialogState.expectationData.find((e) => e.numHints > 0)) {
       // give highly positive feedback if all expectations were met with no hints in survey says style
       answer = answer.concat(
         createTextResponse(
@@ -342,7 +313,7 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
 
 function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
   if (
-    atd.dialogStyle === 'survey_says' &&
+    atd.expectationsLeftFeedback.length !== 0 &&
     sdp.dialogState.expectationsCompleted.indexOf(false) !== -1
   ) {
     return createTextResponse(
@@ -361,11 +332,12 @@ function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
 }
 
 function giveNegativeFeedback(
-  negativeFeedbackAllowed: boolean,
   expectationEnded: boolean,
-  atd: Dialog
+  atd: Dialog,
+  sdp: SessionData
 ) {
-  if (negativeFeedbackAllowed) {
+  // check if negative feedback was given during last 2 cycles for sensitive lessons
+  if (allowNegativeFeedback(atd, sdp)) {
     return createTextResponse(
       pickRandom(atd.negativeFeedback),
       ResponseType.FeedbackNegative
@@ -422,9 +394,6 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     sdp.dialogState.expectationData[index].numPrompts += 1;
     return revealExpectation(p.answer, atd, sdp);
-    // return [createTextResponse(p.answer, ResponseType.Text)].concat(
-    //   toNextExpectation(atd, sdp)
-    // );
   }
 }
 
@@ -434,8 +403,7 @@ function handleHints(
   sdp: SessionData,
   expectationResults: ExpectationResult[],
   e: Expectation,
-  h: string,
-  negativeFeedbackAllowed: boolean
+  h: string
 ) {
   const expectationId: number = atd.expectations.indexOf(e);
   const finalResponses: Array<OpenTutorResponse> = [];
@@ -536,9 +504,7 @@ function handleHints(
           )
         );
       } else {
-        finalResponses.push(
-          giveNegativeFeedback(negativeFeedbackAllowed, false, atd)
-        );
+        finalResponses.push(giveNegativeFeedback(false, atd, sdp));
       }
       // check that a pump was not just added to responses, if not use prompt
       if (
@@ -574,9 +540,7 @@ function handleHints(
           revealExpectation(e.expectation, atd, sdp)
         );
       } else {
-        finalResponses.push(
-          giveNegativeFeedback(negativeFeedbackAllowed, true, atd)
-        );
+        finalResponses.push(giveNegativeFeedback(true, atd, sdp));
         return finalResponses.concat(
           revealExpectation(e.expectation, atd, sdp)
         );
@@ -587,13 +551,13 @@ function handleHints(
 
 function revealExpectation(answer: string, atd: Dialog, sdp: SessionData) {
   const response: OpenTutorResponse[] = [];
-  if (atd.dialogStyle !== 'survey_says') {
+  if (atd.expectationOnTheBoard.length === 0) {
     response.push(createTextResponse(answer, ResponseType.Text));
   } else {
     response.push(
       createTextResponse(
-        "We'll give you this one on the board.",
-        ResponseType.FeedbackNegative
+        pickRandom(atd.expectationOnTheBoard),
+        ResponseType.Text
       )
     );
   }

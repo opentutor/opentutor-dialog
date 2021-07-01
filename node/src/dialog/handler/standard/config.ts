@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { Lesson } from 'apis/lessons';
+import SessionData, { SessionHistory } from 'dialog/session-data';
 import { DialogConfig } from './types';
 
 const goodThreshold: number =
@@ -104,6 +105,35 @@ export const CLOSING_NEGATIVE_FEEDBACK = [
   "Sorry, it looks like you missed a few answers. We'll get them next time.",
 ];
 
+export const SURVEY_STYLE_EXPECTATION_REVEAL = [
+  "We'll give you this one on the board.",
+  "Okay, we'll put this one on the board.",
+  'The answer for this one is on the board',
+];
+
+export function allowNegativeFeedback(
+  atd: DialogConfig,
+  sdp: SessionData
+): boolean {
+  if (
+    atd.dialogCategory === 'sensitive' &&
+    sdp.sessionHistory.systemResponses.length >= 2
+  ) {
+    if (
+      sdp.sessionHistory.systemResponses
+        .slice(-2)
+        .find((prevRespones) =>
+          prevRespones.some((prevResponse) =>
+            atd.negativeFeedback.includes(prevResponse)
+          )
+        )
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export function toConfig(lessonData: Lesson): DialogConfig {
   const defaultData: DialogConfig = {
     lessonId: '',
@@ -127,7 +157,9 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? SENSITIVE_POSITIVE_FEEDBACK
         : POSITIVE_FEEDBACK,
     perfectFeedback:
-      lessonData.dialogStyle === 'survey_says'
+      lessonData.dialogCategory === 'sensitive'
+        ? []
+        : lessonData.dialogStyle === 'survey_says'
         ? PERFECT_FEEDBACK_SURVEY_STYLE
         : ['Nicely done!', 'You got it!'],
     negativeFeedback:
@@ -143,15 +175,15 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     expectationsLeftFeedback:
       lessonData.dialogStyle === 'survey_says'
         ? FEEDBACK_EXPECTATIONS_LEFT
-        : null,
+        : [],
     closingPositiveFeedback:
-      lessonData.dialogStyle === 'survey_says'
-        ? CLOSING_POSITIVE_FEEDBACK
-        : null,
+      lessonData.dialogStyle === 'survey_says' ? CLOSING_POSITIVE_FEEDBACK : [],
     closingNegativeFeedback:
+      lessonData.dialogStyle === 'survey_says' ? CLOSING_NEGATIVE_FEEDBACK : [],
+    expectationOnTheBoard:
       lessonData.dialogStyle === 'survey_says'
-        ? CLOSING_NEGATIVE_FEEDBACK
-        : null,
+        ? SURVEY_STYLE_EXPECTATION_REVEAL
+        : [],
     pump: [
       "Let's work through this together.",
       'And can you add to that?',
@@ -183,6 +215,9 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? sensitiveBadThreshold
         : badThreshold,
     goodMetacognitiveThreshold: goodMetacognitiveThreshold,
+    hasSummaryFeedback:
+      lessonData.dialogStyle === 'survey_says' &&
+      lessonData.dialogCategory === 'default',
     dialogCategory: lessonData.dialogCategory,
     dialogStyle: lessonData.dialogStyle,
   };

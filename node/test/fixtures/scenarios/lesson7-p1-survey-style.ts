@@ -118,7 +118,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.Text,
           data: {
             text: "We'll give you this one on the board.",
           },
@@ -210,7 +210,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.Text,
           data: {
             text: "We'll give you this one on the board.",
           },
@@ -294,7 +294,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.Text,
           data: {
             text: "We'll give you this one on the board.",
           },
