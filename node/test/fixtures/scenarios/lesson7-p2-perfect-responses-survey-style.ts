@@ -3,7 +3,7 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'navy integrity training - survey says style with perfect responses (no hints used)',
+  name: 'navy integrity training - survey says style with perfect response',
   lessonId: 'q7',
   expectedRequestResponses: [
     {
@@ -40,13 +40,6 @@ export const scenario: DialogScenario = {
             text: "Amazing! You got them all. Maybe you're the expert around here.",
           },
         },
-        // {
-        //   author: 'them',
-        //   type: ResponseType.FeedbackNegative,
-        //   data: {
-        //     text: "We'll give you this one on the board.",
-        //   },
-        // },
         {
           author: 'them',
           data: {
