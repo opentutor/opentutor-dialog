@@ -3,8 +3,8 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 3: wrong answer to expectation 1 and then system uses a hint',
-  lessonId: 'q1',
+  name: 'uses sensitive negative responses for lesson marked as sensistive',
+  lessonId: 'q4',
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',
@@ -12,21 +12,13 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { expectationId: '2', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
+              {expectationId: "0", evaluation: Evaluation.Bad, score: 1.0 },
+              {expectationId: "1", evaluation: Evaluation.Good, score: 0.5 },
+              {expectationId: "2", evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
-              metacognitive: {
-                expectationId: 'metacognitive',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: 'profanity',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
+              metacognitive: { expectationId:"", evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { expectationId:"", evaluation: Evaluation.Good, score: 0.5 },
             },
           },
         },
@@ -36,7 +28,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.FeedbackNegative,
           data: {
-            text: 'Not really.',
+            text: "I'm not sure about that.",
           },
         },
         {
@@ -61,21 +53,13 @@ export const scenario: DialogScenario = {
         data: {
           output: {
             expectationResults: [
-              { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
+              {expectationId: "0", evaluation: Evaluation.Good, score: 1.0 },
+              {expectationId: "1", evaluation: Evaluation.Good, score: 0.5 },
+              {expectationId: "2", evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
-              metacognitive: {
-                expectationId: 'metacognitive',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: 'profanity',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
+              metacognitive: {expectationId: "", evaluation: Evaluation.Good, score: 0.5 },
+              profanity: { expectationId: "", evaluation: Evaluation.Good, score: 0.5 },
             },
           },
         },

@@ -1,14 +1,13 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
-import { POSITIVE_FEEDBACK } from 'dialog/dialog-data';
+import { POSITIVE_FEEDBACK } from 'dialog/handler/standard/config';
 
 const expectVariantIndex = 1;
 const variantRandom = expectVariantIndex / POSITIVE_FEEDBACK.length;
 
 export const scenario: DialogScenario = {
-  name:
-    'lesson1 part 13: if more than one unexpected expectation is fulfilled along with the expected expectation, only the positive feedback should be given.',
+  name: 'lesson1 part 13: if more than one unexpected expectation is fulfilled along with the expected expectation, only the positive feedback should be given.',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -77,8 +76,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              'Peer pressure can push you to allow and participate in inappropriate behavior.',
+            text: 'Peer pressure can push you to allow and participate in inappropriate behavior.',
           },
         },
         {
@@ -92,8 +90,7 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              'However, integrity means speaking out even when it is unpopular.',
+            text: 'However, integrity means speaking out even when it is unpopular.',
           },
         },
       ],

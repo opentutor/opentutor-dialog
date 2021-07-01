@@ -4,7 +4,7 @@ import { ResponseType } from 'dialog/response-data';
 import {
   POSITIVE_FEEDBACK,
   FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
-} from 'dialog/dialog-data';
+} from 'dialog/handler/standard/config';
 
 const expectVariantIndex = 1;
 const variantRandom =
@@ -12,8 +12,7 @@ const variantRandom =
   FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED.length;
 
 export const scenario: DialogScenario = {
-  name:
-    'lesson1 part 14: when no hints or prompts are remaining and the user fulfills an unrelated expectation.  acknowledge it',
+  name: 'lesson1 part 14: when no hints or prompts are remaining and the user fulfills an unrelated expectation.  acknowledge it',
   lessonId: 'q3',
   expectedRequestResponses: [
     {
@@ -75,18 +74,16 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text:
-              FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED[
-                expectVariantIndex
-              ],
+            text: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED[
+              expectVariantIndex
+            ],
           },
         },
         {
           author: 'them',
           type: ResponseType.Text,
           data: {
-            text:
-              'Peer pressure can cause you to allow inappropriate behavior.',
+            text: 'Peer pressure can cause you to allow inappropriate behavior.',
           },
         },
       ],

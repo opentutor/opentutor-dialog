@@ -128,24 +128,21 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              'Peer pressure can push you to allow and participate in inappropriate behavior.',
+            text: 'Peer pressure can push you to allow and participate in inappropriate behavior.',
           },
         },
         {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
           },
         },
         {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text:
-              'However, integrity means speaking out even when it is unpopular.',
+            text: 'However, integrity means speaking out even when it is unpopular.',
           },
         },
       ],

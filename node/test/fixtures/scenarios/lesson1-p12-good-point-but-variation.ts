@@ -1,14 +1,13 @@
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
-import { FEEDBACK_GOOD_POINT_BUT } from 'dialog/dialog-data';
+import { FEEDBACK_GOOD_POINT_BUT } from 'dialog/handler/standard/config';
 
 const expectVariantIndex = 1;
 const variantRandom = expectVariantIndex / FEEDBACK_GOOD_POINT_BUT.length;
 
 export const scenario: DialogScenario = {
-  name:
-    'lesson1 part 12: there is more than one variation of the "good point but" server message',
+  name: 'lesson1 part 12: there is more than one variation of the "good point but" server message',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
