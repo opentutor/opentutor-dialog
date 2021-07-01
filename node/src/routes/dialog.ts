@@ -108,10 +108,9 @@ router.post(
       const graphQLResponse = updateSession(lesson, sessionData, username)
         ? true
         : false;
-      const currentExpectation =
-        sessionData.dialogState.expectationData.findIndex(
-          (e) => e.status === ExpectationStatus.Active
-        );
+      const currentExpectation = sessionData.dialogState.expectationData.findIndex(
+        (e) => e.status === ExpectationStatus.Active
+      );
 
       res.send({
         status: 200,

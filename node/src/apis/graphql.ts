@@ -49,8 +49,8 @@ function toGqlRequest(
   sdp: SessionData,
   username: string
 ): GraphQLRequest {
-  const expectationScores: ExpectationScores[] =
-    sdp.sessionHistory.classifierGrades.map((r) => {
+  const expectationScores: ExpectationScores[] = sdp.sessionHistory.classifierGrades.map(
+    (r) => {
       return {
         expectationScore: r.expectationResults.map((e) => {
           return {
@@ -60,7 +60,8 @@ function toGqlRequest(
           };
         }),
       };
-    });
+    }
+  );
 
   const userResponses: Response[] = sdp.sessionHistory.userResponses.map(
     (r, index) => {

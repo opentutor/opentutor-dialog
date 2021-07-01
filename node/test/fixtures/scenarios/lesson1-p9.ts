@@ -1,9 +1,16 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 9: this tests that if a user answers another expectation while in a hint for a different expectation, system handles it well.',
+  name:
+    'lesson1 part 9: this tests that if a user answers another expectation while in a hint for a different expectation, system handles it well.',
   lessonId: 'q1',
   expectedRequestResponses: [
     {
@@ -50,7 +57,8 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            text:
+              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
           },
         },
       ],
@@ -197,7 +205,8 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Prompt,
           data: {
-            text: 'Integrity means doing the right thing even when it is _____ ?',
+            text:
+              'Integrity means doing the right thing even when it is _____ ?',
           },
         },
       ],
@@ -239,21 +248,24 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text: 'Peer pressure can push you to allow and participate in inappropriate behavior.',
+            text:
+              'Peer pressure can push you to allow and participate in inappropriate behavior.',
           },
         },
         {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            text:
+              "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
           },
         },
         {
           author: 'them',
           type: ResponseType.Closing,
           data: {
-            text: 'However, integrity means speaking out even when it is unpopular.',
+            text:
+              'However, integrity means speaking out even when it is unpopular.',
           },
         },
         ,
