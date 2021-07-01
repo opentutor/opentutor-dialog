@@ -7,9 +7,13 @@ docker-build:
 		-t $(DOCKER_IMAGE) \
 	.
 
-.PHONY: pretty
-pretty: node_modules/prettier
-	npm run format
+.PHONY: format
+format:
+	cd .. && $(MAKE) format
+
+.PHONY: license
+license:
+	cd .. && $(MAKE) license
 
 .PHONY: lint-fix
 lint-fix: node_modules/eslint
@@ -18,13 +22,7 @@ lint-fix: node_modules/eslint
 node_modules/eslint:
 	npm ci
 
-node_modules/license-check-and-add:
-	npm ci
-
 node_modules/mocha:
-	npm ci
-
-node_modules/prettier:
 	npm ci
 
 node_modules/typescript:
@@ -32,6 +30,10 @@ node_modules/typescript:
 
 run: node_modules/typescript
 	npm run start:dev
+
+.PHONY: pretty
+pretty:
+	cd .. && $(MAKE) pretty
 
 .PHONY: test
 test: node_modules/mocha
@@ -48,12 +50,12 @@ test-audit:
 	npm run test:audit
 
 .PHONY: test-format
-test-format: node_modules/prettier
-	npm run test:format
+test-format:
+	cd .. && $(MAKE) test-format
 
 .PHONY: test-license
-test-license: node_modules/license-check-and-add
-	npm run test:license
+test-license:
+	cd .. && $(MAKE) test-license
 
 .PHONY: test-lint
 test-lint: node_modules/eslint
