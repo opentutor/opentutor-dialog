@@ -22,11 +22,12 @@ export const FEEDBACK_GOOD_POINT_BUT = [
   `Yes and let's get this other point...`,
 ];
 
-export const FEEDBACK_GOOD_POINT_BUT_MORE = [
-  "Good point! But there's more.",
-  `That's true. Now what is another answer?`,
-  `Yes and let's move on to another answer...`,
-  'Right! But there are more answers left.',
+export const FEEDBACK_EXPECTATIONS_LEFT = [
+  "But there's more.",
+  "Now what's another answer?",
+  `Now let's move on to another answer...`,
+  'But there are more answers left.',
+  'But there are still more answers.',
 ];
 
 export const FEEDBACK_NEGATIVE = [
@@ -60,6 +61,12 @@ export const SENSITIVE_POSITIVE_FEEDBACK = [
   "That's correct.",
 ];
 
+export const PERFECT_FEEDBACK_SURVEY_STYLE = [
+  "Amazing! You got them all. Maybe you're the expert around here.",
+  'Wow! You got them all, that was perfect.',
+  "Great job! You really knew theses answers, you're a pro!",
+];
+
 export const SENSITIVE_NEGATIVE_FEEDBACK = [
   "I'm not sure about that.",
   'Think about this.',
@@ -81,9 +88,21 @@ export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [
 
 export const SURVEY_STYLE_FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED =
   [
-    'Good point, that answer is here, though I was actually thinking about another piece. Both are on the board.',
+    'Good point, though I was actually thinking about another piece. Both are on the board.',
     "That's a good answer, but I had another in mind. Both are on the board.",
   ];
+
+export const CLOSING_POSITIVE_FEEDBACK = [
+  'Nice job, you did great!',
+  'You did pretty well on this lesson!',
+  'Good job, it looks like you understood this lesson',
+];
+
+export const CLOSING_NEGATIVE_FEEDBACK = [
+  'Try again next time and see if you can get all the answers.',
+  "It looks like you didn't get all the answers, try again next time.",
+  "Sorry, it looks like you missed a few answers. We'll get them next time.",
+];
 
 export function toConfig(lessonData: Lesson): DialogConfig {
   const defaultData: DialogConfig = {
@@ -107,7 +126,10 @@ export function toConfig(lessonData: Lesson): DialogConfig {
       lessonData.dialogCategory === 'sensitive'
         ? SENSITIVE_POSITIVE_FEEDBACK
         : POSITIVE_FEEDBACK,
-    perfectFeedback: ['Nicely done!', 'You got it!'],
+    perfectFeedback:
+      lessonData.dialogStyle === 'survey_says'
+        ? PERFECT_FEEDBACK_SURVEY_STYLE
+        : ['Nicely done!', 'You got it!'],
     negativeFeedback:
       lessonData.dialogCategory === 'sensitive'
         ? SENSITIVE_NEGATIVE_FEEDBACK
@@ -115,12 +137,21 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? SURVEY_STYLE_NEGATIVE_FEEDBACK
         : FEEDBACK_NEGATIVE,
     neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
-    goodPointButFeedback:
-      lessonData.dialogStyle === 'survey_says'
-        ? FEEDBACK_GOOD_POINT_BUT_MORE
-        : FEEDBACK_GOOD_POINT_BUT,
+    goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback:
       FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
+    expectationsLeftFeedback:
+      lessonData.dialogStyle === 'survey_says'
+        ? FEEDBACK_EXPECTATIONS_LEFT
+        : null,
+    closingPositiveFeedback:
+      lessonData.dialogStyle === 'survey_says'
+        ? CLOSING_POSITIVE_FEEDBACK
+        : null,
+    closingNegativeFeedback:
+      lessonData.dialogStyle === 'survey_says'
+        ? CLOSING_NEGATIVE_FEEDBACK
+        : null,
     pump: [
       "Let's work through this together.",
       'And can you add to that?',
@@ -160,7 +191,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     defaultData.questionIntro = lessonData.intro;
     if (lessonData.dialogStyle === 'survey_says') {
       defaultData.questionIntro.concat(
-        ' Try to list the top ${lessonData.expectations.length} answers.'
+        ' Try to list the top ${lessonData.expectations.length} expert answers.'
       );
     }
     defaultData.questionText = lessonData.question;

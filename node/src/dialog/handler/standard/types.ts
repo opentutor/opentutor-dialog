@@ -31,6 +31,9 @@ export interface DialogConfig {
   goodPointButFeedback: string[];
   goodPointButOutOfHintsFeedback: string[];
   perfectFeedback: string[];
+  expectationsLeftFeedback?: string[];
+  closingPositiveFeedback?: string[];
+  closingNegativeFeedback?: string[];
   pump: string[];
   pumpBlank: string[];
   hintStart: string[];

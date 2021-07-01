@@ -301,7 +301,7 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: ResponseType.Text,
+          type: ResponseType.FeedbackNegative,
           data: {
             text: 'Try again next time and see if you can get all the answers.',
           },

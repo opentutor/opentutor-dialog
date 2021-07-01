@@ -178,7 +178,7 @@ export async function processUserResponse(
   ) {
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.push(givePositiveFeedback(atd));
+    // responses.push(givePositiveFeedback(atd, sdp));
     responses.concat(giveClosingRemarks(atd, sdp));
   }
   if (
@@ -204,7 +204,7 @@ export async function processUserResponse(
   ) {
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.push(givePositiveFeedback(atd));
+    responses.push(givePositiveFeedback(atd, sdp));
     return responses.concat(toNextExpectation(atd, sdp));
   }
   if (
@@ -314,22 +314,22 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
       // give highly positive feedback if all expectations were met with no hints in survey says style
       answer = answer.concat(
         createTextResponse(
-          "Amazing! You got them all. Maybe you're the expert around here.",
+          pickRandom(atd.perfectFeedback),
           ResponseType.FeedbackPositive
         )
       );
     } else if (calculateScore(sdp) > 0.8) {
       answer = answer.concat(
         createTextResponse(
-          'Nice job, you did great!',
+          pickRandom(atd.closingPositiveFeedback),
           ResponseType.FeedbackPositive
         )
       );
     } else {
       answer = answer.concat(
         createTextResponse(
-          'Try again next time and see if you can get all the answers.',
-          ResponseType.Text
+          pickRandom(atd.closingNegativeFeedback),
+          ResponseType.FeedbackNegative
         )
       );
     }
@@ -340,10 +340,16 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
   return answer;
 }
 
-function givePositiveFeedback(atd: Dialog) {
-  if (atd.dialogStyle === 'survey_says') {
+function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
+  if (
+    atd.dialogStyle === 'survey_says' &&
+    sdp.dialogState.expectationsCompleted.indexOf(false) !== -1
+  ) {
     return createTextResponse(
-      pickRandom(atd.goodPointButFeedback),
+      [
+        pickRandom(atd.positiveFeedback),
+        pickRandom(atd.expectationsLeftFeedback),
+      ].join(' '),
       ResponseType.FeedbackPositive
     );
   } else {
@@ -402,7 +408,7 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     sdp.dialogState.expectationData[index].numPrompts += 1;
 
-    return [givePositiveFeedback(atd)].concat(toNextExpectation(atd, sdp));
+    return [givePositiveFeedback(atd, sdp)].concat(toNextExpectation(atd, sdp));
   } else {
     //prompt not answered correctly. Assert.
     const index = sdp.dialogState.expectationsCompleted.indexOf(false);
@@ -463,7 +469,7 @@ function handleHints(
     );
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Complete;
-    finalResponses.push(givePositiveFeedback(atd));
+    finalResponses.push(givePositiveFeedback(atd, sdp));
     return finalResponses.concat(toNextExpectation(atd, sdp));
   } else {
     //hint not answered correctly, send other hint if exists
