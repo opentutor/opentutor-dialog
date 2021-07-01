@@ -5,10 +5,32 @@ docker-build:
 	cd node \
 	&& $(MAKE) docker-build
 
+.PHONY: format
+format:
+	$(MAKE) pretty
+	$(MAKE) license
+
+LICENSE:
+	@echo "you must have a LICENSE file" 1>&2
+	exit 1
+
+LICENSE_HEADER:
+	@echo "you must have a LICENSE_HEADER file" 1>&2
+	exit 1
+
+.PHONY: license
+license: node_modules/license-check-and-add LICENSE LICENSE_HEADER
+	npm run license:fix
+
+node_modules/license-check-and-add:
+	npm ci
+
+node_modules/prettier:
+	npm ci
+
 .PHONY: pretty
-pretty:
-	cd node \
-	&& $(MAKE) pretty
+pretty: node_modules/prettier
+	npm run pretty
 
 .PHONY: run
 run:
@@ -20,46 +42,35 @@ test:
 	cd node \
 	&& $(MAKE) test
 
-.PHONY: test-endpoint
-test-endpoint:
-	cd node \
-	&& MOCKING_DISABLED=1 DIALOG_ENDPOINT=$(DIALOG_ENDPOINT) $(MAKE) test
-
 .PHONY: test-all
 test-all:
 	cd node \
 	&& $(MAKE) test-all
 
+.PHONY: test-audit
+test-audit:
+	cd node \
+	&& $(MAKE) test-audit
+
 .PHONY: test-format
 test-format:
-	cd node \
-	&& $(MAKE) test-format
+	$(MAKE) test-pretty
+	$(MAKE) test-license
+
+.PHONY: test-license
+test-license: node_modules/license-check-and-add LICENSE LICENSE_HEADER
+	npm run test:license
 
 .PHONY: test-lint
 test-lint:
 	cd node \
 	&& $(MAKE) test-lint
 
-LICENSE:
-	@echo "you must have a LICENSE file" 1>&2
-	exit 1
-
-LICENSE_HEADER:
-	@echo "you must have a LICENSE_HEADER file" 1>&2
-	exit 1
-
-.PHONY: license
-license: LICENSE LICENSE_HEADER
-	cd node && npm run license:fix
-
-.PHONY: format
-format: LICENSE LICENSE_HEADER
+.PHONY: test-pretty
+test-pretty: node_modules/prettier
+	npm run test:pretty
+	
+.PHONY: test-types
+test-types:
 	cd node \
-	&& npm run license:fix && $(MAKE) pretty
-
-.PHONY: test-license
-test-license: LICENSE LICENSE_HEADER
-	cd node && npm run test:license
-
-node_modules/license-check-and-add:
-	npm ci
+	&& $(MAKE) test-types
