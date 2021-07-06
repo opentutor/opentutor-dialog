@@ -1414,4 +1414,189 @@ describe('dialog', async () => {
       ]);
     });
   });
+
+  describe('Survey Says Style Lesson', () => {
+    const lessonIdq7 = 'q7';
+
+    const validSessionData: SessionData = {
+      dialogState: {
+        expectationsCompleted: [false, false, false],
+        currentExpectation: -1,
+        expectationData: [
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+        ],
+        hints: false,
+      },
+      sessionHistory: {
+        classifierGrades: new Array<ClassifierResult>(),
+        systemResponses: [
+          [
+            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+          ],
+        ],
+        userResponses: new Array<UserResponse>(),
+        userScores: new Array<number>(),
+      },
+      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+      previousUserResponse: '',
+      previousSystemResponse: [
+        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+      ],
+    };
+
+    const validSessionDto = dataToDto(validSessionData);
+
+    it('responds with a random apologetic negative feedback message for survey says style lesson', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q7')) {
+            return [200, { data: { me: { lesson: lessonById.q7 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq7, app, {
+        message: 'bad answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonIdq7,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNegative)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf([
+        "Sorry, it looks like that wasn't on the board.",
+        "Sorry, we didn't match that in the list.",
+        "I'm sorry, that wasn't one of the answers on the board.",
+        "I'm sorry, we didn't find that answer in our list.",
+      ]);
+    });
+    it('responds with a random positive feedback message that indicates there are expectations left for survey says style lesson', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q7')) {
+            return [200, { data: { me: { lesson: lessonById.q7 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq7, app, {
+        message: 'good answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonIdq7,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      let feedback = (response.body.response as OpenTutorResponse[])
+        .filter((m) => m.type == ResponseType.FeedbackPositive)
+        .map((m) => (m.data as TextData).text)[0]
+        .split(/([!,?,.]) /);
+      expect(feedback[0].concat(feedback[1])).to.be.oneOf([
+        'Great.',
+        'Good.',
+        'Right.',
+        "Yeah, that's right.",
+        'Excellent.',
+        'Correct.',
+      ]);
+      expect(feedback[2]).to.be.oneOf([
+        "But there's more.",
+        "Now what's another answer?",
+        `Now let's move on to another answer...`,
+        'But there are more answers left.',
+        'But there are still more answers.',
+      ]);
+    });
+  });
 });

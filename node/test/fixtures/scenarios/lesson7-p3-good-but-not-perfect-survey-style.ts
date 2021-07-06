@@ -134,7 +134,6 @@ export const scenario: DialogScenario = {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            // expectation text
             text: "How can it affect you when you correct someone's behavior?",
           },
         },
