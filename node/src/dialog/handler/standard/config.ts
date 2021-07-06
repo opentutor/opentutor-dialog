@@ -163,12 +163,15 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? PERFECT_FEEDBACK_SURVEY_STYLE
         : ['Nicely done!', 'You got it!'],
     negativeFeedback:
-      lessonData.dialogCategory === 'sensitive'
-        ? SENSITIVE_NEGATIVE_FEEDBACK
-        : lessonData.dialogStyle === 'survey_says'
+      lessonData.dialogStyle === 'survey_says'
         ? SURVEY_STYLE_NEGATIVE_FEEDBACK
+        : lessonData.dialogCategory === 'sensitive'
+        ? SENSITIVE_NEGATIVE_FEEDBACK
         : FEEDBACK_NEGATIVE,
-    neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
+    neutralFeedback:
+      lessonData.dialogStyle === 'survey_says'
+        ? SURVEY_STYLE_NEGATIVE_FEEDBACK
+        : ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback:
       FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,

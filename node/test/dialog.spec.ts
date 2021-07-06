@@ -1530,6 +1530,67 @@ describe('dialog', async () => {
       ]);
     });
 
+    it('responds with a random apologetic neutral feedback message for survey says style lesson', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q7')) {
+            return [200, { data: { me: { lesson: lessonById.q7 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq7, app, {
+        message: 'bad answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonIdq7,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf([
+        "Sorry, it looks like that wasn't on the board.",
+        "Sorry, we didn't match that in the list.",
+        "I'm sorry, that wasn't one of the answers on the board.",
+        "I'm sorry, we didn't find that answer in our list.",
+      ]);
+    });
+
     it('responds with a random positive feedback message that indicates there are expectations left for survey says style lesson', async () => {
       if (mockAxios) {
         mockAxios.reset();
@@ -1794,6 +1855,145 @@ describe('dialog', async () => {
         "We'll give you this one on the board.",
         "Okay, we'll put this one on the board.",
         'The answer for this one is on the board',
+      ]);
+    });
+
+    it('gives overall positive feedback when score was good (but not perfect)', async () => {
+      const updatedValidSessionData: SessionData = {
+        dialogState: {
+          expectationsCompleted: [true, true, false],
+          currentExpectation: 2,
+          expectationData: [
+            {
+              ideal: '',
+              score: 0,
+              numHints: 1,
+              numPrompts: 1,
+              satisfied: true,
+              status: ExpectationStatus.Complete,
+            },
+            {
+              ideal: '',
+              score: 0,
+              numHints: 1,
+              numPrompts: 0,
+              satisfied: true,
+              status: ExpectationStatus.Complete,
+            },
+            {
+              ideal: '',
+              score: 0,
+              numHints: 1,
+              numPrompts: 0,
+              satisfied: false,
+              status: ExpectationStatus.Active,
+            },
+          ],
+          hints: true,
+        },
+        sessionHistory: {
+          classifierGrades: [
+            {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Good, score: 0.4 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.8 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+              },
+            },
+          ],
+          systemResponses: [
+            [
+              'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+            ],
+            [
+              'Right. But there are still more answers.',
+              'How can it affect someone when you correct their behavior?',
+            ],
+          ],
+          userResponses: [
+            { text: 'correct answer for expectation 0', activeExpectation: -1 },
+            { text: 'correct answer for expectation 1', activeExpectation: 1 },
+          ],
+          userScores: [0.7, 0.8],
+        },
+        sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+        previousUserResponse: 'good answer for expectation 2',
+        previousSystemResponse: [
+          "Good. Now what's another answer?",
+          "How can it affect you when you correct someone's behavior?",
+        ],
+      };
+
+      const updatedValidSessionDto = dataToDto(updatedValidSessionData);
+
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q7')) {
+            return [200, { data: { me: { lesson: lessonById.q7 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 0.9 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq7, app, {
+        message: 'good answer',
+        username: 'testuser',
+        sessionInfo: updatedValidSessionDto,
+        lessonId: lessonIdq7,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackPositive)
+          .map((m) => (m.data as TextData).text)
+      ).to.include.oneOf([
+        'Nice job, you did great!',
+        'You did pretty well on this lesson!',
+        'Good job, it looks like you understood this lesson',
       ]);
     });
   });
