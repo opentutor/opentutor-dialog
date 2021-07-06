@@ -152,7 +152,6 @@ export async function processUserResponse(
   ) {
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
-    // responses.push(givePositiveFeedback(atd, sdp));
     responses.concat(giveClosingRemarks(atd, sdp));
   }
   if (

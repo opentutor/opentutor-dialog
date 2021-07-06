@@ -1598,5 +1598,65 @@ describe('dialog', async () => {
         'But there are still more answers.',
       ]);
     });
+
+    it('responds with a random highly positive feedback message for perfect answer in survey style lesson', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q7')) {
+            return [200, { data: { me: { lesson: lessonById.q7 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq7, app, {
+        message: 'perfect answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonIdq7,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackPositive)
+          .map((m) => (m.data as TextData).text)
+      ).to.include.oneOf([
+        "Amazing! You got them all. Maybe you're the expert around here.",
+        'Wow! You got them all, that was perfect.',
+        "Great job! You really knew theses answers, you're a pro!",
+      ]);
+    });
   });
 });
