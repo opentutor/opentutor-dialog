@@ -819,10 +819,11 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNeutral)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([ 
+      ).to.be.oneOf([
         "Good point! But let's focus on this part.",
         `That's true. Now consider this...`,
-        `Yes and let's get this other point...`]);
+        `Yes and let's get this other point...`,
+      ]);
     });
 
     it('responds with a random negative feedback message from a set of messages', async () => {
