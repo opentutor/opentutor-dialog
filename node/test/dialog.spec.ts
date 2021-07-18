@@ -1827,8 +1827,8 @@ describe('dialog', async () => {
       expect(
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackPositive)
-          .map((m) => (m.data as TextData).text)
-      ).to.include.oneOf([
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf([
         "Amazing! You got them all. Maybe you're the expert around here.",
         'Wow! You got them all, that was perfect.',
         "Great job! You really knew theses answers, you're a pro!",

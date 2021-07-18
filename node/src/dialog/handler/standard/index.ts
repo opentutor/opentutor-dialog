@@ -323,6 +323,7 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
   answer = answer.concat(
     atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
   );
+  // Give goodbye greeting for sensitive lesson
   return answer;
 }
 

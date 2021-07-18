@@ -123,6 +123,12 @@ export const SURVEY_STYLE_EXPECTATION_REVEAL = [
   'The answer for this one is on the board',
 ];
 
+export const SENSITIVE_FAREWELL = [
+  "Good job today, it was nice to see you. Bye!",
+  "Thanks for working on this lesson today, you did some good work.",
+  "You made a great effort on this lesson. See you later!"
+];
+
 export function allowNegativeFeedback(
   atd: DialogConfig,
   sdp: SessionData
