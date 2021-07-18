@@ -65,7 +65,7 @@ export const SENSITIVE_POSITIVE_FEEDBACK = [
 export const PERFECT_FEEDBACK_SURVEY_STYLE = [
   "Amazing! You got them all. Maybe you're the expert around here.",
   'Wow! You got them all, that was perfect.',
-  "Great job! You really knew theses answers, you're a pro!",
+  "Great job! You really knew these answers, you're a pro!",
 ];
 
 export const SENSITIVE_NEGATIVE_FEEDBACK = [
@@ -77,9 +77,9 @@ export const SENSITIVE_NEGATIVE_FEEDBACK = [
 
 export const SURVEY_STYLE_NEGATIVE_FEEDBACK = [
   "Sorry, it looks like that wasn't on the board.",
-  "Sorry, we didn't match that in the list.",
+  "Sorry, I didn't match that in the list.",
   "I'm sorry, that wasn't one of the answers on the board.",
-  "I'm sorry, we didn't find that answer in our list.",
+  "I'm sorry, I didn't find that answer on the list.",
 ];
 
 export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [

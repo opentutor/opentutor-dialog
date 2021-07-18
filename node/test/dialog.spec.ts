@@ -1996,5 +1996,144 @@ describe('dialog', async () => {
         'Good job, it looks like you understood this lesson',
       ]);
     });
+
+    it('gives overall negative feedback when final score was not good', async () => {
+      const updatedValidSessionData: SessionData = {
+        dialogState: {
+          expectationsCompleted: [true, true, false],
+          currentExpectation: 2,
+          expectationData: [
+            {
+              ideal: '',
+              score: 0,
+              numHints: 2,
+              numPrompts: 1,
+              satisfied: false,
+              status: ExpectationStatus.Complete,
+            },
+            {
+              ideal: '',
+              score: 0,
+              numHints: 2,
+              numPrompts: 0,
+              satisfied: false,
+              status: ExpectationStatus.Complete,
+            },
+            {
+              ideal: '',
+              score: 0,
+              numHints: 1,
+              numPrompts: 0,
+              satisfied: false,
+              status: ExpectationStatus.Active,
+            },
+          ],
+          hints: true,
+        },
+        sessionHistory: {
+          classifierGrades: [
+            {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Good, score: 0.4 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.6 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+              },
+            },
+          ],
+          systemResponses: [
+            [
+              'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+            ],
+            [
+              'Right. But there are still more answers.',
+              'How can it affect someone when you correct their behavior?',
+            ],
+          ],
+          userResponses: [
+            { text: 'wrong answer for expectation 0', activeExpectation: -1 },
+            { text: 'wrong answer for expectation 1', activeExpectation: 1 },
+          ],
+          userScores: [0.5, 0.5],
+        },
+        sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+        previousUserResponse: 'good answer for expectation 2',
+        previousSystemResponse: [
+          "Good. Now what's another answer?",
+          "How can it affect you when you correct someone's behavior?",
+        ],
+      };
+
+      const updatedValidSessionDto = dataToDto(updatedValidSessionData);
+
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q7')) {
+            return [200, { data: { me: { lesson: lessonById.q7 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 0.7 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq7, app, {
+        message: 'good answer',
+        username: 'testuser',
+        sessionInfo: updatedValidSessionDto,
+        lessonId: lessonIdq7,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNegative)
+          .map((m) => (m.data as TextData).text)
+      ).to.include.oneOf([
+        'Try again next time and see if you can get all the answers.',
+        "It looks like you didn't get all the answers, try again next time.",
+        "Sorry, it looks like you missed a few answers. We'll get them next time.",
+      ]);
+    });
   });
 });
