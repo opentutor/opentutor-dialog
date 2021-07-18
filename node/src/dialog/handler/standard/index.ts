@@ -152,9 +152,9 @@ export async function processUserResponse(
   ) {
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.concat(giveClosingRemarks(atd, sdp));
+    return responses.concat(giveClosingRemarks(atd, sdp));
   }
-  if (
+  else if (
     expectationResults.every(
       (x) =>
         (x.score < atd.goodThreshold && x.evaluation === Evaluation.Good) ||
@@ -170,7 +170,20 @@ export async function processUserResponse(
     );
     return responses.concat(toNextExpectation(atd, sdp));
   }
-  if (
+  else if (
+    expectationResults.find(
+      (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
+    ) && 
+    expectationResults.find(
+      (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
+    )
+  ) {
+    //satisfied one expectation but gave very wrong answer(s) for others
+    updateCompletedExpectations(expectationResults, sdp, atd);
+    responses.push(createTextResponse(pickRandom(atd.goodPointButFeedback), ResponseType.FeedbackNeutral))
+    return responses.concat(toNextExpectation(atd, sdp));
+  }
+  else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
     )
@@ -180,7 +193,7 @@ export async function processUserResponse(
     responses.push(givePositiveFeedback(atd, sdp));
     return responses.concat(toNextExpectation(atd, sdp));
   }
-  if (
+  else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
     )
@@ -303,6 +316,8 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
         )
       );
     }
+  } else if (!sdp.dialogState.expectationData.find((e) => e.numHints > 0)){
+    answer = answer.concat(givePositiveFeedback(atd, sdp));
   }
   answer = answer.concat(
     atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
