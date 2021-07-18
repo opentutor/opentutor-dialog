@@ -124,20 +124,18 @@ export const SURVEY_STYLE_EXPECTATION_REVEAL = [
 ];
 
 export const SENSITIVE_FAREWELL = [
-  "Good job today, it was nice to see you. Bye!",
-  "Thanks for working on this lesson today, you did some good work.",
-  "You made a great effort on this lesson. See you later!"
+  'Good job today, it was nice to see you. Bye!',
+  'Thanks for working on this lesson today, you did some good work.',
+  'You made a great effort on this lesson. See you later!',
 ];
 
 export function allowNegativeFeedback(
   atd: DialogConfig,
   sdp: SessionData
 ): boolean {
-  if (
-    atd.dialogCategory === 'sensitive' &&
-    sdp.sessionHistory.systemResponses.length >= 2
-  ) {
+  if (atd.dialogCategory === 'sensitive') {
     if (
+      sdp.sessionHistory.systemResponses.length >= 2 &&
       sdp.sessionHistory.systemResponses
         .slice(-2)
         .find((prevRespones) =>
@@ -146,6 +144,9 @@ export function allowNegativeFeedback(
           )
         )
     ) {
+      return false;
+    } else if (sdp.sessionHistory.systemResponses.length === 1) {
+      // no negative feedback on first answer for sensitive lesson
       return false;
     }
   }
@@ -233,6 +234,8 @@ export function toConfig(lessonData: Lesson): DialogConfig {
       "Hey, easy there. We're both here to help you learn.",
     ],
     pumpBlank: ["I'll give you some more time."],
+    farewell:
+      lessonData.dialogCategory === 'sensitive' ? SENSITIVE_FAREWELL : [],
     originalXml: '',
     goodThreshold: goodThreshold,
     badThreshold:

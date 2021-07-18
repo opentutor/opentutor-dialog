@@ -1092,67 +1092,6 @@ describe('dialog', async () => {
 
     const validSessionDto = dataToDto(validSessionData);
 
-    it('responds with a random sensitive negative feedback message when lesson is sensitive', async () => {
-      if (mockAxios) {
-        mockAxios.reset();
-        mockAxios.onGet('/config').reply(() => {
-          return [200, { API_SECRET: 'api_secret' }];
-        });
-        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q4')) {
-            return [200, { data: { me: { lesson: lessonById.q4 } } }];
-          } else {
-            const errData: LResponseObject = {
-              data: {
-                me: {
-                  lesson: null,
-                },
-              },
-            };
-            return [404, errData];
-          }
-        });
-        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          return [
-            200,
-            {
-              output: {
-                expectationResults: [
-                  { evaluation: Evaluation.Bad, score: 1.0 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                ],
-                speechActs: {
-                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
-                },
-              },
-            },
-          ];
-        });
-      }
-      const response = await postSession(lessonIdq4, app, {
-        message: 'bad answer',
-        username: 'testuser',
-        sessionInfo: validSessionDto,
-        lessonId: lessonIdq4,
-      });
-
-      expect(response.status).to.equal(200);
-      expect(response.body).to.have.property('response');
-      expect(
-        (response.body.response as OpenTutorResponse[])
-          .filter((m) => m.type == ResponseType.FeedbackNegative)
-          .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([
-        'Think about this.',
-        "I'm not sure about that.",
-        "That isn't what I had in mind.",
-        'Not quite, I was thinking about something different.',
-      ]);
-    });
-
     it('responds with a random sensitive positive feedback message when lesson is sensitive', async () => {
       if (mockAxios) {
         mockAxios.reset();
@@ -1324,6 +1263,147 @@ describe('dialog', async () => {
           .filter((m) => m.type == ResponseType.FeedbackNeutral)
           .map((m) => (m.data as TextData).text)[0]
       ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
+    });
+
+    // Update the session data to test negative feedback, since it cannot be given on first answer
+    const negativeFeedbackValidSessionData: SessionData = {
+      dialogState: {
+        expectationsCompleted: [false],
+        currentExpectation: 0,
+        expectationData: [
+          {
+            ideal: '',
+            score: 0,
+            numHints: 1,
+            numPrompts: 1,
+            satisfied: true,
+            status: ExpectationStatus.Active,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+        ],
+        hints: true,
+      },
+      sessionHistory: {
+        classifierGrades: [
+          {
+            expectationResults: [
+              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 0.4 },
+            ],
+            speechActs: {
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+            },
+          },
+        ],
+        systemResponses: [
+          [
+            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+          ],
+          [
+            'Ok.',
+            'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          ],
+        ],
+        userResponses: [
+          { text: 'This answer was wrong', activeExpectation: 0 },
+        ],
+        userScores: new Array<number>(),
+      },
+      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+      previousUserResponse: '',
+      previousSystemResponse: [
+        'How can it affect someone when you correct their behavior?',
+      ],
+    };
+
+    const negativeFeedbackValidSessionDto = dataToDto(
+      negativeFeedbackValidSessionData
+    );
+
+    it('responds with a random sensitive negative feedback message when lesson is sensitive', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q4')) {
+            return [200, { data: { me: { lesson: lessonById.q4 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq4, app, {
+        message: 'bad answer',
+        username: 'testuser',
+        sessionInfo: negativeFeedbackValidSessionDto,
+        lessonId: lessonIdq4,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNegative)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf([
+        'Think about this.',
+        "I'm not sure about that.",
+        "That isn't what I had in mind.",
+        'Not quite, I was thinking about something different.',
+      ]);
     });
 
     // Update the session data for testing dialog behavior with streaks of negative answers

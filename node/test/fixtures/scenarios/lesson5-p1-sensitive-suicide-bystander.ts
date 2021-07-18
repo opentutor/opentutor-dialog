@@ -288,7 +288,7 @@ export const scenario: DialogScenario = {
         {
           author: 'them',
           data: {
-            text: "Good job today, it was nice to see you. Bye!",
+            text: 'Good job today, it was nice to see you. Bye!',
           },
           type: 'closing',
         },

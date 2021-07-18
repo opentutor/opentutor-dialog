@@ -40,9 +40,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackNeutral,
           data: {
-            text: "I'm not sure about that.",
+            text: 'Ok.',
           },
         },
         {
@@ -82,9 +82,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackNegative,
           data: {
-            text: 'Ok.',
+            text: "I'm not sure about that.",
           },
         },
         {
@@ -188,9 +188,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackNeutral,
           data: {
-            text: "I'm not sure about that.",
+            text: 'Ok.',
           },
         },
         {
@@ -224,7 +224,7 @@ export const scenario: DialogScenario = {
         {
           author: 'them',
           data: {
-            text: "Good job today, it was nice to see you. Bye!",
+            text: 'Good job today, it was nice to see you. Bye!',
           },
           type: 'closing',
         },

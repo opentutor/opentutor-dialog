@@ -324,6 +324,11 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
     atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
   );
   // Give goodbye greeting for sensitive lesson
+  if (atd.farewell.length !== 0) {
+    answer = answer.concat(
+      createTextResponse(pickRandom(atd.farewell), ResponseType.Closing)
+    );
+  }
   return answer;
 }
 
