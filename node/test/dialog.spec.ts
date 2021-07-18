@@ -27,6 +27,7 @@ import { postDialog, postSession, MOCKING_DISABLED } from './helpers';
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
 import { randomFunctionSet, randomFunctionRestore } from 'dialog/random';
+import * as standardSpeechCans from 'dialog/handler/standard/config';
 
 const sandbox = sinon.createSandbox();
 
@@ -819,11 +820,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNeutral)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([
-        "Good point! But let's focus on this part.",
-        `That's true. Now consider this...`,
-        `Yes and let's get this other point...`,
-      ]);
+      ).to.be.oneOf(standardSpeechCans.SOME_WRONG_FEEDBACK);
     });
 
     it('responds with a random negative feedback message from a set of messages', async () => {
@@ -1215,6 +1212,62 @@ describe('dialog', async () => {
         'Correct.',
         "That's correct.",
       ]);
+    });
+
+    it('responds with a random sensitive message indicating there answer was not fully correct when other expectations got poor score.', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q4')) {
+            return [200, { data: { me: { lesson: lessonById.q4 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq4, app, {
+        message: 'good answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonIdq4,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf(standardSpeechCans.SENSITIVE_SOME_WRONG_FEEDBACK);
     });
 
     it('responds with a random neutral feedback message when the confidence is below 90% for bad responses', async () => {

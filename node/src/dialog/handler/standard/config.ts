@@ -31,6 +31,18 @@ export const FEEDBACK_EXPECTATIONS_LEFT = [
   'But there are still more answers.',
 ];
 
+export const SOME_WRONG_FEEDBACK = [
+  "Okay, that's part of it.",
+  'Well, some of that is correct.',
+  "I see. Good point, but that's not enitrely right.",
+];
+
+export const SENSITIVE_SOME_WRONG_FEEDBACK = [
+  "That's a good start.",
+  "You made a good point, but there's more.",
+  "That's a good thought.",
+];
+
 export const FEEDBACK_NEGATIVE = [
   'Not really.',
   "I don't think so.",
@@ -175,6 +187,10 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback:
       FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
+    expectationMetButOthersWrongFeedback:
+      lessonData.dialogCategory === 'sensitive'
+        ? SENSITIVE_SOME_WRONG_FEEDBACK
+        : SOME_WRONG_FEEDBACK,
     expectationsLeftFeedback:
       lessonData.dialogStyle === 'survey_says'
         ? FEEDBACK_EXPECTATIONS_LEFT

@@ -30,6 +30,7 @@ export interface DialogConfig {
   neutralFeedback: string[];
   goodPointButFeedback: string[];
   goodPointButOutOfHintsFeedback: string[];
+  expectationMetButOthersWrongFeedback: string[];
   perfectFeedback: string[];
   expectationsLeftFeedback: string[];
   closingPositiveFeedback: string[];

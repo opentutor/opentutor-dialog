@@ -180,7 +180,7 @@ export async function processUserResponse(
     updateCompletedExpectations(expectationResults, sdp, atd);
     responses.push(
       createTextResponse(
-        pickRandom(atd.goodPointButFeedback),
+        pickRandom(atd.expectationMetButOthersWrongFeedback),
         ResponseType.FeedbackNeutral
       )
     );
