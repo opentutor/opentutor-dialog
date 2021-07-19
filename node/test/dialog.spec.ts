@@ -8,7 +8,7 @@ import createApp from 'app';
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAxios from 'axios-mock-adapter';
 import { expect } from 'chai';
-import { Express } from 'express';
+import { Express, response } from 'express';
 import {
   dataToDto,
   SessionData,
@@ -1462,6 +1462,57 @@ describe('dialog', async () => {
         "That isn't what I had in mind.",
         'Not quite, I was thinking about something different.',
       ]);
+    });
+
+    it.only('asks user if they are comfortable proceeding with sensitive lesson before main question', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          const lessonData = findLessonForGqlQuery(reqBody.query);
+          if (lessonData) {
+            return [
+              200,
+              {
+                data: { me: { lesson: findLessonForGqlQuery(reqBody.query) } },
+              },
+            ];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+      }
+      const responseStartSession = await postDialog(lessonIdq4, app, {
+        lessonId: lessonIdq4,
+        id: '1',
+        user: 'rush',
+        UseDB: true,
+        ScriptXML: null,
+        LSASpaceName: 'English_TASA',
+        ScriptURL: null,
+      });
+      let sessionObj = responseStartSession.body.sessionInfo;
+      expect(responseStartSession.status).to.equal(200);
+      console.log(responseStartSession.body.response);
+      expect(
+        (responseStartSession.body.response as OpenTutorResponse[])
+          .filter((m) => m.type === ResponseType.Opening)
+          .map((m) => (m.data as TextData).text)
+        ).to.include.oneOf(["Would you like to proceed?", "Are you comfortable continuing with this lesson?"])
+      expect(
+        (responseStartSession.body.response as OpenTutorResponse[])
+          .filter((m) => m.type === ResponseType.MainQuestion)
+        ).to.be.empty;
     });
 
     // Update the session data for testing dialog behavior with streaks of negative answers
