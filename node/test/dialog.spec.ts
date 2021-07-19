@@ -1464,7 +1464,7 @@ describe('dialog', async () => {
       ]);
     });
 
-    it.only('asks user if they are comfortable proceeding with sensitive lesson before main question', async () => {
+    it('asks user if they are comfortable proceeding with sensitive lesson before main question', async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onGet('/config').reply(() => {
@@ -1508,11 +1508,12 @@ describe('dialog', async () => {
         (responseStartSession.body.response as OpenTutorResponse[])
           .filter((m) => m.type === ResponseType.Opening)
           .map((m) => (m.data as TextData).text)
-        ).to.include.oneOf(["Would you like to proceed?", "Are you comfortable continuing with this lesson?"])
+      ).to.include.oneOf(standardSpeechCans.ASK_TO_PROCEED);
       expect(
-        (responseStartSession.body.response as OpenTutorResponse[])
-          .filter((m) => m.type === ResponseType.MainQuestion)
-        ).to.be.empty;
+        (responseStartSession.body.response as OpenTutorResponse[]).filter(
+          (m) => m.type === ResponseType.MainQuestion
+        )
+      ).to.be.empty;
     });
 
     // Update the session data for testing dialog behavior with streaks of negative answers

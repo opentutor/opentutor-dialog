@@ -42,6 +42,7 @@ export interface DialogConfig {
   promptStart: string[];
   profanityFeedback: string[];
   farewell: string[];
+  askToProceed: string[];
   originalXml: string;
   goodThreshold: number;
   badThreshold: number;

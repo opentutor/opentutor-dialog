@@ -41,6 +41,18 @@ export async function processUserResponse(
   atd: Dialog,
   sdp: SessionData
 ): Promise<OpenTutorResponse[]> {
+  // first check if user wants to proceed for start of sensitive lesson
+  if (atd.askToProceed.length !== 0){
+    if (atd.askToProceed.includes(sdp.previousSystemResponse[sdp.previousSystemResponse.length - 1])){
+      // TODO: Fix this!
+      if (sdp.previousUserResponse === 'Yes'){
+        return [createTextResponse(atd.questionText, ResponseType.MainQuestion)]
+      } else {
+        return [createTextResponse(pickRandom(atd.farewell), ResponseType.Closing)]
+      }
+    }
+  }
+
   let classifierResult: ClassifierResponse;
   try {
     atd.expectations.map((exp) => {
@@ -654,11 +666,17 @@ export class StandardDialogHandler implements DialogHandler {
   async beginDialog(): Promise<OpenTutorResponse[]> {
     if (!this.config) {
       throw new Error('config not loaded');
-    }
+    } else if (this.config.askToProceed.length !== 0) {
+      return [
+      createTextResponse(this.config.questionIntro, ResponseType.Opening), 
+      createTextResponse(pickRandom(this.config.askToProceed), ResponseType.Opening),
+    ]
+    } else {
     return [
       createTextResponse(this.config.questionIntro, ResponseType.Opening),
       createTextResponse(this.config.questionText, ResponseType.MainQuestion),
     ];
+  }
   }
 
   async process(sdp: SessionData): Promise<OpenTutorResponse[]> {

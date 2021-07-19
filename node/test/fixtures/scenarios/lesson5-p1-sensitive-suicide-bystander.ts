@@ -14,6 +14,41 @@ export const scenario: DialogScenario = {
   expectedRequestResponses: [
     {
       userInput:
+        "Yes",
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { expectationId: '0', evaluation: Evaluation.Bad, score: 0.8 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+            ],
+            speechActs: {
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.MainQuestion,
+          data: {
+            text: 'If a person loses the means to commit suicide, such as not having their gun, how does this affect their suicide risk?',
+          },
+        },
+      ],
+    },
+    {
+      userInput:
         "losing it doesn't affect anything. you can't stop people who made up their mind",
       mockClassifierResponse: {
         data: {

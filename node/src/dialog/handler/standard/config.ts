@@ -129,6 +129,12 @@ export const SENSITIVE_FAREWELL = [
   'You made a great effort on this lesson. See you later!',
 ];
 
+export const ASK_TO_PROCEED = [
+  'Would you like to proceed with this lesson?',
+  'Are you comfortable continuing with this lesson?',
+  'Given the content of this lesson, would you like to continue?',
+];
+
 export function allowNegativeFeedback(
   atd: DialogConfig,
   sdp: SessionData
@@ -236,6 +242,10 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     pumpBlank: ["I'll give you some more time."],
     farewell:
       lessonData.dialogCategory === 'sensitive' ? SENSITIVE_FAREWELL : [],
+    askToProceed:       
+      lessonData.dialogCategory === 'sensitive'
+        ? ASK_TO_PROCEED
+        : [],
     originalXml: '',
     goodThreshold: goodThreshold,
     badThreshold:
