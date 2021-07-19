@@ -357,14 +357,17 @@ function giveNegativeFeedback(
   atd: Dialog,
   sdp: SessionData
 ) {
-  // check if negative feedback was given during last 2 cycles for sensitive lessons
   if (allowNegativeFeedback(atd, sdp)) {
     return createTextResponse(
       pickRandom(atd.negativeFeedback),
       ResponseType.FeedbackNegative
     );
   } else {
-    if (nextRandom() < 0.5 || expectationEnded) {
+    if (
+      nextRandom() < 0.5 ||
+      expectationEnded ||
+      sdp.sessionHistory.userResponses.length === 1
+    ) {
       return createTextResponse(
         pickRandom(atd.neutralFeedback),
         ResponseType.FeedbackNeutral
