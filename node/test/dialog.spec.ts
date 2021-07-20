@@ -1036,6 +1036,146 @@ describe('dialog', async () => {
         'See if you know the answer to this.',
       ]);
     });
+
+    const updatedValidSessionData: SessionData = {
+      dialogState: {
+        expectationsCompleted: [false, false, false],
+        currentExpectation: 0,
+        expectationData: [
+          {
+            ideal: '',
+            score: 0,
+            numHints: 1,
+            numPrompts: 1,
+            satisfied: false,
+            status: ExpectationStatus.Active,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+        ],
+        hints: true,
+      },
+      sessionHistory: {
+        classifierGrades: [
+          {
+            expectationResults: [
+              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 0.4 },
+            ],
+            speechActs: {
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+            },
+          },
+        ],
+        systemResponses: [
+          [
+            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
+          ],
+          [
+            'Ok.',
+            'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+          ],
+        ],
+        userResponses: [
+          { text: 'This answer was wrong', activeExpectation: 0 },
+        ],
+        userScores: new Array<number>(),
+      },
+      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+      previousUserResponse: 'This answer was wrong',
+      previousSystemResponse: [
+        'Ok',
+        'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+      ],
+    };
+
+    const updatedValidSessionDto = dataToDto(updatedValidSessionData);
+
+    it('does not give redundant transition messages when giving feedback for hint where another expectation was satisfied instead of current', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        message: 'Wrong for current exp, but got a different one.',
+        username: 'testuser',
+        sessionInfo: updatedValidSessionDto,
+        lessonId: lessonId,
+      });
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      console.log(response.body.response);
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf(standardSpeechCans.FEEDBACK_GOOD_POINT_BUT);
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.Text)
+          .map((m) => (m.data as TextData).text)
+      ).to.not.exist;
+    });
   });
 
   describe('Sensitive Lesson', () => {
@@ -1323,6 +1463,140 @@ describe('dialog', async () => {
       ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
     });
 
+    const lessonIdq5 = 'q5';
+    const updatedValidSessionDataRedundantCase: SessionData = {
+      dialogState: {
+        expectationsCompleted: [false, false],
+        currentExpectation: 0,
+        expectationData: [
+          {
+            ideal: '',
+            score: 0,
+            numHints: 3,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.Active,
+          },
+          {
+            ideal: '',
+            score: 0,
+            numHints: 0,
+            numPrompts: 0,
+            satisfied: false,
+            status: ExpectationStatus.None,
+          },
+        ],
+        hints: true,
+      },
+      sessionHistory: {
+        classifierGrades: [
+          {
+            expectationResults: [
+              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
+            ],
+            speechActs: {
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+            },
+          },
+        ],
+        systemResponses: [
+          [
+            'People considering suicide often have a plan.',
+            'If a person loses the means to commit suicide, such as not having their gun, how does this affect their suicide risk?',
+          ],
+          [
+            'Ok.',
+            'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
+          ],
+        ],
+        userResponses: [
+          { text: 'This answer was wrong', activeExpectation: 0 },
+        ],
+        userScores: new Array<number>(),
+      },
+      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
+      previousUserResponse: 'This answer was wrong',
+      previousSystemResponse: [
+        'Ok',
+        'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
+      ],
+    };
+
+    const updatedValidSessionDtoRedundantCase = dataToDto(
+      updatedValidSessionDataRedundantCase
+    );
+
+    it('does not give redundant transition messages when giving feedback for hint where another expectation was satisfied instead of current', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q5')) {
+            return [200, { data: { me: { lesson: lessonById.q5 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq5, app, {
+        message: 'Wrong for current exp, but got a different one.',
+        username: 'testuser',
+        sessionInfo: updatedValidSessionDtoRedundantCase,
+        lessonId: lessonIdq5,
+      });
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      console.log(response.body.response);
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf(standardSpeechCans.FEEDBACK_GOOD_POINT_BUT);
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.Text)
+          .map((m) => (m.data as TextData).text)
+      ).to.not.exist;
+    });
+
     // Update the session data to test negative feedback, since it cannot be given on first answer
     const negativeFeedbackValidSessionData: SessionData = {
       dialogState: {
@@ -1464,56 +1738,56 @@ describe('dialog', async () => {
       ]);
     });
 
-    it.only('asks user if they are comfortable proceeding with sensitive lesson before main question', async () => {
-      if (mockAxios) {
-        mockAxios.reset();
-        mockAxios.onGet('/config').reply(() => {
-          return [200, { API_SECRET: 'api_secret' }];
-        });
-        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          const lessonData = findLessonForGqlQuery(reqBody.query);
-          if (lessonData) {
-            return [
-              200,
-              {
-                data: { me: { lesson: findLessonForGqlQuery(reqBody.query) } },
-              },
-            ];
-          } else {
-            const errData: LResponseObject = {
-              data: {
-                me: {
-                  lesson: null,
-                },
-              },
-            };
-            return [404, errData];
-          }
-        });
-      }
-      const responseStartSession = await postDialog(lessonIdq4, app, {
-        lessonId: lessonIdq4,
-        id: '1',
-        user: 'rush',
-        UseDB: true,
-        ScriptXML: null,
-        LSASpaceName: 'English_TASA',
-        ScriptURL: null,
-      });
-      let sessionObj = responseStartSession.body.sessionInfo;
-      expect(responseStartSession.status).to.equal(200);
-      console.log(responseStartSession.body.response);
-      expect(
-        (responseStartSession.body.response as OpenTutorResponse[])
-          .filter((m) => m.type === ResponseType.Opening)
-          .map((m) => (m.data as TextData).text)
-        ).to.include.oneOf(["Would you like to proceed?", "Are you comfortable continuing with this lesson?"])
-      expect(
-        (responseStartSession.body.response as OpenTutorResponse[])
-          .filter((m) => m.type === ResponseType.MainQuestion)
-        ).to.be.empty;
-    });
+    // it('asks user if they are comfortable proceeding with sensitive lesson before main question', async () => {
+    //   if (mockAxios) {
+    //     mockAxios.reset();
+    //     mockAxios.onGet('/config').reply(() => {
+    //       return [200, { API_SECRET: 'api_secret' }];
+    //     });
+    //     mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+    //       const reqBody = JSON.parse(config.data);
+    //       const lessonData = findLessonForGqlQuery(reqBody.query);
+    //       if (lessonData) {
+    //         return [
+    //           200,
+    //           {
+    //             data: { me: { lesson: findLessonForGqlQuery(reqBody.query) } },
+    //           },
+    //         ];
+    //       } else {
+    //         const errData: LResponseObject = {
+    //           data: {
+    //             me: {
+    //               lesson: null,
+    //             },
+    //           },
+    //         };
+    //         return [404, errData];
+    //       }
+    //     });
+    //   }
+    //   const responseStartSession = await postDialog(lessonIdq4, app, {
+    //     lessonId: lessonIdq4,
+    //     id: '1',
+    //     user: 'rush',
+    //     UseDB: true,
+    //     ScriptXML: null,
+    //     LSASpaceName: 'English_TASA',
+    //     ScriptURL: null,
+    //   });
+    //   let sessionObj = responseStartSession.body.sessionInfo;
+    //   expect(responseStartSession.status).to.equal(200);
+    //   console.log(responseStartSession.body.response);
+    //   expect(
+    //     (responseStartSession.body.response as OpenTutorResponse[])
+    //       .filter((m) => m.type === ResponseType.Opening)
+    //       .map((m) => (m.data as TextData).text)
+    //     ).to.include.oneOf(["Would you like to proceed?", "Are you comfortable continuing with this lesson?"])
+    //   expect(
+    //     (responseStartSession.body.response as OpenTutorResponse[])
+    //       .filter((m) => m.type === ResponseType.MainQuestion)
+    //     ).to.be.empty;
+    // });
 
     // Update the session data for testing dialog behavior with streaks of negative answers
     let lessonIdq6 = 'q6';
