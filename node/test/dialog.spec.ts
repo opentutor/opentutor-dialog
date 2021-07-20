@@ -1164,7 +1164,6 @@ describe('dialog', async () => {
       });
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('response');
-      console.log(response.body.response);
       expect(
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNeutral)
@@ -1174,7 +1173,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.Text)
           .map((m) => (m.data as TextData).text)
-      ).to.not.exist;
+      ).to.be.empty;
     });
   });
 
@@ -1584,7 +1583,6 @@ describe('dialog', async () => {
       });
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('response');
-      console.log(response.body.response);
       expect(
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNeutral)
@@ -1594,7 +1592,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.Text)
           .map((m) => (m.data as TextData).text)
-      ).to.not.exist;
+      ).to.be.empty;
     });
 
     // Update the session data to test negative feedback, since it cannot be given on first answer

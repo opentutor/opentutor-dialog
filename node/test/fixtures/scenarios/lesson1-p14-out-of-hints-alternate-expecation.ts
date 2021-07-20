@@ -78,7 +78,7 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.Text,
+          type: ResponseType.FeedbackNeutral,
           data: {
             text: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED[
               expectVariantIndex

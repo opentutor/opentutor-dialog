@@ -483,9 +483,8 @@ function handleHints(
             ResponseType.FeedbackNeutral
           )
         );
+        finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       }
-
-      finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       finalResponses.push(
         createTextResponse(e.hints[e.hints.indexOf(h) + 1], ResponseType.Hint)
       );
@@ -511,9 +510,9 @@ function handleHints(
             ResponseType.FeedbackNeutral
           )
         );
+        finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       }
       finalResponses.push(
-        createTextResponse(pickRandom(atd.hintStart)),
         createTextResponse(
           atd.expectations[expectationId].hints[0],
           ResponseType.Hint
@@ -527,17 +526,23 @@ function handleHints(
             ResponseType.FeedbackNeutral
           )
         );
-      } else {
-        finalResponses.push(giveNegativeFeedback(false, atd, sdp));
-      }
-      // check that a pump was not just added to responses, if not use prompt
-      if (
-        finalResponses[finalResponses.length - 1].type !== ResponseType.Hint
-      ) {
-        finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
         finalResponses.push(
           createTextResponse(pickRandom(e.prompts).prompt, ResponseType.Prompt)
         );
+      } else {
+        finalResponses.push(giveNegativeFeedback(false, atd, sdp));
+        // check that a pump was not just added to responses, if not use prompt
+        if (
+          finalResponses[finalResponses.length - 1].type !== ResponseType.Hint
+        ) {
+          finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
+          finalResponses.push(
+            createTextResponse(
+              pickRandom(e.prompts).prompt,
+              ResponseType.Prompt
+            )
+          );
+        }
       }
       return finalResponses;
     } else {
@@ -557,18 +562,13 @@ function handleHints(
         finalResponses.push(
           createTextResponse(
             pickRandom(atd.goodPointButOutOfHintsFeedback),
-            ResponseType.Text
+            ResponseType.FeedbackNeutral
           )
-        );
-        return finalResponses.concat(
-          revealExpectation(e.expectation, atd, sdp)
         );
       } else {
         finalResponses.push(giveNegativeFeedback(true, atd, sdp));
-        return finalResponses.concat(
-          revealExpectation(e.expectation, atd, sdp)
-        );
       }
+      return finalResponses.concat(revealExpectation(e.expectation, atd, sdp));
     }
   }
 }
