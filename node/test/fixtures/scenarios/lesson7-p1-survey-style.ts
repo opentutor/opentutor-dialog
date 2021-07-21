@@ -41,6 +41,13 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'Consider this.',
+          },
+        },
+        {
+          author: 'them',
           type: ResponseType.Hint,
           data: {
             text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
@@ -79,6 +86,13 @@ export const scenario: DialogScenario = {
           type: ResponseType.FeedbackNegative,
           data: {
             text: "Sorry, it looks like that wasn't on the board.",
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'See if you can get this',
           },
         },
         {
@@ -174,6 +188,13 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'See if you can get this',
+          },
+        },
+        {
+          author: 'them',
           type: ResponseType.Prompt,
           data: {
             text: 'How can it affect someone emotionally when you correct their behavior?',
@@ -254,6 +275,13 @@ export const scenario: DialogScenario = {
           type: ResponseType.FeedbackNegative,
           data: {
             text: "Sorry, it looks like that wasn't on the board.",
+          },
+        },
+        {
+          author: 'them',
+          type: ResponseType.Text,
+          data: {
+            text: 'See if you can get this',
           },
         },
         {

@@ -115,7 +115,7 @@ export async function processUserResponse(
           ResponseType.Encouragement
         )
       );
-      return responses.concat(toNextExpectation(atd, sdp, false));
+      return responses.concat(toNextExpectation(atd, sdp, false, false));
     }
   }
 
@@ -167,7 +167,7 @@ export async function processUserResponse(
         ResponseType.FeedbackNeutral
       )
     );
-    return responses.concat(toNextExpectation(atd, sdp, true));
+    return responses.concat(toNextExpectation(atd, sdp, true, false));
   } else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
@@ -184,7 +184,7 @@ export async function processUserResponse(
         ResponseType.FeedbackNeutral
       )
     );
-    return responses.concat(toNextExpectation(atd, sdp, true));
+    return responses.concat(toNextExpectation(atd, sdp, true, false));
   } else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
@@ -193,7 +193,7 @@ export async function processUserResponse(
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp, atd);
     responses.push(givePositiveFeedback(atd, sdp));
-    return responses.concat(toNextExpectation(atd, sdp, true));
+    return responses.concat(toNextExpectation(atd, sdp, true, true));
   } else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
@@ -259,7 +259,8 @@ function updateCompletedExpectations(
 export function toNextExpectation(
   atd: Dialog,
   sdp: SessionData,
-  useHintStart: boolean
+  useHintStart: boolean,
+  afterPositiveFeedback: boolean
 ): OpenTutorResponse[] {
   //give positive feedback, and ask next expectation question
   let answer: OpenTutorResponse[] = [];
@@ -269,7 +270,13 @@ export function toNextExpectation(
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
     setActiveExpecation(sdp);
-    if (useHintStart) {
+    // Do not add hint start message when it would be redundant
+    if (
+      (atd.expectationsLeftFeedback.length !== 0 &&
+        !afterPositiveFeedback &&
+        useHintStart) ||
+      (useHintStart && atd.expectationsLeftFeedback.length === 0)
+    ) {
       answer.push(createTextResponse(pickRandom(atd.hintStart)));
     }
     if (
@@ -408,7 +415,7 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].numPrompts += 1;
 
     return [givePositiveFeedback(atd, sdp)].concat(
-      toNextExpectation(atd, sdp, true)
+      toNextExpectation(atd, sdp, true, true)
     );
   } else {
     //prompt not answered correctly. Assert.
@@ -467,7 +474,7 @@ function handleHints(
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Complete;
     finalResponses.push(givePositiveFeedback(atd, sdp));
-    return finalResponses.concat(toNextExpectation(atd, sdp, true));
+    return finalResponses.concat(toNextExpectation(atd, sdp, true, true));
   } else {
     //hint not answered correctly, send other hint if exists
     // or send prompt if exists
@@ -590,7 +597,7 @@ function revealExpectation(answer: string, atd: Dialog, sdp: SessionData) {
       )
     );
   }
-  return response.concat(toNextExpectation(atd, sdp, true));
+  return response.concat(toNextExpectation(atd, sdp, true, false));
 }
 
 function calculateQuality(

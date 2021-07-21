@@ -2234,7 +2234,7 @@ describe('dialog', async () => {
       ]);
     });
 
-    it('responds with a random positive feedback message that indicates there are expectations left for survey says style lesson', async () => {
+    it('responds with a random positive feedback message that indicates there are expectations left for survey says style lesson and does not give redundant transition messages', async () => {
       if (mockAxios) {
         mockAxios.reset();
         mockAxios.onGet('/config').reply(() => {
@@ -2302,6 +2302,11 @@ describe('dialog', async () => {
         'But there are more answers left.',
         'But there are still more answers.',
       ]);
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.Text)
+          .map((m) => (m.data as TextData).text)
+      ).to.be.empty;
     });
 
     it('responds with a random highly positive feedback message for perfect answer in survey style lesson', async () => {

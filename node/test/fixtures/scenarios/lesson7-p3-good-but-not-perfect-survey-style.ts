@@ -125,13 +125,6 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Consider this.',
-          },
-        },
-        {
-          author: 'them',
           type: ResponseType.Hint,
           data: {
             text: "How can it affect you when you correct someone's behavior?",
