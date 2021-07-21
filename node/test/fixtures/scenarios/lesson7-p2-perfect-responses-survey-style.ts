@@ -50,7 +50,7 @@ export const scenario: DialogScenario = {
         {
           author: 'them',
           data: {
-            text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            text: "When you correct someone's behavior, you may get them in trouble or negatively impact your relationship with them.",
           },
           type: 'closing',
         },

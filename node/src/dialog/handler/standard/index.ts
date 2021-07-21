@@ -115,7 +115,7 @@ export async function processUserResponse(
           ResponseType.Encouragement
         )
       );
-      return responses.concat(toNextExpectation(atd, sdp));
+      return responses.concat(toNextExpectation(atd, sdp, false));
     }
   }
 
@@ -167,7 +167,7 @@ export async function processUserResponse(
         ResponseType.FeedbackNeutral
       )
     );
-    return responses.concat(toNextExpectation(atd, sdp));
+    return responses.concat(toNextExpectation(atd, sdp, true));
   } else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
@@ -184,7 +184,7 @@ export async function processUserResponse(
         ResponseType.FeedbackNeutral
       )
     );
-    return responses.concat(toNextExpectation(atd, sdp));
+    return responses.concat(toNextExpectation(atd, sdp, true));
   } else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
@@ -193,7 +193,7 @@ export async function processUserResponse(
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp, atd);
     responses.push(givePositiveFeedback(atd, sdp));
-    return responses.concat(toNextExpectation(atd, sdp));
+    return responses.concat(toNextExpectation(atd, sdp, true));
   } else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
@@ -258,7 +258,8 @@ function updateCompletedExpectations(
 }
 export function toNextExpectation(
   atd: Dialog,
-  sdp: SessionData
+  sdp: SessionData,
+  useHintStart: boolean
 ): OpenTutorResponse[] {
   //give positive feedback, and ask next expectation question
   let answer: OpenTutorResponse[] = [];
@@ -268,7 +269,9 @@ export function toNextExpectation(
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
     setActiveExpecation(sdp);
-    answer.push(createTextResponse(pickRandom(atd.hintStart)));
+    if (useHintStart) {
+      answer.push(createTextResponse(pickRandom(atd.hintStart)));
+    }
     if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
         .hints[0]
@@ -404,7 +407,9 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     sdp.dialogState.expectationData[index].numPrompts += 1;
 
-    return [givePositiveFeedback(atd, sdp)].concat(toNextExpectation(atd, sdp));
+    return [givePositiveFeedback(atd, sdp)].concat(
+      toNextExpectation(atd, sdp, true)
+    );
   } else {
     //prompt not answered correctly. Assert.
     const index = sdp.dialogState.expectationsCompleted.indexOf(false);
@@ -462,7 +467,7 @@ function handleHints(
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Complete;
     finalResponses.push(givePositiveFeedback(atd, sdp));
-    return finalResponses.concat(toNextExpectation(atd, sdp));
+    return finalResponses.concat(toNextExpectation(atd, sdp, true));
   } else {
     //hint not answered correctly, send other hint if exists
     // or send prompt if exists
@@ -585,7 +590,7 @@ function revealExpectation(answer: string, atd: Dialog, sdp: SessionData) {
       )
     );
   }
-  return response.concat(toNextExpectation(atd, sdp));
+  return response.concat(toNextExpectation(atd, sdp, true));
 }
 
 function calculateQuality(

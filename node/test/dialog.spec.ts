@@ -1037,6 +1037,74 @@ describe('dialog', async () => {
       ]);
     });
 
+    it('does not give redundant transition messages when giving feedback for confusion with a hint', async () => {
+      mockNextRandom = sandbox.stub().returns(0.7);
+      randomFunctionSet(mockNextRandom);
+
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q1')) {
+            return [200, { data: { me: { lesson: lessonById.q1 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 1.0 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonId, app, {
+        message: 'Answer that is not good and is metacognitive.',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonId,
+      });
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.Encouragement)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf([
+        "That's okay. Let's focus on one part of the problem.",
+        "Don't worry if you aren't sure. We'll work on one piece at a time.",
+        "That's an okay place to start. Let's try this part together.",
+      ]);
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.Text)
+          .map((m) => (m.data as TextData).text)
+      ).to.be.empty;
+    });
+
     const updatedValidSessionData: SessionData = {
       dialogState: {
         expectationsCompleted: [false, false, false],
