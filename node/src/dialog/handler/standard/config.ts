@@ -242,10 +242,8 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     pumpBlank: ["I'll give you some more time."],
     farewell:
       lessonData.dialogCategory === 'sensitive' ? SENSITIVE_FAREWELL : [],
-    askToProceed:       
-      lessonData.dialogCategory === 'sensitive'
-        ? ASK_TO_PROCEED
-        : [],
+    askToProceed:
+      lessonData.dialogCategory === 'sensitive' ? ASK_TO_PROCEED : [],
     originalXml: '',
     goodThreshold: goodThreshold,
     badThreshold:

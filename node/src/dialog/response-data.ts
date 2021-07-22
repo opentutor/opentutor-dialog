@@ -31,6 +31,7 @@ export enum ResponseType {
   FeedbackNeutral = 'feedbackNeutral',
   Profanity = 'profanity',
   Encouragement = 'encouragement',
+  TriggerWarning = 'triggerWarning',
 }
 
 export function createTextResponse(

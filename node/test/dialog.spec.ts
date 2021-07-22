@@ -1503,17 +1503,21 @@ describe('dialog', async () => {
       });
       let sessionObj = responseStartSession.body.sessionInfo;
       expect(responseStartSession.status).to.equal(200);
-      console.log(responseStartSession.body.response);
       expect(
         (responseStartSession.body.response as OpenTutorResponse[])
-          .filter((m) => m.type === ResponseType.Opening)
+          .filter((m) => m.type === ResponseType.TriggerWarning)
           .map((m) => (m.data as TextData).text)
       ).to.include.oneOf(standardSpeechCans.ASK_TO_PROCEED);
       expect(
         (responseStartSession.body.response as OpenTutorResponse[]).filter(
+          (m) => m.type === ResponseType.Opening
+        )
+      ).to.exist;
+      expect(
+        (responseStartSession.body.response as OpenTutorResponse[]).filter(
           (m) => m.type === ResponseType.MainQuestion
         )
-      ).to.be.empty;
+      ).to.exist;
     });
 
     // Update the session data for testing dialog behavior with streaks of negative answers
