@@ -26,8 +26,11 @@ import { pickRandom, nextRandom } from 'dialog/random';
 import { DialogHandler } from '../types';
 import { Lesson } from 'apis/lessons';
 import DialogConfig from './types';
-import { toConfig, allowNegativeFeedback, givePositiveStreaksFeedback } from './config';
-import { appendFile } from 'fs-extra';
+import {
+  toConfig,
+  allowNegativeFeedback,
+  givePositiveStreaksFeedback,
+} from './config';
 
 function setActiveExpecation(sdp: SessionData) {
   //find the current active expecation and log it.
@@ -162,7 +165,7 @@ export async function processUserResponse(
     )
   ) {
     //answer did not match any expectation, guide user through expectations
-    sdp.dialogState.numCorrectStreak = 0
+    sdp.dialogState.numCorrectStreak = 0;
     responses.push(
       createTextResponse(
         pickRandom(atd.neutralFeedback),
@@ -358,10 +361,16 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
 
 function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
   sdp.dialogState.numCorrectStreak += 1;
-  const streaksFeedbackTextArray = givePositiveStreaksFeedback(sdp.dialogState.numCorrectStreak, atd);
+  const streaksFeedbackTextArray = givePositiveStreaksFeedback(
+    sdp.dialogState.numCorrectStreak,
+    atd
+  );
   let positiveFeedbackText = '';
   // for sensitive, check for streak of good answers
-  if (sdp.dialogState.numCorrectStreak > 1 && streaksFeedbackTextArray.length !== 0){
+  if (
+    sdp.dialogState.numCorrectStreak > 1 &&
+    streaksFeedbackTextArray.length !== 0
+  ) {
     positiveFeedbackText = pickRandom(streaksFeedbackTextArray);
   } else {
     positiveFeedbackText = pickRandom(atd.positiveFeedback);
@@ -373,14 +382,12 @@ function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
     sdp.dialogState.expectationsCompleted.indexOf(false) !== -1
   ) {
     return createTextResponse(
-      [
-        positiveFeedbackText,
-        pickRandom(atd.expectationsLeftFeedback),
-      ].join(' '),
+      [positiveFeedbackText, pickRandom(atd.expectationsLeftFeedback)].join(
+        ' '
+      ),
       ResponseType.FeedbackPositive
     );
-  } 
-  else {
+  } else {
     return createTextResponse(
       positiveFeedbackText,
       ResponseType.FeedbackPositive
@@ -634,7 +641,7 @@ function handleHints(
 }
 
 function outOfHintsFinishExpectation(
-  e: any,
+  e: Expectation,
   alternateExpectationMet: boolean,
   expectedExpectationMet: boolean,
   expectationResults: ExpectationResult[],

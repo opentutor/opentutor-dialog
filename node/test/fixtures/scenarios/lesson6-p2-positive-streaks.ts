@@ -62,7 +62,8 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: "It could get them in trouble or make it harder to work with them",
+      userInput:
+        'It could get them in trouble or make it harder to work with them',
       mockClassifierResponse: {
         data: {
           output: {
@@ -145,33 +146,33 @@ export const scenario: DialogScenario = {
           },
         },
         {
-            author: 'them',
-            data: {
-              text: 'Peer pressure can push you to allow and participate in inappropriate behavior.',
-            },
-            type: 'closing',
+          author: 'them',
+          data: {
+            text: 'Peer pressure can push you to allow and participate in inappropriate behavior.',
           },
-          {
-            author: 'them',
-            data: {
-              text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
-            },
-            type: 'closing',
+          type: 'closing',
+        },
+        {
+          author: 'them',
+          data: {
+            text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
           },
-          {
-            author: 'them',
-            data: {
-              text: 'However, integrity means speaking out even when it is unpopular.',
-            },
-            type: 'closing',
+          type: 'closing',
+        },
+        {
+          author: 'them',
+          data: {
+            text: 'However, integrity means speaking out even when it is unpopular.',
           },
-          {
-            author: 'them',
-            data: {
-              text: 'Good job today, it was nice to see you. Bye!',
-            },
-            type: 'closing',
+          type: 'closing',
+        },
+        {
+          author: 'them',
+          data: {
+            text: 'Good job today, it was nice to see you. Bye!',
           },
+          type: 'closing',
+        },
       ],
     },
   ],
