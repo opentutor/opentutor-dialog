@@ -26,7 +26,7 @@ import { pickRandom, nextRandom } from 'dialog/random';
 import { DialogHandler } from '../types';
 import { Lesson } from 'apis/lessons';
 import DialogConfig from './types';
-import { toConfig, allowNegativeFeedback } from './config';
+import { toConfig, allowNegativeFeedback, givePositiveStreaksFeedback } from './config';
 import { appendFile } from 'fs-extra';
 
 function setActiveExpecation(sdp: SessionData) {
@@ -162,6 +162,7 @@ export async function processUserResponse(
     )
   ) {
     //answer did not match any expectation, guide user through expectations
+    sdp.dialogState.numCorrectStreak = 0
     responses.push(
       createTextResponse(
         pickRandom(atd.neutralFeedback),
@@ -178,6 +179,8 @@ export async function processUserResponse(
     )
   ) {
     //satisfied one expectation but gave very wrong answer(s) for others
+    //TODO: check if this should count towards positive streak
+    sdp.dialogState.numCorrectStreak = 0;
     updateCompletedExpectations(expectationResults, sdp, atd);
     responses.push(
       createTextResponse(
@@ -201,6 +204,7 @@ export async function processUserResponse(
     )
   ) {
     //bad answer. use hint
+    sdp.dialogState.numCorrectStreak = 0;
     const expectationId = expectationResults.indexOf(
       expectationResults.find(
         (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
@@ -276,7 +280,6 @@ export function toNextExpectation(
     if (
       afterPositiveFeedback &&
       atd.givePumpOnMainQuestion &&
-      // sdp.previousSystemResponse.find((m) => m === atd.questionText)
       sdp.sessionHistory.systemResponses.length === 1
     ) {
       answer.push(createTextResponse(pickRandom(atd.pump), ResponseType.Hint));
@@ -354,6 +357,16 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
 }
 
 function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
+  sdp.dialogState.numCorrectStreak += 1;
+  const streaksFeedbackTextArray = givePositiveStreaksFeedback(sdp.dialogState.numCorrectStreak, atd);
+  let positiveFeedbackText = '';
+  // for sensitive, check for streak of good answers
+  if (sdp.dialogState.numCorrectStreak > 1 && streaksFeedbackTextArray.length !== 0){
+    positiveFeedbackText = pickRandom(streaksFeedbackTextArray);
+  } else {
+    positiveFeedbackText = pickRandom(atd.positiveFeedback);
+  }
+
   // for survey says style, check if expectations left
   if (
     atd.expectationsLeftFeedback.length !== 0 &&
@@ -361,16 +374,15 @@ function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
   ) {
     return createTextResponse(
       [
-        pickRandom(atd.positiveFeedback),
+        positiveFeedbackText,
         pickRandom(atd.expectationsLeftFeedback),
       ].join(' '),
       ResponseType.FeedbackPositive
     );
   } 
-  // for sensitive, check for streak of good answers
   else {
     return createTextResponse(
-      pickRandom(atd.positiveFeedback),
+      positiveFeedbackText,
       ResponseType.FeedbackPositive
     );
   }
@@ -381,6 +393,7 @@ function giveNegativeFeedback(
   atd: Dialog,
   sdp: SessionData
 ) {
+  sdp.dialogState.numCorrectStreak = 0;
   if (allowNegativeFeedback(atd, sdp)) {
     return createTextResponse(
       pickRandom(atd.negativeFeedback),
@@ -433,6 +446,7 @@ function handlePrompt(
     );
   } else {
     //prompt not answered correctly. Assert.
+    sdp.dialogState.numCorrectStreak = 0;
     const index = sdp.dialogState.expectationsCompleted.indexOf(false);
     sdp.dialogState.expectationsCompleted[index] = true;
     sdp.dialogState.expectationData[index].ideal =
@@ -492,7 +506,8 @@ function handleHints(
   } else {
     //hint not answered correctly, send other hint if exists
     // or send prompt if exists
-
+    //TODO: check if scenario where alternate expectation was met but hint was not should count for positive streak
+    sdp.dialogState.numCorrectStreak = 0;
     //fist check if we should give any more hints for sensitive lesson
     if (atd.limitHints) {
       if (sdp.dialogState.limitHintsMode) {

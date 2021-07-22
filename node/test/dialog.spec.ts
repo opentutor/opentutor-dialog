@@ -246,6 +246,7 @@ describe('dialog', async () => {
         ],
         hints: false,
         limitHintsMode: false,
+        numCorrectStreak: 0,
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -270,6 +271,7 @@ describe('dialog', async () => {
         currentExpectation: -1,
         hints: false,
         limitHintsMode: false,
+        numCorrectStreak: 0,
         expectationData: [],
       },
       sessionHistory: {
@@ -1140,6 +1142,7 @@ describe('dialog', async () => {
         ],
         hints: true,
         limitHintsMode: false,
+        numCorrectStreak: 0,
       },
       sessionHistory: {
         classifierGrades: [
@@ -1284,6 +1287,7 @@ describe('dialog', async () => {
         ],
         hints: false,
         limitHintsMode: false,
+        numCorrectStreak: 0,
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -1625,6 +1629,7 @@ describe('dialog', async () => {
         ],
         hints: true,
         limitHintsMode: false,
+        numCorrectStreak: 0,
       },
       sessionHistory: {
         classifierGrades: [
@@ -1767,6 +1772,7 @@ describe('dialog', async () => {
         ],
         hints: true,
         limitHintsMode: false,
+        numCorrectStreak: 0,
       },
       sessionHistory: {
         classifierGrades: [
@@ -1910,6 +1916,7 @@ describe('dialog', async () => {
         ],
         hints: true,
         limitHintsMode: false,
+        numCorrectStreak: 0,
       },
       sessionHistory: {
         classifierGrades: [
@@ -2115,6 +2122,7 @@ describe('dialog', async () => {
         ],
         hints: false,
         limitHintsMode: false,
+        numCorrectStreak: 0,
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -2425,6 +2433,7 @@ describe('dialog', async () => {
           ],
           hints: true,
           limitHintsMode: false,
+          numCorrectStreak: 0,
         },
         sessionHistory: {
           classifierGrades: [
@@ -2563,6 +2572,7 @@ describe('dialog', async () => {
           ],
           hints: true,
           limitHintsMode: false,
+          numCorrectStreak: 1,
         },
         sessionHistory: {
           classifierGrades: [
@@ -2703,6 +2713,7 @@ describe('dialog', async () => {
           ],
           hints: true,
           limitHintsMode: false,
+          numCorrectStreak: 0,
         },
         sessionHistory: {
           classifierGrades: [

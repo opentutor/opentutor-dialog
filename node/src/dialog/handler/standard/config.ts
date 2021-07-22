@@ -132,14 +132,14 @@ export const SENSITIVE_FAREWELL = [
 export function givePositiveStreaksFeedback(streakNum: number, atd: DialogConfig){
   if (atd.dialogCategory === 'sensitive'){
     return [
-      "Correct, that's ${streakNum} in a row!",
-      "That's right, you got ${streakNum} in a row!",
-      "Keep it up, you're on a roll.",
-      "Right, that's ${streakNum} in a row!",
-      "Good effort, you got ${streakNum} in a row.",
-      "That's correct, you got ${streakNum} in a row now.",
-      "Keep up the good work, that's ${streakNum} in a row.",
-      "Nicely done, that's ${streakNum} in a row",
+      `Correct, that's ${streakNum} in a row!`,
+      `That's right, you got ${streakNum} in a row!`,
+      `Keep it up, you're on a roll.`,
+      `Right, that's ${streakNum} in a row!`,
+      `Good effort, you got ${streakNum} in a row.`,
+      `That's correct, you got ${streakNum} in a row now.`,
+      `Keep up the good work, that's ${streakNum} in a row.`,
+      `Nicely done, that's ${streakNum} in a row`,
     ];
   } else {
     return [];
