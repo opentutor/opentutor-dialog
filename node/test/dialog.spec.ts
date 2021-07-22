@@ -1469,6 +1469,62 @@ describe('dialog', async () => {
 
     const validSessionDto = dataToDto(validSessionData);
 
+    it('starts the lesson with intro, main question, and asking users to list the top answers on the board.', async () => {
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          const lessonData = findLessonForGqlQuery(reqBody.query);
+          if (lessonData) {
+            return [
+              200,
+              {
+                data: { me: { lesson: findLessonForGqlQuery(reqBody.query) } },
+              },
+            ];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+      }
+      const responseStartSession = await postDialog(lessonIdq7, app, {
+        lessonId: lessonIdq7,
+        id: '1',
+        user: 'rush',
+        UseDB: true,
+        ScriptXML: null,
+        LSASpaceName: 'English_TASA',
+        ScriptURL: null,
+      });
+      let sessionObj = responseStartSession.body.sessionInfo;
+      expect(responseStartSession.status).to.equal(200);
+      expect(
+        (responseStartSession.body.response as OpenTutorResponse[])
+          .filter((m) => m.type === ResponseType.MainQuestion)
+          .map((m) => (m.data as TextData).text)
+      ).to.include("What are the challenges to demonstrating integrity in a group? Try to list the top 3 expert answers.");
+      expect(
+        (responseStartSession.body.response as OpenTutorResponse[]).filter(
+          (m) => m.type === ResponseType.Opening
+        )
+      ).to.exist;
+      expect(
+        (responseStartSession.body.response as OpenTutorResponse[]).filter(
+          (m) => m.type === ResponseType.MainQuestion
+        )
+      ).to.exist;
+    });
+
     it('responds with a random apologetic negative feedback message for survey says style lesson', async () => {
       if (mockAxios) {
         mockAxios.reset();

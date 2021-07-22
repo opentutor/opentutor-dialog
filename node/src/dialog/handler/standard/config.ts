@@ -227,12 +227,12 @@ export function toConfig(lessonData: Lesson): DialogConfig {
 
   try {
     defaultData.questionIntro = lessonData.intro;
+    defaultData.questionText = lessonData.question;
     if (lessonData.dialogStyle === 'survey_says') {
-      defaultData.questionIntro.concat(
-        ' Try to list the top ${lessonData.expectations.length} expert answers.'
+      defaultData.questionText = defaultData.questionText.concat(
+        ` Try to list the top ${lessonData.expectations.length} expert answers.`
       );
     }
-    defaultData.questionText = lessonData.question;
     defaultData.lessonId = lessonData.lessonId;
     defaultData.recapText = Array.isArray(lessonData.conclusion)
       ? lessonData.conclusion
