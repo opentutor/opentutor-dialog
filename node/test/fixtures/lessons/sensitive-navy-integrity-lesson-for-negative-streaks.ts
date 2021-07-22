@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { Lesson } from 'apis/lessons';
 
 export const lesson: Lesson = {
-  name: 'Sensitive Navy Integrity Lesson for Negative Streaks',
+  name: 'Sensitive Navy Integrity Lesson (no prompts)',
   lessonId: 'q6',
   intro: 'Here is a question about integrity, a key Navy attribute.',
   question: 'What are the challenges to demonstrating integrity in a group?',

@@ -354,6 +354,7 @@ function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
 }
 
 function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
+  // for survey says style, check if expectations left
   if (
     atd.expectationsLeftFeedback.length !== 0 &&
     sdp.dialogState.expectationsCompleted.indexOf(false) !== -1
@@ -365,7 +366,9 @@ function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
       ].join(' '),
       ResponseType.FeedbackPositive
     );
-  } else {
+  } 
+  // for sensitive, check for streak of good answers
+  else {
     return createTextResponse(
       pickRandom(atd.positiveFeedback),
       ResponseType.FeedbackPositive

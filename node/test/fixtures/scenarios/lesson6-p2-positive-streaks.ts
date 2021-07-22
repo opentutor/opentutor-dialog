@@ -9,17 +9,18 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'suicide prevention bystander training - uses sensitive negative responses for lesson marked as sensistive',
-  lessonId: 'q5',
+  name: 'navy integrity training - gives greater affirmation for continued success.',
+  lessonId: 'q6',
   expectedRequestResponses: [
     {
-      userInput: 'their long term suicide risk will decrease',
+      userInput: 'Peer pressure could influence you to allow poor behavior',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Good, score: 0.8 },
+              { expectationId: '0', evaluation: Evaluation.Good, score: 1.0 },
               { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
               metacognitive: {
@@ -44,6 +45,13 @@ export const scenario: DialogScenario = {
             text: 'Right.',
           },
         },
+        // {
+        //     author: 'them',
+        //     type: ResponseType.Text,
+        //     data: {
+        //         text: 'Consider this.',
+        //     },
+        // },
         {
           author: 'them',
           type: ResponseType.Hint,
@@ -54,13 +62,14 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: 'they are still at a higher risk than other people',
+      userInput: "It could get them in trouble or make it harder to work with them",
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
               { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.9 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
               metacognitive: {
@@ -87,25 +96,82 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
+          type: ResponseType.Text,
           data: {
-            text: 'Most people do not attempt suicide again if their plan is interrupted or if they survive a suicide attempt. This means that removing guns, pills, or other ways to commit suicide are very important.',
+            text: 'Consider this.',
           },
-          type: 'closing',
         },
         {
           author: 'them',
+          type: ResponseType.Hint,
           data: {
-            text: 'However, a person with suicidal thoughts is still at-risk and they should receive professional help to decrease their risk and improve their quality of life.',
+            // expectation text
+            text: "How can it affect you when you correct someone's behavior?",
           },
-          type: 'closing',
         },
+      ],
+    },
+    {
+      userInput: 'It could make me unpopular',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
+            ],
+            speechActs: {
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+            },
+          },
+        },
+      },
+      expectedResponse: [
         {
           author: 'them',
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Good job today, it was nice to see you. Bye!',
+            text: "Correct, that's 3 in a row!",
           },
-          type: 'closing',
         },
+        {
+            author: 'them',
+            data: {
+              text: 'Peer pressure can push you to allow and participate in inappropriate behavior.',
+            },
+            type: 'closing',
+          },
+          {
+            author: 'them',
+            data: {
+              text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            },
+            type: 'closing',
+          },
+          {
+            author: 'them',
+            data: {
+              text: 'However, integrity means speaking out even when it is unpopular.',
+            },
+            type: 'closing',
+          },
+          {
+            author: 'them',
+            data: {
+              text: 'Good job today, it was nice to see you. Bye!',
+            },
+            type: 'closing',
+          },
       ],
     },
   ],
