@@ -38,6 +38,7 @@ export interface DialogState {
   expectationData: ExpectationData[];
   currentExpectation: number;
   hints: boolean;
+  limitHintsMode: boolean;
 }
 
 export enum ExpectationStatus {
@@ -133,6 +134,7 @@ export function newSession(lesson: Lesson, sessionId = ''): SessionData {
       expectationData: newExpectationData(lesson),
       currentExpectation: -1,
       hints: false,
+      limitHintsMode: false,
     },
   };
 }

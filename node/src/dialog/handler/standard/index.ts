@@ -27,6 +27,7 @@ import { DialogHandler } from '../types';
 import { Lesson } from 'apis/lessons';
 import DialogConfig from './types';
 import { toConfig, allowNegativeFeedback } from './config';
+import { appendFile } from 'fs-extra';
 
 function setActiveExpecation(sdp: SessionData) {
   //find the current active expecation and log it.
@@ -489,6 +490,38 @@ function handleHints(
     //hint not answered correctly, send other hint if exists
     // or send prompt if exists
 
+    //fist check if we should give any more hints for sensitive lesson
+    if (atd.limitHints) {
+      if (sdp.dialogState.limitHintsMode) {
+        return outOfHintsFinishExpectation(
+          e,
+          alternateExpectationMet,
+          expectedExpectationMet,
+          expectationResults,
+          finalResponses,
+          atd,
+          sdp
+        );
+      }
+      let totalHints = 0;
+      sdp.dialogState.expectationData.forEach((expData) => {
+        if (expData.satisfied === false) {
+          totalHints += expData.numHints;
+        }
+      });
+      if (totalHints >= 3) {
+        return outOfHintsFinishExpectation(
+          e,
+          alternateExpectationMet,
+          expectedExpectationMet,
+          expectationResults,
+          finalResponses,
+          atd,
+          sdp
+        );
+      }
+    }
+
     if (e.hints.indexOf(h) < e.hints.length - 1 && atd.pump.indexOf(h) === -1) {
       //another hint exists, use that.
       if (alternateExpectationMet && !expectedExpectationMet) {
@@ -569,30 +602,49 @@ function handleHints(
       return finalResponses;
     } else {
       //if no prompt, assert
-      const index = sdp.dialogState.expectationsCompleted.indexOf(false);
-      sdp.dialogState.expectationsCompleted[index] = true;
-      sdp.dialogState.expectationData[index].ideal =
-        atd.expectations[index].expectation;
-      sdp.dialogState.expectationData[index].satisfied = false;
-      sdp.dialogState.expectationData[index].score = normalizeScores(
-        expectationResults[index]
+      return outOfHintsFinishExpectation(
+        e,
+        alternateExpectationMet,
+        expectedExpectationMet,
+        expectationResults,
+        finalResponses,
+        atd,
+        sdp
       );
-      sdp.dialogState.expectationData[index].status =
-        ExpectationStatus.Complete;
-
-      if (alternateExpectationMet && !expectedExpectationMet) {
-        finalResponses.push(
-          createTextResponse(
-            pickRandom(atd.goodPointButOutOfHintsFeedback),
-            ResponseType.FeedbackNeutral
-          )
-        );
-      } else {
-        finalResponses.push(giveNegativeFeedback(true, atd, sdp));
-      }
-      return finalResponses.concat(revealExpectation(e.expectation, atd, sdp));
     }
   }
+}
+
+function outOfHintsFinishExpectation(
+  e: any,
+  alternateExpectationMet: boolean,
+  expectedExpectationMet: boolean,
+  expectationResults: ExpectationResult[],
+  finalResponses: OpenTutorResponse[],
+  atd: Dialog,
+  sdp: SessionData
+) {
+  const index = sdp.dialogState.expectationsCompleted.indexOf(false);
+  sdp.dialogState.expectationsCompleted[index] = true;
+  sdp.dialogState.expectationData[index].ideal =
+    atd.expectations[index].expectation;
+  sdp.dialogState.expectationData[index].satisfied = false;
+  sdp.dialogState.expectationData[index].score = normalizeScores(
+    expectationResults[index]
+  );
+  sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
+
+  if (alternateExpectationMet && !expectedExpectationMet) {
+    finalResponses.push(
+      createTextResponse(
+        pickRandom(atd.goodPointButOutOfHintsFeedback),
+        ResponseType.FeedbackNeutral
+      )
+    );
+  } else {
+    finalResponses.push(giveNegativeFeedback(true, atd, sdp));
+  }
+  return finalResponses.concat(revealExpectation(e.expectation, atd, sdp));
 }
 
 function revealExpectation(answer: string, atd: Dialog, sdp: SessionData) {

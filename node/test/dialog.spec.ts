@@ -84,6 +84,7 @@ describe('dialog', async () => {
   }
 
   allScenarios.forEach((ex) => {
+    // allScenarios.filter((x) => x.lessonId === 'q5').forEach((ex) => {
     it(`gives expected responses to scenario inputs: ${ex.name}`, async () => {
       if (mockAxios) {
         mockAxios.reset();
@@ -244,6 +245,7 @@ describe('dialog', async () => {
           },
         ],
         hints: false,
+        limitHintsMode: false,
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -267,6 +269,7 @@ describe('dialog', async () => {
         expectationsCompleted: [true],
         currentExpectation: -1,
         hints: false,
+        limitHintsMode: false,
         expectationData: [],
       },
       sessionHistory: {
@@ -1136,6 +1139,7 @@ describe('dialog', async () => {
           },
         ],
         hints: true,
+        limitHintsMode: false,
       },
       sessionHistory: {
         classifierGrades: [
@@ -1279,6 +1283,7 @@ describe('dialog', async () => {
           },
         ],
         hints: false,
+        limitHintsMode: false,
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -1604,7 +1609,7 @@ describe('dialog', async () => {
           {
             ideal: '',
             score: 0,
-            numHints: 3,
+            numHints: 1,
             numPrompts: 0,
             satisfied: false,
             status: ExpectationStatus.Active,
@@ -1619,6 +1624,7 @@ describe('dialog', async () => {
           },
         ],
         hints: true,
+        limitHintsMode: false,
       },
       sessionHistory: {
         classifierGrades: [
@@ -1760,6 +1766,7 @@ describe('dialog', async () => {
           },
         ],
         hints: true,
+        limitHintsMode: false,
       },
       sessionHistory: {
         classifierGrades: [
@@ -1902,6 +1909,7 @@ describe('dialog', async () => {
           },
         ],
         hints: true,
+        limitHintsMode: false,
       },
       sessionHistory: {
         classifierGrades: [
@@ -2106,6 +2114,7 @@ describe('dialog', async () => {
           },
         ],
         hints: false,
+        limitHintsMode: false,
       },
       sessionHistory: {
         classifierGrades: new Array<ClassifierResult>(),
@@ -2415,6 +2424,7 @@ describe('dialog', async () => {
             },
           ],
           hints: true,
+          limitHintsMode: false,
         },
         sessionHistory: {
           classifierGrades: [
@@ -2552,6 +2562,7 @@ describe('dialog', async () => {
             },
           ],
           hints: true,
+          limitHintsMode: false,
         },
         sessionHistory: {
           classifierGrades: [
@@ -2691,6 +2702,7 @@ describe('dialog', async () => {
             },
           ],
           hints: true,
+          limitHintsMode: false,
         },
         sessionHistory: {
           classifierGrades: [

@@ -247,6 +247,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
       lessonData.dialogStyle === 'survey_says' &&
       lessonData.dialogCategory === 'default',
     givePumpOnMainQuestion: lessonData.dialogCategory === 'sensitive',
+    limitHints: lessonData.dialogCategory === 'sensitive',
     dialogCategory: lessonData.dialogCategory,
     dialogStyle: lessonData.dialogStyle,
   };

@@ -48,6 +48,7 @@ export interface DialogConfig {
   goodMetacognitiveThreshold: number;
   hasSummaryFeedback: boolean;
   givePumpOnMainQuestion: boolean;
+  limitHints: boolean;
   dialogCategory: 'default' | 'sensitive';
   dialogStyle: 'standard' | 'survey_says';
 }
