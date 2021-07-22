@@ -1250,7 +1250,7 @@ describe('dialog', async () => {
 
     const validSessionData: SessionData = {
       dialogState: {
-        expectationsCompleted: [false],
+        expectationsCompleted: [false, false, false],
         currentExpectation: -1,
         expectationData: [
           {
@@ -1530,6 +1530,71 @@ describe('dialog', async () => {
       ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
     });
 
+    it('responds with a pump (instead of a hint) when the user is answering the main question and covered at least 1 expectation', async () => {
+      mockNextRandom = sandbox.stub().returns(0.7);
+      randomFunctionSet(mockNextRandom);
+      if (mockAxios) {
+        mockAxios.reset();
+        mockAxios.onGet('/config').reply(() => {
+          return [200, { API_SECRET: 'api_secret' }];
+        });
+        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          if ((reqBody.query as string).includes('q4')) {
+            return [200, { data: { me: { lesson: lessonById.q4 } } }];
+          } else {
+            const errData: LResponseObject = {
+              data: {
+                me: {
+                  lesson: null,
+                },
+              },
+            };
+            return [404, errData];
+          }
+        });
+        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
+              },
+            },
+          ];
+        });
+      }
+      const response = await postSession(lessonIdq4, app, {
+        message: 'good answer',
+        username: 'testuser',
+        sessionInfo: validSessionDto,
+        lessonId: lessonIdq4,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.Hint)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf([
+        "Let's work through this together.",
+        'And can you add to that?',
+        'What else?',
+        'Anything else?',
+        'Could you elaborate on that a little?',
+        'Can you add anything to that?',
+      ]);
+    });
+
     const lessonIdq5 = 'q5';
     const updatedValidSessionDataRedundantCase: SessionData = {
       dialogState: {
@@ -1803,57 +1868,6 @@ describe('dialog', async () => {
         'Not quite, I was thinking about something different.',
       ]);
     });
-
-    // it('asks user if they are comfortable proceeding with sensitive lesson before main question', async () => {
-    //   if (mockAxios) {
-    //     mockAxios.reset();
-    //     mockAxios.onGet('/config').reply(() => {
-    //       return [200, { API_SECRET: 'api_secret' }];
-    //     });
-    //     mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-    //       const reqBody = JSON.parse(config.data);
-    //       const lessonData = findLessonForGqlQuery(reqBody.query);
-    //       if (lessonData) {
-    //         return [
-    //           200,
-    //           {
-    //             data: { me: { lesson: findLessonForGqlQuery(reqBody.query) } },
-    //           },
-    //         ];
-    //       } else {
-    //         const errData: LResponseObject = {
-    //           data: {
-    //             me: {
-    //               lesson: null,
-    //             },
-    //           },
-    //         };
-    //         return [404, errData];
-    //       }
-    //     });
-    //   }
-    //   const responseStartSession = await postDialog(lessonIdq4, app, {
-    //     lessonId: lessonIdq4,
-    //     id: '1',
-    //     user: 'rush',
-    //     UseDB: true,
-    //     ScriptXML: null,
-    //     LSASpaceName: 'English_TASA',
-    //     ScriptURL: null,
-    //   });
-    //   let sessionObj = responseStartSession.body.sessionInfo;
-    //   expect(responseStartSession.status).to.equal(200);
-    //   console.log(responseStartSession.body.response);
-    //   expect(
-    //     (responseStartSession.body.response as OpenTutorResponse[])
-    //       .filter((m) => m.type === ResponseType.Opening)
-    //       .map((m) => (m.data as TextData).text)
-    //     ).to.include.oneOf(["Would you like to proceed?", "Are you comfortable continuing with this lesson?"])
-    //   expect(
-    //     (responseStartSession.body.response as OpenTutorResponse[])
-    //       .filter((m) => m.type === ResponseType.MainQuestion)
-    //     ).to.be.empty;
-    // });
 
     // Update the session data for testing dialog behavior with streaks of negative answers
     let lessonIdq6 = 'q6';

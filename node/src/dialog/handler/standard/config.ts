@@ -211,7 +211,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? SURVEY_STYLE_EXPECTATION_REVEAL
         : [],
     pump: [
-      "Let's work through this together.",
+      // "Let's work through this together.",
       'And can you add to that?',
       'What else?',
       'Anything else?',
@@ -246,6 +246,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     hasSummaryFeedback:
       lessonData.dialogStyle === 'survey_says' &&
       lessonData.dialogCategory === 'default',
+    givePumpOnMainQuestion: lessonData.dialogCategory === 'sensitive',
     dialogCategory: lessonData.dialogCategory,
     dialogStyle: lessonData.dialogStyle,
   };

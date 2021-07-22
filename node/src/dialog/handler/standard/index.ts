@@ -270,19 +270,28 @@ export function toNextExpectation(
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
     setActiveExpecation(sdp);
-    // Do not add hint start message when it would be redundant
+
+    //for sensitive, if this was in response to main question after positive feedback, give pump instead of hint
     if (
-      (atd.expectationsLeftFeedback.length !== 0 &&
-        !afterPositiveFeedback &&
-        useHintStart) ||
-      (useHintStart && atd.expectationsLeftFeedback.length === 0)
+      afterPositiveFeedback &&
+      atd.givePumpOnMainQuestion &&
+      // sdp.previousSystemResponse.find((m) => m === atd.questionText)
+      sdp.sessionHistory.systemResponses.length === 1
     ) {
-      answer.push(createTextResponse(pickRandom(atd.hintStart)));
-    }
-    if (
+      answer.push(createTextResponse(pickRandom(atd.pump), ResponseType.Hint));
+    } else if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
         .hints[0]
     ) {
+      // Do not add hint start message when it would be redundant
+      if (
+        (atd.expectationsLeftFeedback.length !== 0 &&
+          !afterPositiveFeedback &&
+          useHintStart) ||
+        (useHintStart && atd.expectationsLeftFeedback.length === 0)
+      ) {
+        answer.push(createTextResponse(pickRandom(atd.hintStart)));
+      }
       answer.push(
         createTextResponse(
           atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
@@ -290,10 +299,11 @@ export function toNextExpectation(
           ResponseType.Hint
         )
       );
-    } else
+    } else {
       answer.push(
         createTextResponse('Think about the answer!', ResponseType.Hint)
       );
+    }
   } else {
     answer = answer.concat(giveClosingRemarks(atd, sdp));
   }
