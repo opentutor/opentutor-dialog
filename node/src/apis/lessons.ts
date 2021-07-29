@@ -74,6 +74,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
             question
             conclusion
             expectations {
+              expectationId
               expectation
               hints {
                 text
