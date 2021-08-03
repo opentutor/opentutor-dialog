@@ -13,6 +13,7 @@ export interface Hint {
 }
 
 export interface LessonExpectation {
+  expectationId: string;
   expectation: string;
   hints: Hint[];
   prompts?: LessonPrompt[];
@@ -73,6 +74,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
             question
             conclusion
             expectations {
+              expectationId
               expectation
               hints {
                 text

@@ -24,6 +24,7 @@ export interface Response {
 }
 
 interface ExpectationScore {
+  expectationId: string;
   classifierGrade: string;
   graderGrade: string;
 }
@@ -53,6 +54,7 @@ function toGqlRequest(
       return {
         expectationScore: r.expectationResults.map((e) => {
           return {
+            expectationId: e.expectationId,
             classifierGrade: e.evaluation.toString(),
             graderGrade: '',
           };
@@ -76,7 +78,10 @@ function toGqlRequest(
     question: {
       text: lesson.question,
       expectations: lesson.expectations.map((e) => {
-        return { text: e.expectation } as Expectation;
+        return {
+          expectationId: e.expectationId,
+          text: e.expectation,
+        } as Expectation;
       }),
     },
     userResponses: userResponses,

@@ -235,14 +235,17 @@ export async function processUserResponse(
       ExpectationStatus.Active;
     setActiveExpecation(sdp);
 
-    responses.push(handleNegativeFeedback(negativeFeedbackAllowed, atd));
-    responses.push(
-      createTextResponse(pickRandom(atd.hintStart)),
-      createTextResponse(
-        atd.expectations[expectationId].hints[0],
-        ResponseType.Hint
-      )
-    );
+    responses.push(handleNegativeFeedback(negativeFeedbackAllowed, false, atd));
+    // check that a pump was not just added to responses, if not use hint
+    if (responses[responses.length - 1].type !== ResponseType.Hint) {
+      responses.push(
+        createTextResponse(pickRandom(atd.hintStart)),
+        createTextResponse(
+          atd.expectations[expectationId].hints[0],
+          ResponseType.Hint
+        )
+      );
+    }
     return responses;
   }
   return responses.concat([
@@ -315,20 +318,24 @@ export function toNextExpectation(
   return answer;
 }
 
-function handleNegativeFeedback(negativeFeedbackAllowed: boolean, atd: Dialog) {
+function handleNegativeFeedback(
+  negativeFeedbackAllowed: boolean,
+  expectationEnded: boolean,
+  atd: Dialog
+) {
   if (negativeFeedbackAllowed) {
     return createTextResponse(
       pickRandom(atd.negativeFeedback),
       ResponseType.FeedbackNegative
     );
   } else {
-    if (nextRandom() < 0.5) {
+    if (nextRandom() < 0.5 || expectationEnded) {
       return createTextResponse(
         pickRandom(atd.neutralFeedback),
         ResponseType.FeedbackNeutral
       );
     } else {
-      return createTextResponse(pickRandom(atd.pump), ResponseType.Text);
+      return createTextResponse(pickRandom(atd.pump), ResponseType.Hint);
     }
   }
 }
@@ -412,10 +419,7 @@ function handleHints(
       }
     }
   });
-  if (
-    expectationResults[expectationId].evaluation === Evaluation.Good &&
-    expectationResults[expectationId].score > atd.goodThreshold
-  ) {
+  if (expectedExpectationMet) {
     //hint answered successfully
     updateCompletedExpectations(expectationResults, sdp, atd);
     sdp.dialogState.expectationsCompleted[expectationId] = true;
@@ -438,7 +442,7 @@ function handleHints(
     //hint not answered correctly, send other hint if exists
     // or send prompt if exists
 
-    if (e.hints.indexOf(h) < e.hints.length - 1) {
+    if (e.hints.indexOf(h) < e.hints.length - 1 && atd.pump.indexOf(h) === -1) {
       //another hint exists, use that.
       if (alternateExpectationMet && !expectedExpectationMet) {
         finalResponses.push(
@@ -461,6 +465,35 @@ function handleHints(
         createTextResponse(e.hints[e.hints.indexOf(h) + 1], ResponseType.Hint)
       );
       return finalResponses;
+    } else if (
+      atd.pump.indexOf(h) !== -1 &&
+      !sdp.sessionHistory.systemResponses.some((prevRespones) =>
+        prevRespones.includes(e.hints[0])
+      )
+    ) {
+      // hint was actually a pump and the hints for this expectation have not been used yet
+      if (alternateExpectationMet && !expectedExpectationMet) {
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.goodPointButFeedback),
+            ResponseType.FeedbackNeutral
+          )
+        );
+      } else {
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.neutralFeedback),
+            ResponseType.FeedbackNeutral
+          )
+        );
+      }
+      finalResponses.push(
+        createTextResponse(pickRandom(atd.hintStart)),
+        createTextResponse(
+          atd.expectations[expectationId].hints[0],
+          ResponseType.Hint
+        )
+      );
     } else if (e.prompts[0]) {
       if (alternateExpectationMet && !expectedExpectationMet) {
         finalResponses.push(
@@ -471,13 +504,18 @@ function handleHints(
         );
       } else {
         finalResponses.push(
-          handleNegativeFeedback(negativeFeedbackAllowed, atd)
+          handleNegativeFeedback(negativeFeedbackAllowed, false, atd)
         );
       }
-      finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
-      finalResponses.push(
-        createTextResponse(pickRandom(e.prompts).prompt, ResponseType.Prompt)
-      );
+      // check that a pump was not just added to responses, if not use prompt
+      if (
+        finalResponses[finalResponses.length - 1].type !== ResponseType.Hint
+      ) {
+        finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
+        finalResponses.push(
+          createTextResponse(pickRandom(e.prompts).prompt, ResponseType.Prompt)
+        );
+      }
       return finalResponses;
     } else {
       //if no prompt, assert
@@ -505,7 +543,7 @@ function handleHints(
       }
       return finalResponses
         .concat([
-          handleNegativeFeedback(negativeFeedbackAllowed, atd),
+          handleNegativeFeedback(negativeFeedbackAllowed, true, atd),
           createTextResponse(e.expectation, ResponseType.Text),
         ])
         .concat(toNextExpectation(atd, sdp));
