@@ -1512,7 +1512,9 @@ describe('dialog', async () => {
         (responseStartSession.body.response as OpenTutorResponse[])
           .filter((m) => m.type === ResponseType.MainQuestion)
           .map((m) => (m.data as TextData).text)
-      ).to.include("What are the challenges to demonstrating integrity in a group? Try to list the top 3 expert answers.");
+      ).to.include(
+        'What are the challenges to demonstrating integrity in a group? Try to list the top 3 expert answers.'
+      );
       expect(
         (responseStartSession.body.response as OpenTutorResponse[]).filter(
           (m) => m.type === ResponseType.Opening
