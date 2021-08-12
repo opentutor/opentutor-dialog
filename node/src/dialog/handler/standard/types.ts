@@ -30,17 +30,25 @@ export interface DialogConfig {
   neutralFeedback: string[];
   goodPointButFeedback: string[];
   goodPointButOutOfHintsFeedback: string[];
+  expectationMetButOthersWrongFeedback: string[];
   perfectFeedback: string[];
+  expectationsLeftFeedback: string[];
+  closingPositiveFeedback: string[];
+  closingNegativeFeedback: string[];
+  expectationOnTheBoard: string[];
   pump: string[];
   pumpBlank: string[];
   hintStart: string[];
   promptStart: string[];
   profanityFeedback: string[];
+  farewell: string[];
   originalXml: string;
   goodThreshold: number;
   badThreshold: number;
   goodMetacognitiveThreshold: number;
+  hasSummaryFeedback: boolean;
   dialogCategory: 'default' | 'sensitive';
+  dialogStyle: 'standard' | 'survey_says';
 }
 
 export default DialogConfig;

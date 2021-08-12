@@ -26,7 +26,7 @@ import { pickRandom, nextRandom } from 'dialog/random';
 import { DialogHandler } from '../types';
 import { Lesson } from 'apis/lessons';
 import DialogConfig from './types';
-import { toConfig } from './config';
+import { toConfig, allowNegativeFeedback } from './config';
 
 function setActiveExpecation(sdp: SessionData) {
   //find the current active expecation and log it.
@@ -42,7 +42,6 @@ export async function processUserResponse(
   sdp: SessionData
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
-  let negativeFeedbackAllowed = true;
   try {
     atd.expectations.map((exp) => {
       return {
@@ -70,23 +69,6 @@ export async function processUserResponse(
             message: err.message,
           }
     );
-  }
-  // check if negative feedback was given during last 2 cycles for sensitive lessons
-  if (
-    atd.dialogCategory === 'sensitive' &&
-    sdp.sessionHistory.systemResponses.length >= 2
-  ) {
-    if (
-      sdp.sessionHistory.systemResponses
-        .slice(-2)
-        .find((prevRespones) =>
-          prevRespones.some((prevResponse) =>
-            atd.negativeFeedback.includes(prevResponse)
-          )
-        )
-    ) {
-      negativeFeedbackAllowed = false;
-    }
   }
 
   const expectationResults = classifierResult.output.expectationResults;
@@ -133,7 +115,7 @@ export async function processUserResponse(
           ResponseType.Encouragement
         )
       );
-      return responses.concat(toNextExpectation(atd, sdp));
+      return responses.concat(toNextExpectation(atd, sdp, false, false));
     }
   }
 
@@ -159,15 +141,7 @@ export async function processUserResponse(
   if (e && h) {
     //response is to a hint
     return responses.concat(
-      handleHints(
-        lessonId,
-        atd,
-        sdp,
-        expectationResults,
-        e,
-        h,
-        negativeFeedbackAllowed
-      )
+      handleHints(lessonId, atd, sdp, expectationResults, e, h)
     );
   }
 
@@ -178,17 +152,8 @@ export async function processUserResponse(
   ) {
     //perfect answer
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.push(
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      )
-    );
-    return responses.concat(
-      atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
-    );
-  }
-  if (
+    return responses.concat(giveClosingRemarks(atd, sdp));
+  } else if (
     expectationResults.every(
       (x) =>
         (x.score < atd.goodThreshold && x.evaluation === Evaluation.Good) ||
@@ -202,24 +167,34 @@ export async function processUserResponse(
         ResponseType.FeedbackNeutral
       )
     );
-    return responses.concat(toNextExpectation(atd, sdp));
-  }
-  if (
+    return responses.concat(toNextExpectation(atd, sdp, true, false));
+  } else if (
+    expectationResults.find(
+      (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
+    ) &&
+    expectationResults.find(
+      (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
+    )
+  ) {
+    //satisfied one expectation but gave very wrong answer(s) for others
+    updateCompletedExpectations(expectationResults, sdp, atd);
+    responses.push(
+      createTextResponse(
+        pickRandom(atd.expectationMetButOthersWrongFeedback),
+        ResponseType.FeedbackNeutral
+      )
+    );
+    return responses.concat(toNextExpectation(atd, sdp, true, false));
+  } else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
     )
   ) {
     //matched atleast one specific expectation
     updateCompletedExpectations(expectationResults, sdp, atd);
-    responses.push(
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      )
-    );
-    return responses.concat(toNextExpectation(atd, sdp));
-  }
-  if (
+    responses.push(givePositiveFeedback(atd, sdp));
+    return responses.concat(toNextExpectation(atd, sdp, true, true));
+  } else if (
     expectationResults.find(
       (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
     )
@@ -235,7 +210,7 @@ export async function processUserResponse(
       ExpectationStatus.Active;
     setActiveExpecation(sdp);
 
-    responses.push(handleNegativeFeedback(negativeFeedbackAllowed, false, atd));
+    responses.push(giveNegativeFeedback(false, atd, sdp));
     // check that a pump was not just added to responses, if not use hint
     if (responses[responses.length - 1].type !== ResponseType.Hint) {
       responses.push(
@@ -283,7 +258,9 @@ function updateCompletedExpectations(
 }
 export function toNextExpectation(
   atd: Dialog,
-  sdp: SessionData
+  sdp: SessionData,
+  useHintStart: boolean,
+  afterPositiveFeedback: boolean
 ): OpenTutorResponse[] {
   //give positive feedback, and ask next expectation question
   let answer: OpenTutorResponse[] = [];
@@ -293,7 +270,15 @@ export function toNextExpectation(
       sdp.dialogState.expectationsCompleted.indexOf(false)
     ].status = ExpectationStatus.Active;
     setActiveExpecation(sdp);
-    answer.push(createTextResponse(pickRandom(atd.hintStart)));
+    // Do not add hint start message when it would be redundant
+    if (
+      (atd.expectationsLeftFeedback.length !== 0 &&
+        !afterPositiveFeedback &&
+        useHintStart) ||
+      (useHintStart && atd.expectationsLeftFeedback.length === 0)
+    ) {
+      answer.push(createTextResponse(pickRandom(atd.hintStart)));
+    }
     if (
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
         .hints[0]
@@ -310,26 +295,89 @@ export function toNextExpectation(
         createTextResponse('Think about the answer!', ResponseType.Hint)
       );
   } else {
-    //all expectations completed
+    answer = answer.concat(giveClosingRemarks(atd, sdp));
+  }
+  return answer;
+}
+
+function giveClosingRemarks(atd: Dialog, sdp: SessionData) {
+  // Give feedback based on score and hints used for survey style
+  let answer: OpenTutorResponse[] = [];
+  if (atd.hasSummaryFeedback) {
+    if (!sdp.dialogState.expectationData.find((e) => e.numHints > 0)) {
+      // give highly positive feedback if all expectations were met with no hints in survey says style
+      answer = answer.concat(
+        createTextResponse(
+          pickRandom(atd.perfectFeedback),
+          ResponseType.FeedbackPositive
+        )
+      );
+    } else if (calculateScore(sdp) > 0.8) {
+      answer = answer.concat(
+        createTextResponse(
+          pickRandom(atd.closingPositiveFeedback),
+          ResponseType.FeedbackPositive
+        )
+      );
+    } else {
+      answer = answer.concat(
+        createTextResponse(
+          pickRandom(atd.closingNegativeFeedback),
+          ResponseType.FeedbackNegative
+        )
+      );
+    }
+  } else if (!sdp.dialogState.expectationData.find((e) => e.numHints > 0)) {
+    answer = answer.concat(givePositiveFeedback(atd, sdp));
+  }
+  answer = answer.concat(
+    atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
+  );
+  // Give goodbye greeting for sensitive lesson
+  if (atd.farewell.length !== 0) {
     answer = answer.concat(
-      atd.recapText.map((rt) => createTextResponse(rt, ResponseType.Closing))
+      createTextResponse(pickRandom(atd.farewell), ResponseType.Closing)
     );
   }
   return answer;
 }
 
-function handleNegativeFeedback(
-  negativeFeedbackAllowed: boolean,
+function givePositiveFeedback(atd: Dialog, sdp: SessionData) {
+  if (
+    atd.expectationsLeftFeedback.length !== 0 &&
+    sdp.dialogState.expectationsCompleted.indexOf(false) !== -1
+  ) {
+    return createTextResponse(
+      [
+        pickRandom(atd.positiveFeedback),
+        pickRandom(atd.expectationsLeftFeedback),
+      ].join(' '),
+      ResponseType.FeedbackPositive
+    );
+  } else {
+    return createTextResponse(
+      pickRandom(atd.positiveFeedback),
+      ResponseType.FeedbackPositive
+    );
+  }
+}
+
+function giveNegativeFeedback(
   expectationEnded: boolean,
-  atd: Dialog
+  atd: Dialog,
+  sdp: SessionData
 ) {
-  if (negativeFeedbackAllowed) {
+  if (allowNegativeFeedback(atd, sdp)) {
     return createTextResponse(
       pickRandom(atd.negativeFeedback),
       ResponseType.FeedbackNegative
     );
   } else {
-    if (nextRandom() < 0.5 || expectationEnded) {
+    if (
+      nextRandom() < 0.5 ||
+      expectationEnded ||
+      sdp.sessionHistory.userResponses.length === 1
+    ) {
       return createTextResponse(
         pickRandom(atd.neutralFeedback),
         ResponseType.FeedbackNeutral
@@ -366,12 +414,9 @@ function handlePrompt(
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     sdp.dialogState.expectationData[index].numPrompts += 1;
 
-    return [
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      ),
-    ].concat(toNextExpectation(atd, sdp));
+    return [givePositiveFeedback(atd, sdp)].concat(
+      toNextExpectation(atd, sdp, true, true)
+    );
   } else {
     //prompt not answered correctly. Assert.
     const index = sdp.dialogState.expectationsCompleted.indexOf(false);
@@ -384,9 +429,7 @@ function handlePrompt(
     );
     sdp.dialogState.expectationData[index].status = ExpectationStatus.Complete;
     sdp.dialogState.expectationData[index].numPrompts += 1;
-    return [createTextResponse(p.answer, ResponseType.Text)].concat(
-      toNextExpectation(atd, sdp)
-    );
+    return revealExpectation(p.answer, atd, sdp);
   }
 }
 
@@ -396,8 +439,7 @@ function handleHints(
   sdp: SessionData,
   expectationResults: ExpectationResult[],
   e: Expectation,
-  h: string,
-  negativeFeedbackAllowed: boolean
+  h: string
 ) {
   const expectationId: number = atd.expectations.indexOf(e);
   const finalResponses: Array<OpenTutorResponse> = [];
@@ -431,13 +473,8 @@ function handleHints(
     );
     sdp.dialogState.expectationData[expectationId].status =
       ExpectationStatus.Complete;
-    finalResponses.push(
-      createTextResponse(
-        pickRandom(atd.positiveFeedback),
-        ResponseType.FeedbackPositive
-      )
-    );
-    return finalResponses.concat(toNextExpectation(atd, sdp));
+    finalResponses.push(givePositiveFeedback(atd, sdp));
+    return finalResponses.concat(toNextExpectation(atd, sdp, true, true));
   } else {
     //hint not answered correctly, send other hint if exists
     // or send prompt if exists
@@ -458,9 +495,8 @@ function handleHints(
             ResponseType.FeedbackNeutral
           )
         );
+        finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       }
-
-      finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       finalResponses.push(
         createTextResponse(e.hints[e.hints.indexOf(h) + 1], ResponseType.Hint)
       );
@@ -486,9 +522,9 @@ function handleHints(
             ResponseType.FeedbackNeutral
           )
         );
+        finalResponses.push(createTextResponse(pickRandom(atd.hintStart)));
       }
       finalResponses.push(
-        createTextResponse(pickRandom(atd.hintStart)),
         createTextResponse(
           atd.expectations[expectationId].hints[0],
           ResponseType.Hint
@@ -502,19 +538,23 @@ function handleHints(
             ResponseType.FeedbackNeutral
           )
         );
-      } else {
-        finalResponses.push(
-          handleNegativeFeedback(negativeFeedbackAllowed, false, atd)
-        );
-      }
-      // check that a pump was not just added to responses, if not use prompt
-      if (
-        finalResponses[finalResponses.length - 1].type !== ResponseType.Hint
-      ) {
-        finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
         finalResponses.push(
           createTextResponse(pickRandom(e.prompts).prompt, ResponseType.Prompt)
         );
+      } else {
+        finalResponses.push(giveNegativeFeedback(false, atd, sdp));
+        // check that a pump was not just added to responses, if not use prompt
+        if (
+          finalResponses[finalResponses.length - 1].type !== ResponseType.Hint
+        ) {
+          finalResponses.push(createTextResponse(pickRandom(atd.promptStart)));
+          finalResponses.push(
+            createTextResponse(
+              pickRandom(e.prompts).prompt,
+              ResponseType.Prompt
+            )
+          );
+        }
       }
       return finalResponses;
     } else {
@@ -531,24 +571,33 @@ function handleHints(
         ExpectationStatus.Complete;
 
       if (alternateExpectationMet && !expectedExpectationMet) {
-        return finalResponses
-          .concat([
-            createTextResponse(
-              pickRandom(atd.goodPointButOutOfHintsFeedback),
-              ResponseType.Text
-            ),
-            createTextResponse(e.expectation, ResponseType.Text),
-          ])
-          .concat(toNextExpectation(atd, sdp));
+        finalResponses.push(
+          createTextResponse(
+            pickRandom(atd.goodPointButOutOfHintsFeedback),
+            ResponseType.FeedbackNeutral
+          )
+        );
+      } else {
+        finalResponses.push(giveNegativeFeedback(true, atd, sdp));
       }
-      return finalResponses
-        .concat([
-          handleNegativeFeedback(negativeFeedbackAllowed, true, atd),
-          createTextResponse(e.expectation, ResponseType.Text),
-        ])
-        .concat(toNextExpectation(atd, sdp));
+      return finalResponses.concat(revealExpectation(e.expectation, atd, sdp));
     }
   }
+}
+
+function revealExpectation(answer: string, atd: Dialog, sdp: SessionData) {
+  const response: OpenTutorResponse[] = [];
+  if (atd.expectationOnTheBoard.length === 0) {
+    response.push(createTextResponse(answer, ResponseType.Text));
+  } else {
+    response.push(
+      createTextResponse(
+        pickRandom(atd.expectationOnTheBoard),
+        ResponseType.Text
+      )
+    );
+  }
+  return response.concat(toNextExpectation(atd, sdp, true, false));
 }
 
 function calculateQuality(

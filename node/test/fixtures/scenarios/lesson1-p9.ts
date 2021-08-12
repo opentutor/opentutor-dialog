@@ -94,13 +94,13 @@ export const scenario: DialogScenario = {
             text: "Good point! But let's focus on this part.",
           },
         },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'See if you can get this',
-          },
-        },
+        // {
+        //   author: 'them',
+        //   type: ResponseType.Text,
+        //   data: {
+        //     text: 'See if you can get this',
+        //   },
+        // },
         {
           author: 'them',
           type: ResponseType.Prompt,

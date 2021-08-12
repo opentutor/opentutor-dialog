@@ -1,16 +1,10 @@
-/*
-This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
-Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
-
-The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
-*/
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'navy integrity training - does not give negative feedback if user has recieved negative feedback in past two cycles',
-  lessonId: 'q6',
+  name: 'navy integrity training - survey says style with some hints needed',
+  lessonId: 'q7',
   expectedRequestResponses: [
     {
       userInput: 'Rules apply differently to the group',
@@ -40,9 +34,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackNegative,
           data: {
-            text: 'Ok.',
+            text: "Sorry, it looks like that wasn't on the board.",
           },
         },
         {
@@ -55,12 +49,12 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: "I wouldn't",
+      userInput: 'Peer pressure could cause someone to allow bad behavior.',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '0', evaluation: Evaluation.Good, score: 1.0 },
               { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
               { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
             ],
@@ -82,43 +76,28 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: "I'm not sure about that.",
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Peer pressure can cause you to allow inappropriate behavior.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Consider this.',
+            text: "Great. But there's more.",
           },
         },
         {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            // expectation text
             text: 'How can it affect someone when you correct their behavior?',
           },
         },
       ],
     },
     {
-      userInput: 'They will not be affected',
+      userInput: "It's possible it could be harder to work with them.",
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
               { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
               { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
@@ -139,16 +118,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Ok.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+            text: "Great. But there's more.",
           },
         },
         {
@@ -161,14 +133,14 @@ export const scenario: DialogScenario = {
       ],
     },
     {
-      userInput: "they won't view me any differently",
+      userInput: 'It might make me unpopular',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
               { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Bad, score: 0.5 },
-              { expectationId: '2', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
             ],
             speechActs: {
               metacognitive: {
@@ -188,16 +160,16 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Ok.',
+            text: 'Great.',
           },
         },
         {
           author: 'them',
-          type: ResponseType.Text,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Enforcing the rules can make you unpopular.',
+            text: 'Nice job, you did great!',
           },
         },
         {
@@ -210,7 +182,7 @@ export const scenario: DialogScenario = {
         {
           author: 'them',
           data: {
-            text: "When you correct somone's behavior, you may get them in trouble or negatively impact your relationship with them.",
+            text: "When you correct someone's behavior, you may get them in trouble or negatively impact your relationship with them.",
           },
           type: 'closing',
         },
@@ -218,13 +190,6 @@ export const scenario: DialogScenario = {
           author: 'them',
           data: {
             text: 'However, integrity means speaking out even when it is unpopular.',
-          },
-          type: 'closing',
-        },
-        {
-          author: 'them',
-          data: {
-            text: 'Good job today, it was nice to see you. Bye!',
           },
           type: 'closing',
         },

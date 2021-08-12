@@ -47,6 +47,7 @@ export const lesson: Lesson = {
     'However, a person with suicidal thoughts is still at-risk and they should receive professional help to decrease their risk and improve their quality of life.',
   ],
   dialogCategory: 'sensitive',
+  dialogStyle: 'standard',
 };
 
 export default lesson;
