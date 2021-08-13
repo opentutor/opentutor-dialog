@@ -823,46 +823,44 @@ describe('dialog', async () => {
     });
 
     it('responds with a random neutral feedback message from a set of messages', async () => {
-      if (mockAxios) {
-        mockAxios.reset();
-        mockAxios.onGet('/config').reply(() => {
-          return [200, { API_SECRET: 'api_secret' }];
-        });
-        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: lessonById.q1 } } }];
-          } else {
-            const errData: LResponseObject = {
-              data: {
-                me: {
-                  lesson: null,
-                },
-              },
-            };
-            return [404, errData];
-          }
-        });
-        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          return [
-            200,
-            {
-              output: {
-                expectationResults: [
-                  { evaluation: Evaluation.Good, score: 0.5 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                ],
-                speechActs: {
-                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
-                },
+      mockAxios.reset();
+      mockAxios.onGet('/config').reply(() => {
+        return [200, { API_SECRET: 'api_secret' }];
+      });
+      mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        if ((reqBody.query as string).includes('q1')) {
+          return [200, { data: { me: { lesson: lessonById.q1 } } }];
+        } else {
+          const errData: LResponseObject = {
+            data: {
+              me: {
+                lesson: null,
               },
             },
-          ];
-        });
-      }
+          };
+          return [404, errData];
+        }
+      });
+      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        return [
+          200,
+          {
+            output: {
+              expectationResults: [
+                { evaluation: Evaluation.Good, score: 0.5 },
+                { evaluation: Evaluation.Good, score: 0.4 },
+                { evaluation: Evaluation.Good, score: 0.4 },
+              ],
+              speechActs: {
+                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+              },
+            },
+          },
+        ];
+      });
       const response = await postSession(lessonId, app, {
         message: 'neutral answer',
         username: 'testuser',
@@ -1083,45 +1081,43 @@ describe('dialog', async () => {
     const validSessionDto = dataToDto(sensitiveLessonData);
 
     it('responds with a random sensitive positive feedback message when lesson is sensitive', async () => {
-      if (mockAxios) {
-        mockAxios.reset();
-        mockAxios.onGet('/config').reply(() => {
-          return [200, { API_SECRET: 'api_secret' }];
-        });
-        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q4')) {
-            return [200, { data: { me: { lesson: lessonById.q4 } } }];
-          } else {
-            const errData: LResponseObject = {
-              data: {
-                me: {
-                  lesson: null,
-                },
-              },
-            };
-            return [404, errData];
-          }
-        });
-        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          return [
-            200,
-            {
-              output: {
-                expectationResults: [
-                  { evaluation: Evaluation.Good, score: 1.0 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                ],
-                speechActs: {
-                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
-                },
+      mockAxios.reset();
+      mockAxios.onGet('/config').reply(() => {
+        return [200, { API_SECRET: 'api_secret' }];
+      });
+      mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        if ((reqBody.query as string).includes('q4')) {
+          return [200, { data: { me: { lesson: lessonById.q4 } } }];
+        } else {
+          const errData: LResponseObject = {
+            data: {
+              me: {
+                lesson: null,
               },
             },
-          ];
-        });
-      }
+          };
+          return [404, errData];
+        }
+      });
+      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+        return [
+          200,
+          {
+            output: {
+              expectationResults: [
+                { evaluation: Evaluation.Good, score: 1.0 },
+                { evaluation: Evaluation.Good, score: 0.4 },
+                { evaluation: Evaluation.Good, score: 0.4 },
+              ],
+              speechActs: {
+                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+              },
+            },
+          },
+        ];
+      });
       const response = await postSession(lessonIdq4, app, {
         message: 'good answer',
         username: 'testuser',
@@ -1139,45 +1135,43 @@ describe('dialog', async () => {
     });
 
     it('responds with a random sensitive message indicating there answer was not fully correct when other expectations got poor score.', async () => {
-      if (mockAxios) {
-        mockAxios.reset();
-        mockAxios.onGet('/config').reply(() => {
-          return [200, { API_SECRET: 'api_secret' }];
-        });
-        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q4')) {
-            return [200, { data: { me: { lesson: lessonById.q4 } } }];
-          } else {
-            const errData: LResponseObject = {
-              data: {
-                me: {
-                  lesson: null,
-                },
-              },
-            };
-            return [404, errData];
-          }
-        });
-        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          return [
-            200,
-            {
-              output: {
-                expectationResults: [
-                  { evaluation: Evaluation.Good, score: 1.0 },
-                  { evaluation: Evaluation.Bad, score: 1.0 },
-                  { evaluation: Evaluation.Bad, score: 1.0 },
-                ],
-                speechActs: {
-                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
-                },
+      mockAxios.reset();
+      mockAxios.onGet('/config').reply(() => {
+        return [200, { API_SECRET: 'api_secret' }];
+      });
+      mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        if ((reqBody.query as string).includes('q4')) {
+          return [200, { data: { me: { lesson: lessonById.q4 } } }];
+        } else {
+          const errData: LResponseObject = {
+            data: {
+              me: {
+                lesson: null,
               },
             },
-          ];
-        });
-      }
+          };
+          return [404, errData];
+        }
+      });
+      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+        return [
+          200,
+          {
+            output: {
+              expectationResults: [
+                { evaluation: Evaluation.Good, score: 1.0 },
+                { evaluation: Evaluation.Bad, score: 1.0 },
+                { evaluation: Evaluation.Bad, score: 1.0 },
+              ],
+              speechActs: {
+                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+              },
+            },
+          },
+        ];
+      });
       const response = await postSession(lessonIdq4, app, {
         message: 'good answer',
         username: 'testuser',
