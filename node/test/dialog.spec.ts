@@ -29,6 +29,20 @@ import sinon from 'sinon';
 import { randomFunctionSet, randomFunctionRestore } from 'dialog/random';
 import * as standardSpeechCans from 'dialog/handler/standard/config';
 
+import finalScoreNotGood from './fixtures/sessionData/finalScoreNotGood';
+import scoreGoodButNotPerfect from './fixtures/sessionData/scoreGoodButNotPerfect';
+import answerWrongNoHintsLeft from './fixtures/sessionData/answerWrongNoHIntsLeft';
+import surveySaysStyle from './fixtures/sessionData/surveySaysStyleLesson';
+import negativeFeedbackValidSessionData from './fixtures/sessionData/negativeFeedbackValidSessionData';
+import streaksOfNegativeAnswers from './fixtures/sessionData/streaksOfNegativeAnswers';
+import updatedValidSessionDataRedundantCase from './fixtures/sessionData/updatedValidSessionDataRedundantCase';
+import sensitiveLessonData from './fixtures/sessionData/sensitiveLessonData';
+import noRedundantTransitionWhenGivingFeedbackForConfusionWithHint from './fixtures/sessionData/noRedundantTransitionWhenGivingFeedbackForConfusionWithHint';
+import {
+  basicSessionData,
+  completedSessionData,
+} from './fixtures/sessionData/basicSessionData';
+
 const sandbox = sinon.createSandbox();
 
 describe('dialog', async () => {
@@ -213,80 +227,7 @@ describe('dialog', async () => {
       },
     };
 
-    const validSessionData: SessionData = {
-      dialogState: {
-        expectationsCompleted: [false],
-        currentExpectation: -1,
-        expectationData: [
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-        ],
-        hints: false,
-      },
-      sessionHistory: {
-        classifierGrades: new Array<ClassifierResult>(),
-        systemResponses: [
-          [
-            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-          ],
-        ],
-        userResponses: new Array<UserResponse>(),
-        userScores: new Array<number>(),
-      },
-      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      previousUserResponse: '',
-      previousSystemResponse: [
-        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-      ],
-    };
-
-    const completedSessionData: SessionData = {
-      dialogState: {
-        expectationsCompleted: [true],
-        currentExpectation: -1,
-        hints: false,
-        expectationData: [],
-      },
-      sessionHistory: {
-        classifierGrades: new Array<ClassifierResult>(),
-        systemResponses: [
-          [
-            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-          ],
-        ],
-        userResponses: new Array<UserResponse>(),
-        userScores: new Array<number>(),
-      },
-      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      previousUserResponse: '',
-      previousSystemResponse: [
-        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-      ],
-    };
-
-    const validSessionDto = dataToDto(validSessionData);
+    const validSessionDto = dataToDto(basicSessionData);
 
     it('responds with a 404 error if lesson id passed does not correspond to a valid lesson', async () => {
       const response = await postDialog('q3', app, {
@@ -560,7 +501,7 @@ describe('dialog', async () => {
         lessonId: 'q1',
         message: 'correct answer',
         username: 'testuser',
-        sessionInfo: dataToDto(validSessionData),
+        sessionInfo: dataToDto(basicSessionData),
       });
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('sentToGrader', true);
@@ -641,10 +582,10 @@ describe('dialog', async () => {
 
     it('sends an error if user tries to tamper with the session data', async () => {
       const tampered: SessionDto = dataToDto({
-        ...validSessionData,
+        ...basicSessionData,
         sessionHistory: {
-          ...validSessionData.sessionHistory,
-          userScores: [...validSessionData.sessionHistory.userScores, 10],
+          ...basicSessionData.sessionHistory,
+          userScores: [...basicSessionData.sessionHistory.userScores, 10],
         },
       });
       tampered.hash = validSessionDto.hash;
@@ -1105,83 +1046,9 @@ describe('dialog', async () => {
       ).to.be.empty;
     });
 
-    const updatedValidSessionData: SessionData = {
-      dialogState: {
-        expectationsCompleted: [false, false, false],
-        currentExpectation: 0,
-        expectationData: [
-          {
-            ideal: '',
-            score: 0,
-            numHints: 1,
-            numPrompts: 1,
-            satisfied: false,
-            status: ExpectationStatus.Active,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-        ],
-        hints: true,
-      },
-      sessionHistory: {
-        classifierGrades: [
-          {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.4 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-            },
-          },
-        ],
-        systemResponses: [
-          [
-            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-          ],
-          [
-            'Ok.',
-            'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-          ],
-        ],
-        userResponses: [
-          { text: 'This answer was wrong', activeExpectation: 0 },
-        ],
-        userScores: new Array<number>(),
-      },
-      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      previousUserResponse: 'This answer was wrong',
-      previousSystemResponse: [
-        'Ok',
-        'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-      ],
-    };
-
-    const updatedValidSessionDto = dataToDto(updatedValidSessionData);
+    const updatedValidSessionDto = dataToDto(
+      noRedundantTransitionWhenGivingFeedbackForConfusionWithHint
+    );
 
     it('does not give redundant transition messages when giving feedback for hint where another expectation was satisfied instead of current', async () => {
       if (mockAxios) {
@@ -1247,57 +1114,7 @@ describe('dialog', async () => {
 
   describe('Sensitive Lesson', () => {
     const lessonIdq4 = 'q4';
-
-    const validSessionData: SessionData = {
-      dialogState: {
-        expectationsCompleted: [false],
-        currentExpectation: -1,
-        expectationData: [
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-        ],
-        hints: false,
-      },
-      sessionHistory: {
-        classifierGrades: new Array<ClassifierResult>(),
-        systemResponses: [
-          [
-            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-          ],
-        ],
-        userResponses: new Array<UserResponse>(),
-        userScores: new Array<number>(),
-      },
-      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      previousUserResponse: '',
-      previousSystemResponse: [
-        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-      ],
-    };
-
-    const validSessionDto = dataToDto(validSessionData);
+    const validSessionDto = dataToDto(sensitiveLessonData);
 
     it('responds with a random sensitive positive feedback message when lesson is sensitive', async () => {
       if (mockAxios) {
@@ -1352,12 +1169,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackPositive)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([
-        'Right.',
-        "Yeah, that's right.",
-        'Correct.',
-        "That's correct.",
-      ]);
+      ).to.be.oneOf(standardSpeechCans.SENSITIVE_POSITIVE_FEEDBACK);
     });
 
     it('responds with a random sensitive message indicating there answer was not fully correct when other expectations got poor score.', async () => {
@@ -1531,73 +1343,6 @@ describe('dialog', async () => {
     });
 
     const lessonIdq5 = 'q5';
-    const updatedValidSessionDataRedundantCase: SessionData = {
-      dialogState: {
-        expectationsCompleted: [false, false],
-        currentExpectation: 0,
-        expectationData: [
-          {
-            ideal: '',
-            score: 0,
-            numHints: 3,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.Active,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-        ],
-        hints: true,
-      },
-      sessionHistory: {
-        classifierGrades: [
-          {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-            },
-          },
-        ],
-        systemResponses: [
-          [
-            'People considering suicide often have a plan.',
-            'If a person loses the means to commit suicide, such as not having their gun, how does this affect their suicide risk?',
-          ],
-          [
-            'Ok.',
-            'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
-          ],
-        ],
-        userResponses: [
-          { text: 'This answer was wrong', activeExpectation: 0 },
-        ],
-        userScores: new Array<number>(),
-      },
-      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      previousUserResponse: 'This answer was wrong',
-      previousSystemResponse: [
-        'Ok',
-        'Compared to when they knew a clear way to commit suicide, does their long term suicide risk change?',
-      ],
-    };
 
     const updatedValidSessionDtoRedundantCase = dataToDto(
       updatedValidSessionDataRedundantCase
@@ -1664,81 +1409,6 @@ describe('dialog', async () => {
     });
 
     // Update the session data to test negative feedback, since it cannot be given on first answer
-    const negativeFeedbackValidSessionData: SessionData = {
-      dialogState: {
-        expectationsCompleted: [false],
-        currentExpectation: 0,
-        expectationData: [
-          {
-            ideal: '',
-            score: 0,
-            numHints: 1,
-            numPrompts: 1,
-            satisfied: true,
-            status: ExpectationStatus.Active,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-        ],
-        hints: true,
-      },
-      sessionHistory: {
-        classifierGrades: [
-          {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.4 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-            },
-          },
-        ],
-        systemResponses: [
-          [
-            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-          ],
-          [
-            'Ok.',
-            'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-          ],
-        ],
-        userResponses: [
-          { text: 'This answer was wrong', activeExpectation: 0 },
-        ],
-        userScores: new Array<number>(),
-      },
-      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      previousUserResponse: '',
-      previousSystemResponse: [
-        'How can it affect someone when you correct their behavior?',
-      ],
-    };
-
     const negativeFeedbackValidSessionDto = dataToDto(
       negativeFeedbackValidSessionData
     );
@@ -1796,12 +1466,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNegative)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([
-        'Think about this.',
-        "I'm not sure about that.",
-        "That isn't what I had in mind.",
-        'Not quite, I was thinking about something different.',
-      ]);
+      ).to.be.oneOf(standardSpeechCans.SENSITIVE_NEGATIVE_FEEDBACK);
     });
 
     // it('asks user if they are comfortable proceeding with sensitive lesson before main question', async () => {
@@ -1857,82 +1522,7 @@ describe('dialog', async () => {
 
     // Update the session data for testing dialog behavior with streaks of negative answers
     let lessonIdq6 = 'q6';
-    const updatedValidSessionData: SessionData = {
-      dialogState: {
-        expectationsCompleted: [false],
-        currentExpectation: 0,
-        expectationData: [
-          {
-            ideal: '',
-            score: 0,
-            numHints: 1,
-            numPrompts: 1,
-            satisfied: true,
-            status: ExpectationStatus.Active,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-        ],
-        hints: true,
-      },
-      sessionHistory: {
-        classifierGrades: [
-          {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.4 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-            },
-          },
-        ],
-        systemResponses: [
-          [
-            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-          ],
-          [
-            "That isn't what I had in mind.",
-            'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-          ],
-        ],
-        userResponses: [
-          { text: 'This answer was wrong', activeExpectation: 0 },
-        ],
-        userScores: new Array<number>(),
-      },
-      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      previousUserResponse: '',
-      previousSystemResponse: [
-        'How can it affect someone when you correct their behavior?',
-      ],
-    };
-
-    const updatedValidSessionDto = dataToDto(updatedValidSessionData);
+    const updatedValidSessionDto = dataToDto(streaksOfNegativeAnswers);
     mockNextRandom = sandbox.stub().returns(0.7);
     randomFunctionSet(mockNextRandom);
 
@@ -2061,56 +1651,7 @@ describe('dialog', async () => {
   describe('Survey Says Style Lesson', () => {
     const lessonIdq7 = 'q7';
 
-    const validSessionData: SessionData = {
-      dialogState: {
-        expectationsCompleted: [false, false, false],
-        currentExpectation: -1,
-        expectationData: [
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-          {
-            ideal: '',
-            score: 0,
-            numHints: 0,
-            numPrompts: 0,
-            satisfied: false,
-            status: ExpectationStatus.None,
-          },
-        ],
-        hints: false,
-      },
-      sessionHistory: {
-        classifierGrades: new Array<ClassifierResult>(),
-        systemResponses: [
-          [
-            'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-          ],
-        ],
-        userResponses: new Array<UserResponse>(),
-        userScores: new Array<number>(),
-      },
-      sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-      previousUserResponse: '',
-      previousSystemResponse: [
-        'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-      ],
-    };
-
-    const validSessionDto = dataToDto(validSessionData);
+    const validSessionDto = dataToDto(surveySaysStyle);
 
     it('responds with a random apologetic negative feedback message for survey says style lesson', async () => {
       if (mockAxios) {
@@ -2165,12 +1706,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNegative)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([
-        "Sorry, it looks like that wasn't on the board.",
-        "Sorry, we didn't match that in the list.",
-        "I'm sorry, that wasn't one of the answers on the board.",
-        "I'm sorry, we didn't find that answer in our list.",
-      ]);
+      ).to.be.oneOf(standardSpeechCans.SURVEY_STYLE_NEGATIVE_FEEDBACK);
     });
 
     it('responds with a random apologetic neutral feedback message for survey says style lesson', async () => {
@@ -2226,12 +1762,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNeutral)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([
-        "Sorry, it looks like that wasn't on the board.",
-        "Sorry, we didn't match that in the list.",
-        "I'm sorry, that wasn't one of the answers on the board.",
-        "I'm sorry, we didn't find that answer in our list.",
-      ]);
+      ).to.be.oneOf(standardSpeechCans.SURVEY_STYLE_NEGATIVE_FEEDBACK);
     });
 
     it('responds with a random positive feedback message that indicates there are expectations left for survey says style lesson and does not give redundant transition messages', async () => {
@@ -2295,13 +1826,9 @@ describe('dialog', async () => {
         'Excellent.',
         'Correct.',
       ]);
-      expect(feedback[2]).to.be.oneOf([
-        "But there's more.",
-        "Now what's another answer?",
-        `Now let's move on to another answer...`,
-        'But there are more answers left.',
-        'But there are still more answers.',
-      ]);
+      expect(feedback[2]).to.be.oneOf(
+        standardSpeechCans.FEEDBACK_EXPECTATIONS_LEFT
+      );
       expect(
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.Text)
@@ -2362,90 +1889,11 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackPositive)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([
-        "Amazing! You got them all. Maybe you're the expert around here.",
-        'Wow! You got them all, that was perfect.',
-        "Great job! You really knew theses answers, you're a pro!",
-      ]);
+      ).to.be.oneOf(standardSpeechCans.PERFECT_FEEDBACK_SURVEY_STYLE);
     });
 
     it('gives away the expectation when the answer was wrong and no more hints are left', async () => {
-      const updatedValidSessionData: SessionData = {
-        dialogState: {
-          expectationsCompleted: [false, false, false],
-          currentExpectation: 0,
-          expectationData: [
-            {
-              ideal: '',
-              score: 0,
-              numHints: 1,
-              numPrompts: 1,
-              satisfied: false,
-              status: ExpectationStatus.Active,
-            },
-            {
-              ideal: '',
-              score: 0,
-              numHints: 0,
-              numPrompts: 0,
-              satisfied: false,
-              status: ExpectationStatus.None,
-            },
-            {
-              ideal: '',
-              score: 0,
-              numHints: 0,
-              numPrompts: 0,
-              satisfied: false,
-              status: ExpectationStatus.None,
-            },
-          ],
-          hints: true,
-        },
-        sessionHistory: {
-          classifierGrades: [
-            {
-              expectationResults: [
-                { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-                { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
-                { expectationId: '2', evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0.5,
-                },
-                profanity: {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0.5,
-                },
-              },
-            },
-          ],
-          systemResponses: [
-            [
-              'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-            ],
-            [
-              "Sorry, it looks like that wasn't on the board.",
-              'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-            ],
-          ],
-          userResponses: [
-            { text: 'This answer was wrong', activeExpectation: 0 },
-          ],
-          userScores: new Array<number>(),
-        },
-        sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-        previousUserResponse: 'bad answer',
-        previousSystemResponse: [
-          'What might cause you to lower your standards?',
-        ],
-      };
-
-      const updatedValidSessionDto = dataToDto(updatedValidSessionData);
+      const updatedValidSessionDto = dataToDto(answerWrongNoHintsLeft);
 
       if (mockAxios) {
         mockAxios.reset();
@@ -2507,84 +1955,7 @@ describe('dialog', async () => {
     });
 
     it('gives overall positive feedback when score was good (but not perfect)', async () => {
-      const updatedValidSessionData: SessionData = {
-        dialogState: {
-          expectationsCompleted: [true, true, false],
-          currentExpectation: 2,
-          expectationData: [
-            {
-              ideal: '',
-              score: 0,
-              numHints: 1,
-              numPrompts: 1,
-              satisfied: true,
-              status: ExpectationStatus.Complete,
-            },
-            {
-              ideal: '',
-              score: 0,
-              numHints: 1,
-              numPrompts: 0,
-              satisfied: true,
-              status: ExpectationStatus.Complete,
-            },
-            {
-              ideal: '',
-              score: 0,
-              numHints: 1,
-              numPrompts: 0,
-              satisfied: false,
-              status: ExpectationStatus.Active,
-            },
-          ],
-          hints: true,
-        },
-        sessionHistory: {
-          classifierGrades: [
-            {
-              expectationResults: [
-                { expectationId: '0', evaluation: Evaluation.Good, score: 0.4 },
-                { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
-                { expectationId: '2', evaluation: Evaluation.Good, score: 0.8 },
-              ],
-              speechActs: {
-                metacognitive: {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0.5,
-                },
-                profanity: {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0.5,
-                },
-              },
-            },
-          ],
-          systemResponses: [
-            [
-              'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-            ],
-            [
-              'Right. But there are still more answers.',
-              'How can it affect someone when you correct their behavior?',
-            ],
-          ],
-          userResponses: [
-            { text: 'correct answer for expectation 0', activeExpectation: -1 },
-            { text: 'correct answer for expectation 1', activeExpectation: 1 },
-          ],
-          userScores: [0.7, 0.8],
-        },
-        sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-        previousUserResponse: 'good answer for expectation 2',
-        previousSystemResponse: [
-          "Good. Now what's another answer?",
-          "How can it affect you when you correct someone's behavior?",
-        ],
-      };
-
-      const updatedValidSessionDto = dataToDto(updatedValidSessionData);
+      const updatedValidSessionDto = dataToDto(scoreGoodButNotPerfect);
 
       if (mockAxios) {
         mockAxios.reset();
@@ -2638,92 +2009,11 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackPositive)
           .map((m) => (m.data as TextData).text)
-      ).to.include.oneOf([
-        'Nice job, you did great!',
-        'You did pretty well on this lesson!',
-        'Good job, it looks like you understood this lesson',
-      ]);
+      ).to.include.oneOf(standardSpeechCans.CLOSING_POSITIVE_FEEDBACK);
     });
 
     it('gives overall negative feedback when final score was not good', async () => {
-      const updatedValidSessionData: SessionData = {
-        dialogState: {
-          expectationsCompleted: [true, true, false],
-          currentExpectation: 2,
-          expectationData: [
-            {
-              ideal: '',
-              score: 0,
-              numHints: 2,
-              numPrompts: 1,
-              satisfied: false,
-              status: ExpectationStatus.Complete,
-            },
-            {
-              ideal: '',
-              score: 0,
-              numHints: 2,
-              numPrompts: 0,
-              satisfied: false,
-              status: ExpectationStatus.Complete,
-            },
-            {
-              ideal: '',
-              score: 0,
-              numHints: 1,
-              numPrompts: 0,
-              satisfied: false,
-              status: ExpectationStatus.Active,
-            },
-          ],
-          hints: true,
-        },
-        sessionHistory: {
-          classifierGrades: [
-            {
-              expectationResults: [
-                { expectationId: '0', evaluation: Evaluation.Good, score: 0.4 },
-                { expectationId: '1', evaluation: Evaluation.Good, score: 0.4 },
-                { expectationId: '2', evaluation: Evaluation.Good, score: 0.6 },
-              ],
-              speechActs: {
-                metacognitive: {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0.5,
-                },
-                profanity: {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0.5,
-                },
-              },
-            },
-          ],
-          systemResponses: [
-            [
-              'Here is a question about integrity, a key Navy attribute. What are the challenges to demonstrating integrity in a group?',
-            ],
-            [
-              'Right. But there are still more answers.',
-              'How can it affect someone when you correct their behavior?',
-            ],
-          ],
-          userResponses: [
-            { text: 'wrong answer for expectation 0', activeExpectation: -1 },
-            { text: 'wrong answer for expectation 1', activeExpectation: 1 },
-          ],
-          userScores: [0.5, 0.5],
-        },
-        sessionId: 'a677e7a8-b09e-4b3b-825d-5073422d42fd',
-        previousUserResponse: 'good answer for expectation 2',
-        previousSystemResponse: [
-          "Good. Now what's another answer?",
-          "How can it affect you when you correct someone's behavior?",
-        ],
-      };
-
-      const updatedValidSessionDto = dataToDto(updatedValidSessionData);
+      const updatedValidSessionDto = dataToDto(finalScoreNotGood);
 
       if (mockAxios) {
         mockAxios.reset();
@@ -2777,11 +2067,7 @@ describe('dialog', async () => {
         (response.body.response as OpenTutorResponse[])
           .filter((m) => m.type == ResponseType.FeedbackNegative)
           .map((m) => (m.data as TextData).text)
-      ).to.include.oneOf([
-        'Try again next time and see if you can get all the answers.',
-        "It looks like you didn't get all the answers, try again next time.",
-        "Sorry, it looks like you missed a few answers. We'll get them next time.",
-      ]);
+      ).to.include.oneOf(standardSpeechCans.CLOSING_NEGATIVE_FEEDBACK);
     });
   });
 });
