@@ -42,6 +42,7 @@ import {
   basicSessionData,
   completedSessionData,
 } from './fixtures/sessionData/basicSessionData';
+import { expectationResult1 } from './fixtures/expectationResults/expectationResults1';
 
 const sandbox = sinon.createSandbox();
 
@@ -900,42 +901,7 @@ describe('dialog', async () => {
         });
         mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
           const reqBody = JSON.parse(config.data);
-          return [
-            200,
-            {
-              output: {
-                expectationResults: [
-                  {
-                    expectationId: '2',
-                    evaluation: Evaluation.Good,
-                    score: 0.5,
-                  },
-                  {
-                    expectationId: '3',
-                    evaluation: Evaluation.Good,
-                    score: 0.4,
-                  },
-                  {
-                    expectationId: '4',
-                    evaluation: Evaluation.Good,
-                    score: 0.4,
-                  },
-                ],
-                speechActs: {
-                  metacognitive: {
-                    expectationId: '',
-                    evaluation: Evaluation.Good,
-                    score: 0.5,
-                  },
-                  profanity: {
-                    expectationId: '',
-                    evaluation: Evaluation.Good,
-                    score: 0.5,
-                  },
-                },
-              },
-            },
-          ];
+          return [200, expectationResult1];
         });
       }
       const responseHint = await postSession(lessonId, app, {
