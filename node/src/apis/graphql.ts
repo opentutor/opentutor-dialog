@@ -78,7 +78,10 @@ function toGqlRequest(
     question: {
       text: lesson.question,
       expectations: lesson.expectations.map((e) => {
-        return { text: e.expectation } as Expectation;
+        return {
+          expectationId: e.expectationId,
+          text: e.expectation,
+        } as Expectation;
       }),
     },
     userResponses: userResponses,
