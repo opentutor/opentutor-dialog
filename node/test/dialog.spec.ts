@@ -652,7 +652,6 @@ describe('dialog', async () => {
     });
 
     it('responds with a random positive feedback message from a set of messages', async () => {
-      if (mockAxios) {
         mockAxios.reset();
         mockAxios.onGet('/config').reply(() => {
           return [200, { API_SECRET: 'api_secret' }];
@@ -691,7 +690,6 @@ describe('dialog', async () => {
             },
           ];
         });
-      }
       const response = await postSession(lessonId, app, {
         message: 'peer pressure',
         username: 'testuser',
