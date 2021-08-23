@@ -24,6 +24,8 @@ const updatedValidSessionDataRedundantCase: SessionData = {
       },
     ],
     hints: true,
+    limitHintsMode: false,
+    numCorrectStreak: 0,
   },
   sessionHistory: {
     classifierGrades: [

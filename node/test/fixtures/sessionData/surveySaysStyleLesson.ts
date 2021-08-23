@@ -36,6 +36,8 @@ const surveySaysStyle: SessionData = {
       },
     ],
     hints: false,
+    limitHintsMode: false,
+    numCorrectStreak: 0,
   },
   sessionHistory: {
     classifierGrades: new Array<ClassifierResult>(),

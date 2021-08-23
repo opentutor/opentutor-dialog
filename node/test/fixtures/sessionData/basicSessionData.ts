@@ -36,6 +36,8 @@ export const basicSessionData: SessionData = {
       },
     ],
     hints: false,
+    limitHintsMode: false,
+    numCorrectStreak: 0,
   },
   sessionHistory: {
     classifierGrades: new Array<ClassifierResult>(),
@@ -60,6 +62,8 @@ export const completedSessionData: SessionData = {
     currentExpectation: -1,
     hints: false,
     expectationData: [],
+    limitHintsMode: false,
+    numCorrectStreak: 0,
   },
   sessionHistory: {
     classifierGrades: new Array<ClassifierResult>(),

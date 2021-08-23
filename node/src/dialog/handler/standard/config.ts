@@ -129,6 +129,26 @@ export const SENSITIVE_FAREWELL = [
   'You made a great effort on this lesson. See you later!',
 ];
 
+export function givePositiveStreaksFeedback(
+  streakNum: number,
+  atd: DialogConfig
+): string[] {
+  if (atd.dialogCategory === 'sensitive') {
+    return [
+      `Correct, that's ${streakNum} in a row!`,
+      `That's right, you got ${streakNum} in a row!`,
+      `Keep it up, you're on a roll.`,
+      `Right, that's ${streakNum} in a row!`,
+      `Good effort, you got ${streakNum} in a row.`,
+      `That's correct, you got ${streakNum} in a row now.`,
+      `Keep up the good work, that's ${streakNum} in a row.`,
+      `Nicely done, that's ${streakNum} in a row`,
+    ];
+  } else {
+    return [];
+  }
+}
+
 export function allowNegativeFeedback(
   atd: DialogConfig,
   sdp: SessionData
@@ -211,7 +231,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? SURVEY_STYLE_EXPECTATION_REVEAL
         : [],
     pump: [
-      "Let's work through this together.",
+      // "Let's work through this together.",
       'And can you add to that?',
       'What else?',
       'Anything else?',
@@ -246,6 +266,8 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     hasSummaryFeedback:
       lessonData.dialogStyle === 'survey_says' &&
       lessonData.dialogCategory === 'default',
+    givePumpOnMainQuestion: lessonData.dialogCategory === 'sensitive',
+    limitHints: lessonData.dialogCategory === 'sensitive',
     dialogCategory: lessonData.dialogCategory,
     dialogStyle: lessonData.dialogStyle,
   };

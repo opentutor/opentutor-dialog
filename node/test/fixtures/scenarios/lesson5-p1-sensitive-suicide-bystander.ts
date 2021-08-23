@@ -9,7 +9,7 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'suicide prevention bystander training - uses sensitive negative responses for lesson marked as sensistive',
+  name: 'suicide prevention bystander training - uses sensitive negative responses and limits hints',
   lessonId: 'q5',
   expectedRequestResponses: [
     {
@@ -225,47 +225,6 @@ export const scenario: DialogScenario = {
         },
         {
           author: 'them',
-          type: ResponseType.Hint,
-          data: {
-            text: 'After removing the means for suicide, how likely are they to commit suicide versus other people?',
-          },
-        },
-      ],
-    },
-    {
-      userInput: 'they are the same likely',
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Bad, score: 0.7 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-            },
-          },
-        },
-      },
-      expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.FeedbackNeutral,
-          data: {
-            text: 'Ok.',
-          },
-        },
-        {
-          author: 'them',
           type: ResponseType.Text,
           data: {
             text: 'The person is still at risk compared to other people.',
@@ -282,6 +241,13 @@ export const scenario: DialogScenario = {
           author: 'them',
           data: {
             text: 'However, a person with suicidal thoughts is still at-risk and they should receive professional help to decrease their risk and improve their quality of life.',
+          },
+          type: 'closing',
+        },
+        {
+          author: 'them',
+          data: {
+            text: 'Good job today, it was nice to see you. Bye!',
           },
           type: 'closing',
         },
