@@ -457,28 +457,28 @@ describe('dialog', async () => {
     });
 
     it('sends the session data to the grader at the end of the dialog', async () => {
-        mockAxios.reset();
-        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          return [200, expectationResult2];
-        });
-        mockAxios.onGet('/config').reply(() => {
-          return [200, { API_SECRET: 'api_secret' }];
-        });
-        mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          if ((reqBody.query as string).includes('q1')) {
-            return [200, { data: { me: { lesson: lessonById.q1 } } }];
-          } else if ((reqBody.query as string).includes('q2')) {
-            return [200, { data: { me: { lesson: lessonById.q2 } } }];
-          } else {
-            const errData: LResponseObject = {
-              data: {
-                me: {
-                  lesson: null,
-                },
+      mockAxios.reset();
+      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+        return [200, expectationResult2];
+      });
+      mockAxios.onGet('/config').reply(() => {
+        return [200, { API_SECRET: 'api_secret' }];
+      });
+      mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        if ((reqBody.query as string).includes('q1')) {
+          return [200, { data: { me: { lesson: lessonById.q1 } } }];
+        } else if ((reqBody.query as string).includes('q2')) {
+          return [200, { data: { me: { lesson: lessonById.q2 } } }];
+        } else {
+          const errData: LResponseObject = {
+            data: {
+              me: {
+                lesson: null,
               },
-            };
-            return [404, errData];
+            },
+          };
+          return [404, errData];
         }
       });
       const response = await postSession(lessonId, app, {
@@ -708,15 +708,15 @@ describe('dialog', async () => {
               me: {
                 lesson: null,
               },
-            } 
-            };
-            return [404, errData];
-          }
-        });
-        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          return [200, expectationResult9];
-        });
+            },
+          };
+          return [404, errData];
+        }
+      });
+      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        return [200, expectationResult9];
+      });
       const response = await postSession(lessonId, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -748,15 +748,15 @@ describe('dialog', async () => {
               me: {
                 lesson: null,
               },
-            }
-            };
-            return [404, errData];
-          }
-        });
-        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          return [200, expectationResult5];
-        });
+            },
+          };
+          return [404, errData];
+        }
+      });
+      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        return [200, expectationResult5];
+      });
       const response = await postSession(lessonId, app, {
         message: 'neutral answer',
         username: 'testuser',
@@ -787,15 +787,15 @@ describe('dialog', async () => {
               me: {
                 lesson: null,
               },
-            }
-            };
-            return [404, errData];
-          }
-        });
-        mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-          const reqBody = JSON.parse(config.data);
-          return [200, expectationResult1];
-        });
+            },
+          };
+          return [404, errData];
+        }
+      });
+      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        return [200, expectationResult1];
+      });
       const responseHint = await postSession(lessonId, app, {
         message: 'no answer',
         username: 'testuser',
@@ -890,7 +890,7 @@ describe('dialog', async () => {
       ).to.be.empty;
     });
 
-    it('responds with a random sensitive negative feedback message when lesson is sensitive', async () => {
+    it('responds with a random neutral feedback on first bad answer when sensitive', async () => {
       mockAxios.reset();
       mockAxios.onGet('/config').reply(() => {
         return [200, { API_SECRET: 'api_secret' }];
@@ -939,18 +939,9 @@ describe('dialog', async () => {
       expect(response.body).to.have.property('response');
       expect(
         (response.body.response as OpenTutorResponse[])
-          .filter((m) => m.type == ResponseType.Encouragement)
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf([
-        "That's okay. Let's focus on one part of the problem.",
-        "Don't worry if you aren't sure. We'll work on one piece at a time.",
-        "That's an okay place to start. Let's try this part together.",
-      ]);
-      expect(
-        (response.body.response as OpenTutorResponse[])
-          .filter((m) => m.type == ResponseType.Text)
-          .map((m) => (m.data as TextData).text)
-      ).to.be.empty;
+      ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
     });
 
     const updatedValidSessionDto = dataToDto(
@@ -1053,7 +1044,6 @@ describe('dialog', async () => {
         "That's correct.",
       ]);
     });
-
 
     it('responds with a random sensitive positive feedback message when lesson is sensitive', async () => {
       mockAxios.reset();
@@ -1158,14 +1148,14 @@ describe('dialog', async () => {
         sessionInfo: validSessionDto,
         lessonId: lessonIdq4,
       });
-
+      console.log(JSON.stringify(response.body, null, 2));
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('response');
       expect(
         (response.body.response as OpenTutorResponse[])
-          .filter((m) => m.type == ResponseType.FeedbackPositive)
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
           .map((m) => (m.data as TextData).text)[0]
-      ).to.be.oneOf(standardSpeechCans.SENSITIVE_POSITIVE_FEEDBACK);
+      ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
     });
 
     it('responds with a random sensitive message indicating there answer was not fully correct when other expectations got poor score.', async () => {
