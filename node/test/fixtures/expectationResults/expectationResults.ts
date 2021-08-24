@@ -221,8 +221,8 @@ export const expectationResult16 = {
   output: {
     expectationResults: [
       { evaluation: Evaluation.Good, score: 0.5 },
+      { evaluation: Evaluation.Good, score: 1.0 },
       { evaluation: Evaluation.Good, score: 0.5 },
-      { evaluation: Evaluation.Good, score: 0.7 },
     ],
     speechActs: {
       metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
