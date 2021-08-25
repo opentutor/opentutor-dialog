@@ -234,7 +234,7 @@ describe('dialog', async () => {
             expectations: [],
             conclusion: ['a'],
             dialogCategory: 'default',
-            dialogStyle: 'standard',
+            learningFormat: 'standard',
           },
         },
       },

@@ -50,7 +50,7 @@ export interface DialogConfig {
   givePumpOnMainQuestion: boolean;
   limitHints: boolean;
   dialogCategory: 'default' | 'sensitive';
-  dialogStyle: 'standard' | 'survey_says';
+  learningFormat: 'standard' | 'survey_says';
 }
 
 export default DialogConfig;

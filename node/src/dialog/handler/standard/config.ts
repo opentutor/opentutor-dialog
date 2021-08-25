@@ -198,17 +198,17 @@ export function toConfig(lessonData: Lesson): DialogConfig {
     perfectFeedback:
       lessonData.dialogCategory === 'sensitive'
         ? []
-        : lessonData.dialogStyle === 'survey_says'
+        : lessonData.learningFormat === 'survey_says'
         ? PERFECT_FEEDBACK_SURVEY_STYLE
         : ['Nicely done!', 'You got it!'],
     negativeFeedback:
-      lessonData.dialogStyle === 'survey_says'
+      lessonData.learningFormat === 'survey_says'
         ? SURVEY_STYLE_NEGATIVE_FEEDBACK
         : lessonData.dialogCategory === 'sensitive'
         ? SENSITIVE_NEGATIVE_FEEDBACK
         : FEEDBACK_NEGATIVE,
     neutralFeedback:
-      lessonData.dialogStyle === 'survey_says'
+      lessonData.learningFormat === 'survey_says'
         ? SURVEY_STYLE_NEGATIVE_FEEDBACK
         : ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
@@ -219,15 +219,19 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? SENSITIVE_SOME_WRONG_FEEDBACK
         : SOME_WRONG_FEEDBACK,
     expectationsLeftFeedback:
-      lessonData.dialogStyle === 'survey_says'
+      lessonData.learningFormat === 'survey_says'
         ? FEEDBACK_EXPECTATIONS_LEFT
         : [],
     closingPositiveFeedback:
-      lessonData.dialogStyle === 'survey_says' ? CLOSING_POSITIVE_FEEDBACK : [],
+      lessonData.learningFormat === 'survey_says'
+        ? CLOSING_POSITIVE_FEEDBACK
+        : [],
     closingNegativeFeedback:
-      lessonData.dialogStyle === 'survey_says' ? CLOSING_NEGATIVE_FEEDBACK : [],
+      lessonData.learningFormat === 'survey_says'
+        ? CLOSING_NEGATIVE_FEEDBACK
+        : [],
     expectationOnTheBoard:
-      lessonData.dialogStyle === 'survey_says'
+      lessonData.learningFormat === 'survey_says'
         ? SURVEY_STYLE_EXPECTATION_REVEAL
         : [],
     pump: [
@@ -264,17 +268,17 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         : badThreshold,
     goodMetacognitiveThreshold: goodMetacognitiveThreshold,
     hasSummaryFeedback:
-      lessonData.dialogStyle === 'survey_says' &&
+      lessonData.learningFormat === 'survey_says' &&
       lessonData.dialogCategory === 'default',
     givePumpOnMainQuestion: lessonData.dialogCategory === 'sensitive',
     limitHints: lessonData.dialogCategory === 'sensitive',
     dialogCategory: lessonData.dialogCategory,
-    dialogStyle: lessonData.dialogStyle,
+    learningFormat: lessonData.learningFormat,
   };
 
   try {
     defaultData.questionIntro = lessonData.intro;
-    if (lessonData.dialogStyle === 'survey_says') {
+    if (lessonData.learningFormat === 'survey_says') {
       defaultData.questionIntro.concat(
         ' Try to list the top ${lessonData.expectations.length} expert answers.'
       );

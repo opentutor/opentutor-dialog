@@ -48,7 +48,7 @@ export const lesson: Lesson = {
     'However, integrity means speaking out even when it is unpopular.',
   ],
   dialogCategory: 'sensitive',
-  dialogStyle: 'standard',
+  learningFormat: 'standard',
 };
 
 export default lesson;
