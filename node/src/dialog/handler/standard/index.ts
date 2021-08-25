@@ -408,7 +408,7 @@ function giveNegativeFeedback(
   expectationEnded: boolean,
   atd: Dialog,
   sdp: SessionData
-) {
+): OpenTutorResponse {
   sdp.dialogState.numCorrectStreak = 0;
   if (allowNegativeFeedback(atd, sdp)) {
     return createTextResponse(
