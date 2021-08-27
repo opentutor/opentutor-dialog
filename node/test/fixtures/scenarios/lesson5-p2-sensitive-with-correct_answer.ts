@@ -7,29 +7,19 @@ The full terms of this copyright and license should always be found in the root 
 import { DialogScenario } from 'test/fixtures/types';
 import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
-import {
-  POSITIVE_FEEDBACK,
-  FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
-} from 'dialog/handler/standard/config';
-
-const expectVariantIndex = 1;
-const variantRandom =
-  expectVariantIndex /
-  FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED.length;
 
 export const scenario: DialogScenario = {
-  name: 'lesson1 part 14: when no hints or prompts are remaining and the user fulfills an unrelated expectation.  acknowledge it',
-  lessonId: 'q3',
+  name: 'suicide prevention bystander training - uses sensitive negative responses for lesson marked as sensistive',
+  lessonId: 'q5',
   expectedRequestResponses: [
     {
-      userInput: 'Rules apply differently to the group',
+      userInput: 'their long term suicide risk will decrease',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { expectationId: '5', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '6', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '7', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '0', evaluation: Evaluation.Good, score: 0.8 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
               metacognitive: {
@@ -46,51 +36,75 @@ export const scenario: DialogScenario = {
           },
         },
       },
-      expectedResponse: [],
-    },
-    {
-      userInput: 'It may be harder to work with them.',
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { expectationId: '5', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '6', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '7', evaluation: Evaluation.Good, score: 1.0 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-            },
-          },
-        },
-      },
-      nextRandom: variantRandom,
-      expectExactMatchResponse: false,
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED[
-              expectVariantIndex
-            ],
+            text: 'Right.',
           },
         },
         {
           author: 'them',
-          type: ResponseType.Text,
+          type: ResponseType.Hint,
           data: {
-            text: 'Peer pressure can cause you to allow inappropriate behavior.',
+            text: 'And can you add to that?',
           },
+        },
+      ],
+    },
+    {
+      userInput: 'they are still at a higher risk than other people',
+      mockClassifierResponse: {
+        data: {
+          output: {
+            expectationResults: [
+              { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.9 },
+            ],
+            speechActs: {
+              metacognitive: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+              profanity: {
+                expectationId: '',
+                evaluation: Evaluation.Good,
+                score: 0.5,
+              },
+            },
+          },
+        },
+      },
+      expectedResponse: [
+        {
+          author: 'them',
+          type: ResponseType.FeedbackPositive,
+          data: {
+            text: "Correct, that's 2 in a row!",
+          },
+        },
+        {
+          author: 'them',
+          data: {
+            text: 'Most people do not attempt suicide again if their plan is interrupted or if they survive a suicide attempt. This means that removing guns, pills, or other ways to commit suicide are very important.',
+          },
+          type: 'closing',
+        },
+        {
+          author: 'them',
+          data: {
+            text: 'However, a person with suicidal thoughts is still at-risk and they should receive professional help to decrease their risk and improve their quality of life.',
+          },
+          type: 'closing',
+        },
+        {
+          author: 'them',
+          data: {
+            text: 'Good job today, it was nice to see you. Bye!',
+          },
+          type: 'closing',
         },
       ],
     },

@@ -9,16 +9,16 @@ import { Evaluation } from 'apis/classifier';
 import { ResponseType } from 'dialog/response-data';
 
 export const scenario: DialogScenario = {
-  name: 'navy integrity training - does not give negative feedback if user has recieved negative feedback in past two cycles',
+  name: 'navy integrity training - gives greater affirmation for continued success.',
   lessonId: 'q6',
   expectedRequestResponses: [
     {
-      userInput: 'Rules apply differently to the group',
+      userInput: 'Peer pressure could influence you to allow poor behavior',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '0', evaluation: Evaluation.Good, score: 1.0 },
               { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
               { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
             ],
@@ -40,28 +40,36 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Ok.',
+            text: 'Right.',
           },
         },
+        // {
+        //     author: 'them',
+        //     type: ResponseType.Text,
+        //     data: {
+        //         text: 'Consider this.',
+        //     },
+        // },
         {
           author: 'them',
           type: ResponseType.Hint,
           data: {
-            text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
+            text: 'And can you add to that?',
           },
         },
       ],
     },
     {
-      userInput: "I wouldn't",
+      userInput:
+        'It could get them in trouble or make it harder to work with them',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
               { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
             ],
             speechActs: {
@@ -82,16 +90,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNegative,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: "I'm not sure about that.",
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Peer pressure can cause you to allow inappropriate behavior.',
+            text: "Correct, that's 2 in a row!",
           },
         },
         {
@@ -106,69 +107,20 @@ export const scenario: DialogScenario = {
           type: ResponseType.Hint,
           data: {
             // expectation text
-            text: 'How can it affect someone when you correct their behavior?',
-          },
-        },
-      ],
-    },
-    {
-      userInput: 'They will not be affected',
-      mockClassifierResponse: {
-        data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-            },
-          },
-        },
-      },
-      expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.FeedbackNeutral,
-          data: {
-            text: 'Ok.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Hint,
-          data: {
             text: "How can it affect you when you correct someone's behavior?",
           },
         },
       ],
     },
     {
-      userInput: "they won't view me any differently",
+      userInput: 'It could make me unpopular',
       mockClassifierResponse: {
         data: {
           output: {
             expectationResults: [
               { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Bad, score: 0.5 },
-              { expectationId: '2', evaluation: Evaluation.Bad, score: 1.0 },
+              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+              { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
             ],
             speechActs: {
               metacognitive: {
@@ -188,16 +140,9 @@ export const scenario: DialogScenario = {
       expectedResponse: [
         {
           author: 'them',
-          type: ResponseType.FeedbackNeutral,
+          type: ResponseType.FeedbackPositive,
           data: {
-            text: 'Ok.',
-          },
-        },
-        {
-          author: 'them',
-          type: ResponseType.Text,
-          data: {
-            text: 'Enforcing the rules can make you unpopular.',
+            text: "Correct, that's 3 in a row!",
           },
         },
         {

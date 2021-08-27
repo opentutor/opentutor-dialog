@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { Lesson } from 'apis/lessons';
+import SessionData from 'dialog/session-data';
 import { DialogConfig } from './types';
 
 const goodThreshold: number =
@@ -20,6 +21,26 @@ export const FEEDBACK_GOOD_POINT_BUT = [
   "Good point! But let's focus on this part.",
   `That's true. Now consider this...`,
   `Yes and let's get this other point...`,
+];
+
+export const FEEDBACK_EXPECTATIONS_LEFT = [
+  "But there's more.",
+  "Now what's another answer?",
+  `Now let's move on to another answer...`,
+  'But there are more answers left.',
+  'But there are still more answers.',
+];
+
+export const SOME_WRONG_FEEDBACK = [
+  "Okay, that's part of it.",
+  'Well, some of that is correct.',
+  "I see. Good point, but that's not enitrely right.",
+];
+
+export const SENSITIVE_SOME_WRONG_FEEDBACK = [
+  "That's a good start.",
+  "You made a good point, but there's more.",
+  "That's a good thought.",
 ];
 
 export const FEEDBACK_NEGATIVE = [
@@ -53,6 +74,12 @@ export const SENSITIVE_POSITIVE_FEEDBACK = [
   "That's correct.",
 ];
 
+export const PERFECT_FEEDBACK_SURVEY_STYLE = [
+  "Amazing! You got them all. Maybe you're the expert around here.",
+  'Wow! You got them all, that was perfect.',
+  "Great job! You really knew these answers, you're a pro!",
+];
+
 export const SENSITIVE_NEGATIVE_FEEDBACK = [
   "I'm not sure about that.",
   'Think about this.',
@@ -60,10 +87,91 @@ export const SENSITIVE_NEGATIVE_FEEDBACK = [
   'Not quite, I was thinking about something different.',
 ];
 
+export const SURVEY_STYLE_NEGATIVE_FEEDBACK = [
+  "Sorry, it looks like that wasn't on the board.",
+  "Sorry, I didn't match that in the list.",
+  "I'm sorry, that wasn't one of the answers on the board.",
+  "I'm sorry, I didn't find that answer on the list.",
+];
+
 export const FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED = [
-  'Good point, though I was actually thinking about another piece.',
+  'Good point, though I was actually thinking about another piece',
   "That's a good point, but I had another part in mind.",
 ];
+
+export const SURVEY_STYLE_FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED =
+  [
+    'Good point, though I was actually thinking about another piece. Both are on the board.',
+    "That's a good answer, but I had another in mind. Both are on the board.",
+  ];
+
+export const CLOSING_POSITIVE_FEEDBACK = [
+  'Nice job, you did great!',
+  'You did pretty well on this lesson!',
+  'Good job, it looks like you understood this lesson',
+];
+
+export const CLOSING_NEGATIVE_FEEDBACK = [
+  'Try again next time and see if you can get all the answers.',
+  "It looks like you didn't get all the answers, try again next time.",
+  "Sorry, it looks like you missed a few answers. We'll get them next time.",
+];
+
+export const SURVEY_STYLE_EXPECTATION_REVEAL = [
+  "We'll give you this one on the board.",
+  "Okay, we'll put this one on the board.",
+  'The answer for this one is on the board',
+];
+
+export const SENSITIVE_FAREWELL = [
+  'Good job today, it was nice to see you. Bye!',
+  'Thanks for working on this lesson today, you did some good work.',
+  'You made a great effort on this lesson. See you later!',
+];
+
+export function givePositiveStreaksFeedback(
+  streakNum: number,
+  atd: DialogConfig
+): string[] {
+  if (atd.dialogCategory === 'sensitive') {
+    return [
+      `Correct, that's ${streakNum} in a row!`,
+      `That's right, you got ${streakNum} in a row!`,
+      `Keep it up, you're on a roll.`,
+      `Right, that's ${streakNum} in a row!`,
+      `Good effort, you got ${streakNum} in a row.`,
+      `That's correct, you got ${streakNum} in a row now.`,
+      `Keep up the good work, that's ${streakNum} in a row.`,
+      `Nicely done, that's ${streakNum} in a row`,
+    ];
+  } else {
+    return [];
+  }
+}
+
+export function allowNegativeFeedback(
+  atd: DialogConfig,
+  sdp: SessionData
+): boolean {
+  if (atd.dialogCategory === 'sensitive') {
+    if (
+      sdp.sessionHistory.systemResponses.length >= 2 &&
+      sdp.sessionHistory.systemResponses
+        .slice(-2)
+        .find((prevRespones) =>
+          prevRespones.some((prevResponse) =>
+            atd.negativeFeedback.includes(prevResponse)
+          )
+        )
+    ) {
+      return false;
+    } else if (sdp.sessionHistory.systemResponses.length === 1) {
+      // no negative feedback on first answer for sensitive lesson
+      return false;
+    }
+  }
+  return true;
+}
 
 export function toConfig(lessonData: Lesson): DialogConfig {
   const defaultData: DialogConfig = {
@@ -87,17 +195,47 @@ export function toConfig(lessonData: Lesson): DialogConfig {
       lessonData.dialogCategory === 'sensitive'
         ? SENSITIVE_POSITIVE_FEEDBACK
         : POSITIVE_FEEDBACK,
-    perfectFeedback: ['Nicely done!', 'You got it!'],
-    negativeFeedback:
+    perfectFeedback:
       lessonData.dialogCategory === 'sensitive'
+        ? []
+        : lessonData.learningFormat === 'survey_says'
+        ? PERFECT_FEEDBACK_SURVEY_STYLE
+        : ['Nicely done!', 'You got it!'],
+    negativeFeedback:
+      lessonData.learningFormat === 'survey_says'
+        ? SURVEY_STYLE_NEGATIVE_FEEDBACK
+        : lessonData.dialogCategory === 'sensitive'
         ? SENSITIVE_NEGATIVE_FEEDBACK
         : FEEDBACK_NEGATIVE,
-    neutralFeedback: ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
+    neutralFeedback:
+      lessonData.learningFormat === 'survey_says'
+        ? SURVEY_STYLE_NEGATIVE_FEEDBACK
+        : ['Ok.', 'So.', 'Well.', 'I see.', 'Okay.'],
     goodPointButFeedback: FEEDBACK_GOOD_POINT_BUT,
     goodPointButOutOfHintsFeedback:
       FEEDBACK_OUT_OF_HINTS_ALTERNATE_EXPECTATION_FULFILLED,
+    expectationMetButOthersWrongFeedback:
+      lessonData.dialogCategory === 'sensitive'
+        ? SENSITIVE_SOME_WRONG_FEEDBACK
+        : SOME_WRONG_FEEDBACK,
+    expectationsLeftFeedback:
+      lessonData.learningFormat === 'survey_says'
+        ? FEEDBACK_EXPECTATIONS_LEFT
+        : [],
+    closingPositiveFeedback:
+      lessonData.learningFormat === 'survey_says'
+        ? CLOSING_POSITIVE_FEEDBACK
+        : [],
+    closingNegativeFeedback:
+      lessonData.learningFormat === 'survey_says'
+        ? CLOSING_NEGATIVE_FEEDBACK
+        : [],
+    expectationOnTheBoard:
+      lessonData.learningFormat === 'survey_says'
+        ? SURVEY_STYLE_EXPECTATION_REVEAL
+        : [],
     pump: [
-      "Let's work through this together.",
+      // "Let's work through this together.",
       'And can you add to that?',
       'What else?',
       'Anything else?',
@@ -120,6 +258,8 @@ export function toConfig(lessonData: Lesson): DialogConfig {
       "Hey, easy there. We're both here to help you learn.",
     ],
     pumpBlank: ["I'll give you some more time."],
+    farewell:
+      lessonData.dialogCategory === 'sensitive' ? SENSITIVE_FAREWELL : [],
     originalXml: '',
     goodThreshold: goodThreshold,
     badThreshold:
@@ -127,11 +267,22 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         ? sensitiveBadThreshold
         : badThreshold,
     goodMetacognitiveThreshold: goodMetacognitiveThreshold,
+    hasSummaryFeedback:
+      lessonData.learningFormat === 'survey_says' &&
+      lessonData.dialogCategory === 'default',
+    givePumpOnMainQuestion: lessonData.dialogCategory === 'sensitive',
+    limitHints: lessonData.dialogCategory === 'sensitive',
     dialogCategory: lessonData.dialogCategory,
+    learningFormat: lessonData.learningFormat,
   };
 
   try {
     defaultData.questionIntro = lessonData.intro;
+    if (lessonData.learningFormat === 'survey_says') {
+      defaultData.questionIntro.concat(
+        ' Try to list the top ${lessonData.expectations.length} expert answers.'
+      );
+    }
     defaultData.questionText = lessonData.question;
     defaultData.lessonId = lessonData.lessonId;
     defaultData.recapText = Array.isArray(lessonData.conclusion)
