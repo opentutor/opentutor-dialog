@@ -48,12 +48,12 @@ jobs:
       - name: docker login
         run: docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: docker build
-        run: export DOCKER_IMAGE=uscictdocker/opentutor-dialog:${{ steps.tag.outputs.image_tag }} && make docker-build
+        run: export DOCKER_IMAGE=opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: docker tag release as version
         if: needs.publish-check.outputs.is_release == 'true'
-        run: docker tag "uscictdocker/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "uscictdocker/opentutor-dialog:${GITHUB_REF#refs/tags/}"
+        run: docker tag "opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog:${GITHUB_REF#refs/tags/}"
       - name: docker tag main as latest
         if: github.ref == 'refs/heads/main'
-        run: docker tag "uscictdocker/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "uscictdocker/opentutor-dialog:latest"
+        run: docker tag "opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog:latest"
       - name: docker push
-        run: docker push --all-tags uscictdocker/opentutor-dialog
+        run: docker push --all-tags opentutor/opentutor-dialog
