@@ -53,10 +53,8 @@ describe('dialog', async () => {
   });
 
   beforeEach(async () => {
-    if (!MOCKING_DISABLED) {
-      app = await createApp();
-      mockAxios = MOCK_AXIOS;
-    }
+    app = await createApp();
+    mockAxios = MOCK_AXIOS;
     mockNextRandom = sandbox.stub().returns(0);
     randomFunctionSet(mockNextRandom);
   });

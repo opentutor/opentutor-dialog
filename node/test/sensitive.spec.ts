@@ -58,10 +58,8 @@ describe('sensitive dialog', async () => {
   });
 
   beforeEach(async () => {
-    if (!MOCKING_DISABLED) {
-      app = await createApp();
-      mockAxios = MOCK_AXIOS;
-    }
+    app = await createApp();
+    mockAxios = MOCK_AXIOS;
     mockNextRandom = sandbox.stub().returns(0);
     randomFunctionSet(mockNextRandom);
   });
@@ -517,7 +515,7 @@ describe('sensitive dialog', async () => {
     // });
 
     // Update the session data for testing dialog behavior with streaks of negative answers
-    let lessonIdq6 = 'q6';
+    const lessonIdq6 = 'q6';
     const updatedValidSessionDto = dataToDto(streaksOfNegativeAnswers);
     mockNextRandom = sandbox.stub().returns(0.7);
     randomFunctionSet(mockNextRandom);
