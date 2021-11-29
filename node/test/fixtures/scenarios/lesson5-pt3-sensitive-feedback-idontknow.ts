@@ -13,8 +13,7 @@ export const scenario: DialogScenario = {
   lessonId: 'q5',
   expectedRequestResponses: [
     {
-      userInput:
-        "I don't know",
+      userInput: "I don't know",
       mockClassifierResponse: {
         data: {
           output: {
