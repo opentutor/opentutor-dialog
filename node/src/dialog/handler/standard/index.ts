@@ -299,15 +299,6 @@ export function toNextExpectation(
       atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
         .hints[0]
     ) {
-      // Do not add hint start message when it would be redundant
-      if (
-        (atd.expectationsLeftFeedback.length !== 0 &&
-          !afterPositiveFeedback &&
-          useHintStart) ||
-        (useHintStart && atd.expectationsLeftFeedback.length === 0)
-      ) {
-        answer.push(createTextResponse(pickRandom(atd.hintStart)));
-      }
       answer.push(
         createTextResponse(
           atd.expectations[sdp.dialogState.expectationsCompleted.indexOf(false)]
