@@ -5,19 +5,22 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import {
+  ClassfierRequest,
   Classifier,
+  ClassifierResponse,
   DialogConfig,
   Evaluation,
+  ExpectationResult,
   ExpectationStatus,
   Lesson,
   OpenTutorResponse,
   ResponseType,
   SessionData,
 } from './types';
-import { handlerFor } from './handler';
-import { addTutorDialog, addUserDialog, newSession } from './session-data';
-import { calculateScore } from './dialog';
 import { toConfig } from './config';
+import { handlerFor } from './handler';
+import { calculateScore } from './dialog';
+import { addTutorDialog, addUserDialog, newSession } from './session-data';
 
 export interface DialogueModel {
   init: (props: InitRequest) => Promise<InitResponse>;
@@ -45,6 +48,58 @@ interface RespondResponse {
   expectationActive: number;
 }
 
+export class OpentutorDefaultClassifier implements Classifier {
+  lesson: Lesson;
+  expectationResults: ExpectationResult[];
+
+  constructor(lesson: Lesson) {
+    this.lesson = lesson;
+    this.expectationResults = [];
+  }
+
+  async evaluate(props: ClassfierRequest): Promise<ClassifierResponse> {
+    const expectation = props.config.expectations[props.expectation || 0];
+    const score =
+      props.input.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '') ===
+      expectation.ideal.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '')
+        ? 1
+        : Math.random();
+    const idx = this.expectationResults.findIndex(
+      (er) => er.expectationId === expectation.expectationId
+    );
+    if (idx === -1) {
+      this.expectationResults.push({
+        expectationId: expectation.expectationId,
+        evaluation: score > 0.5 ? Evaluation.Good : Evaluation.Bad,
+        score: score,
+      });
+    } else {
+      this.expectationResults[idx] = {
+        expectationId: expectation.expectationId,
+        evaluation: score > 0.5 ? Evaluation.Good : Evaluation.Bad,
+        score: score,
+      };
+    }
+    return {
+      output: {
+        expectationResults: this.expectationResults,
+        speechActs: {
+          metacognitive: {
+            expectationId: expectation.expectationId,
+            evaluation: Evaluation.Good,
+            score: 1,
+          },
+          profanity: {
+            expectationId: expectation.expectationId,
+            evaluation: Evaluation.Good,
+            score: 1,
+          },
+        },
+      },
+    };
+  }
+}
+
 export class OpentutorDialogueModel implements DialogueModel {
   lesson: Lesson;
   classifier: Classifier;
@@ -57,33 +112,7 @@ export class OpentutorDialogueModel implements DialogueModel {
     if (classifier) {
       this.classifier = classifier;
     } else {
-      this.classifier = {
-        evaluate: async (request) => {
-          return {
-            output: {
-              expectationResults: [
-                {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0,
-                },
-              ],
-              speechActs: {
-                metacognitive: {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0,
-                },
-                profanity: {
-                  expectationId: '',
-                  evaluation: Evaluation.Good,
-                  score: 0,
-                },
-              },
-            },
-          };
-        },
-      };
+      this.classifier = new OpentutorDefaultClassifier(lesson);
     }
   }
 
