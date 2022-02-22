@@ -55,7 +55,7 @@ jobs:
       - name: docker build node
         run: cd node && DOCKER_IMAGE=opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: docker build react
-        run: cd opentutor-dialog-react export DOCKER_IMAGE=opentutor/opentutor-dialog-react:${{ steps.tag.outputs.image_tag }} && make docker-build
+        run: cd opentutor-dialog-react && DOCKER_IMAGE=opentutor/opentutor-dialog-react:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: docker tag release as version
         if: needs.publish-check.outputs.is_release == 'true'
         run: |
