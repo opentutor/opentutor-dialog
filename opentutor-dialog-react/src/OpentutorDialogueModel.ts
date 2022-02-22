@@ -7,22 +7,15 @@ The full terms of this copyright and license should always be found in the root 
 import {
   Classifier,
   DialogConfig,
+  Evaluation,
   ExpectationStatus,
   Lesson,
   OpenTutorResponse,
   ResponseType,
   SessionData,
-  SessionDto,
 } from './types';
 import { handlerFor } from './handler';
-import {
-  addTutorDialog,
-  addUserDialog,
-  dataToDto,
-  dtoToData,
-  hasHistoryBeenTampered,
-  newSession,
-} from './session-data';
+import { addTutorDialog, addUserDialog, newSession } from './session-data';
 import { calculateScore } from './dialog';
 import { toConfig } from './config';
 
@@ -36,7 +29,7 @@ interface InitRequest {
 }
 interface InitResponse {
   lessonId: string;
-  sessionInfo: SessionDto;
+  sessionInfo: SessionData;
   response: OpenTutorResponse[];
 }
 interface RespondRequest {
@@ -44,7 +37,7 @@ interface RespondRequest {
   username: string;
 }
 interface RespondResponse {
-  sessionInfo: SessionDto;
+  sessionInfo: SessionData;
   response: OpenTutorResponse[];
   sentToGrader: boolean;
   completed: boolean;
@@ -58,10 +51,40 @@ export class OpentutorDialogueModel implements DialogueModel {
   config: DialogConfig;
   sdp: SessionData;
 
-  constructor(lesson: Lesson, classifier: Classifier) {
+  constructor(lesson: Lesson, classifier?: Classifier) {
     this.lesson = lesson;
-    this.classifier = classifier;
     this.config = toConfig(lesson);
+    if (classifier) {
+      this.classifier = classifier;
+    } else {
+      this.classifier = {
+        evaluate: async (request) => {
+          return {
+            output: {
+              expectationResults: [
+                {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0,
+                },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0,
+                },
+              },
+            },
+          };
+        },
+      };
+    }
   }
 
   async init(props: InitRequest): Promise<InitResponse> {
@@ -71,7 +94,7 @@ export class OpentutorDialogueModel implements DialogueModel {
     addTutorDialog(this.sdp, messages);
     return {
       lessonId: this.lesson.lessonId,
-      sessionInfo: dataToDto(this.sdp),
+      sessionInfo: this.sdp,
       response: messages,
     };
   }
@@ -92,7 +115,7 @@ export class OpentutorDialogueModel implements DialogueModel {
       (e) => e.status === ExpectationStatus.Active
     );
     return {
-      sessionInfo: dataToDto(this.sdp),
+      sessionInfo: this.sdp,
       response: msg,
       sentToGrader: false,
       completed: msg.find((m) => m.type === ResponseType.Closing)

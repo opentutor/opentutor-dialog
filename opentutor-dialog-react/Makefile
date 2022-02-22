@@ -31,6 +31,7 @@ test-all: test-audit test-format test-lint test-license test-types test
 
 .PHONY: test
 test: node_modules
+	npm test
 
 .PHONY: test-audit
 test-audit:
