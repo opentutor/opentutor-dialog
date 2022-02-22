@@ -4,11 +4,56 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import { OpentutorDialogueModel } from './OpentutorDialogueModel';
+import {
+  Lesson,
+  LessonExpectation,
+  Hint,
+  LessonPrompt,
+  Classifier,
+  ClassfierRequest,
+  ClassifierResponse,
+  ClassifierConfig,
+  ClassifierResult,
+  Expectation,
+  ExpectationResult,
+  SpeechActs,
+  Evaluation,
+  SessionData,
+  SessionHistory,
+  DialogState,
+  UserResponse,
+  ExpectationData,
+  ExpectationStatus,
+  OpenTutorResponse,
+  TextData,
+  ImageData,
+  ResponseType,
+} from './types';
 
-export function getClientID(): string {
-  return process.env.GOOGLE_CLIENT_ID;
-}
-
-export function getApiKey(): string {
-  return process.env.API_SECRET;
-}
+export {
+  Lesson,
+  LessonExpectation,
+  Hint,
+  LessonPrompt,
+  Classifier,
+  ClassfierRequest,
+  ClassifierResponse,
+  ClassifierConfig,
+  ClassifierResult,
+  Expectation,
+  ExpectationResult,
+  SpeechActs,
+  Evaluation,
+  SessionData,
+  SessionHistory,
+  DialogState,
+  UserResponse,
+  ExpectationData,
+  ExpectationStatus,
+  OpenTutorResponse,
+  TextData,
+  ImageData,
+  ResponseType,
+  OpentutorDialogueModel,
+};

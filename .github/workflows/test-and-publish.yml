@@ -6,19 +6,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm ci
-      - run: cd node && npm ci
-      - run: cd opentutor-dialog-react && npm ci
-      - name: test pretty
-        run: make test-pretty
-      - name: test license
-        run: make test-license
       - name: test audit
         run: make test-audit
+      - name: test pretty
+        run: make test-pretty
       - name: test lint
         run: make test-lint
       - name: test types
         run: make test-types
+      - name: test license
+        run: make test-license
       - name: test node
         run: cd node && make test
       - name: test react
@@ -53,9 +50,9 @@ jobs:
       - name: docker login
         run: docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: docker build node
-        run: cd node && DOCKER_IMAGE=opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }} && make docker-build
+        run: cd node && export DOCKER_IMAGE=opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: docker build react
-        run: cd opentutor-dialog-react export DOCKER_IMAGE=opentutor/opentutor-dialog-react:${{ steps.tag.outputs.image_tag }} && make docker-build
+        run: cd opentutor-dialog-react && export DOCKER_IMAGE=opentutor/opentutor-dialog-react:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: docker tag release as version
         if: needs.publish-check.outputs.is_release == 'true'
         run: |
