@@ -291,7 +291,6 @@ export function toConfig(lessonData: Lesson): DialogConfig {
   } catch (err) {
     throw { status: '404', message: 'lesson data not found' };
   }
-
   defaultData.expectations = lessonData.expectations.map((exp) => {
     return {
       expectationId: exp.expectationId,

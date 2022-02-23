@@ -8,7 +8,7 @@ The full terms of this copyright and license should always be found in the root 
 import {
   OpentutorDialogueModel,
   OpentutorDefaultClassifier,
-} from 'OpentutorDialogueModel';
+} from './OpentutorDialogueModel';
 import {
   ClassfierRequest,
   Classifier,
@@ -33,7 +33,7 @@ import {
   SpeechActs,
   TextData,
   UserResponse,
-} from 'types';
+} from './types';
 
 export {
   ClassfierRequest,

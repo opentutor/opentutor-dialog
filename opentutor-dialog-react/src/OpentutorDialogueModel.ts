@@ -21,6 +21,7 @@ import { toConfig } from './config';
 import { handlerFor } from './handler';
 import { calculateScore } from './dialog';
 import { addTutorDialog, addUserDialog, newSession } from './session-data';
+import { LessonExpectation } from '.';
 
 export interface DialogueModel {
   init: (props: InitRequest) => Promise<InitResponse>;
@@ -58,12 +59,36 @@ export class OpentutorDefaultClassifier implements Classifier {
   }
 
   async evaluate(props: ClassfierRequest): Promise<ClassifierResponse> {
-    const expectation = props.config.expectations[props.expectation || 0];
+    console.log(props);
+    let expectation: LessonExpectation;
+    const normalizedInput = props.input
+      .toLowerCase()
+      .replace(/[^a-zA-Z0-9 ]/g, '');
+
+    if (props.expectation) {
+      expectation = this.lesson.expectations[props.expectation];
+    } else {
+      const idx = this.lesson.expectations.findIndex(
+        (e) =>
+          normalizedInput ===
+          e.expectation.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '')
+      );
+      if (idx === -1) {
+        expectation = this.lesson.expectations.find(
+          (e) =>
+            !this.expectationResults
+              .map((er) => er.expectationId)
+              .includes(e.expectationId)
+        );
+      } else {
+        expectation = this.lesson.expectations[idx];
+      }
+    }
     const score =
-      props.input.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '') ===
-      expectation.ideal.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '')
+      normalizedInput ===
+      expectation.expectation.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '')
         ? 1
-        : Math.random();
+        : 0;
     const idx = this.expectationResults.findIndex(
       (er) => er.expectationId === expectation.expectationId
     );
@@ -87,12 +112,12 @@ export class OpentutorDefaultClassifier implements Classifier {
           metacognitive: {
             expectationId: expectation.expectationId,
             evaluation: Evaluation.Good,
-            score: 1,
+            score: 0,
           },
           profanity: {
             expectationId: expectation.expectationId,
             evaluation: Evaluation.Good,
-            score: 1,
+            score: 0,
           },
         },
       },
