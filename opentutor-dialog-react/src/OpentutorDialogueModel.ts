@@ -49,6 +49,10 @@ interface RespondResponse {
   expectationActive: number;
 }
 
+function normalizeInput(str: string): string {
+  return str.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '');
+}
+
 export class OpentutorDefaultClassifier implements Classifier {
   lesson: Lesson;
   expectationResults: ExpectationResult[];
@@ -61,31 +65,30 @@ export class OpentutorDefaultClassifier implements Classifier {
   async evaluate(props: ClassfierRequest): Promise<ClassifierResponse> {
     console.log(props);
     let expectation: LessonExpectation;
-    const normalizedInput = props.input
-      .toLowerCase()
-      .replace(/[^a-zA-Z0-9 ]/g, '');
-
+    const input = normalizeInput(props.input);
     if (props.expectation) {
       expectation = this.lesson.expectations[props.expectation];
     } else {
-      const idx = this.lesson.expectations.findIndex(
-        (e) =>
-          normalizedInput ===
-          e.expectation.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '')
-      );
-      if (idx === -1) {
-        expectation = this.lesson.expectations.find(
+      expectation =
+        this.lesson.expectations.find(
+          (e) => input === normalizeInput(e.expectation)
+        ) ||
+        this.lesson.expectations.find((e) =>
+          this.expectationResults.find(
+            (er) =>
+              er.expectationId === e.expectationId &&
+              er.evaluation === Evaluation.Bad
+          )
+        ) ||
+        this.lesson.expectations.find(
           (e) =>
             !this.expectationResults
               .map((er) => er.expectationId)
               .includes(e.expectationId)
         );
-      } else {
-        expectation = this.lesson.expectations[idx];
-      }
     }
     const score =
-      normalizedInput ===
+      input ===
       expectation.expectation.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '')
         ? 1
         : 0;
