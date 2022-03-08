@@ -22,6 +22,7 @@ import { handlerFor } from './handler';
 import { calculateScore } from './dialog';
 import { addTutorDialog, addUserDialog, newSession } from './session-data';
 import { LessonExpectation } from '.';
+import { evaluate as classifierEvaluate } from './classifier';
 
 export interface DialogueModel {
   init: (props: InitRequest) => Promise<InitResponse>;
@@ -53,72 +54,42 @@ function normalizeInput(str: string): string {
   return str.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '');
 }
 
-export class OpentutorDefaultClassifier implements Classifier {
+class OpentutorClassifier implements Classifier {
   lesson: Lesson;
-  expectationResults: ExpectationResult[];
+  w2v: any;
+  features: any;
 
-  constructor(lesson: Lesson) {
+  constructor(lesson: Lesson, w2v: any, features: any) {
     this.lesson = lesson;
-    this.expectationResults = [];
+    this.w2v = w2v;
+    this.features = features;
   }
 
   async evaluate(props: ClassfierRequest): Promise<ClassifierResponse> {
-    console.log(props);
-    let expectation: LessonExpectation;
-    const input = normalizeInput(props.input);
-    if (props.expectation) {
-      expectation = this.lesson.expectations[props.expectation];
-    } else {
-      expectation =
-        this.lesson.expectations.find(
-          (e) => input === normalizeInput(e.expectation)
-        ) ||
-        this.lesson.expectations.find((e) =>
-          this.expectationResults.find(
-            (er) =>
-              er.expectationId === e.expectationId &&
-              er.evaluation === Evaluation.Bad
-          )
-        ) ||
-        this.lesson.expectations.find(
-          (e) =>
-            !this.expectationResults
-              .map((er) => er.expectationId)
-              .includes(e.expectationId)
-        );
-    }
-    const score =
-      input ===
-      expectation.expectation.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '')
-        ? 1
-        : 0;
-    const idx = this.expectationResults.findIndex(
-      (er) => er.expectationId === expectation.expectationId
+    props.config = {
+      question: this.lesson.question,
+      expectations: this.lesson.expectations.map((le) => ({
+        expectationId: le.expectationId,
+        ideal: le.expectation,
+      })),
+    };
+    const expectationResults = classifierEvaluate(
+      props,
+      this.w2v,
+      this.features
     );
-    if (idx === -1) {
-      this.expectationResults.push({
-        expectationId: expectation.expectationId,
-        evaluation: score > 0.5 ? Evaluation.Good : Evaluation.Bad,
-        score: score,
-      });
-    } else {
-      this.expectationResults[idx] = {
-        expectationId: expectation.expectationId,
-        evaluation: score > 0.5 ? Evaluation.Good : Evaluation.Bad,
-        score: score,
-      };
-    }
+    console.log(expectationResults);
     return {
       output: {
-        expectationResults: this.expectationResults,
+        expectationResults,
         speechActs: {
           metacognitive: {
-            expectationId: expectation.expectationId,
+            expectationId: '',
             evaluation: Evaluation.Good,
             score: 0,
           },
           profanity: {
-            expectationId: expectation.expectationId,
+            expectationId: '',
             evaluation: Evaluation.Good,
             score: 0,
           },
@@ -134,14 +105,10 @@ export class OpentutorDialogueModel implements DialogueModel {
   config: DialogConfig;
   sdp: SessionData;
 
-  constructor(lesson: Lesson, classifier?: Classifier) {
+  constructor(lesson: Lesson, w2v: any, features: any) {
     this.lesson = lesson;
     this.config = toConfig(lesson);
-    if (classifier) {
-      this.classifier = classifier;
-    } else {
-      this.classifier = new OpentutorDefaultClassifier(lesson);
-    }
+    this.classifier = new OpentutorClassifier(lesson, w2v, features);
   }
 
   async init(props: InitRequest): Promise<InitResponse> {
