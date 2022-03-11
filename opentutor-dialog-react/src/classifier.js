@@ -80,6 +80,10 @@ class FeatureExtractor {
       ia_.delete(common_words[i]);
     }
 
+    if (ia_.size === 0) {
+      return 1;
+    }
+
     for (let ia_i of ia_) {
       if (!this.avail_words.has(ia_i)) continue;
       var inner_cost = Array();
@@ -131,6 +135,9 @@ class FeatureExtractor {
       num += a[i] * b[i];
       den1 += a[i] * a[i];
       den2 += b[i] * b[i];
+    }
+    if (den1 === 0 || den2 === 0) {
+      return 0;
     }
     return num / (Math.sqrt(den1) * Math.sqrt(den2));
   }
@@ -323,19 +330,12 @@ function calculate_score(weights, bias, features) {
 }
 
 export function evaluate(classifierRequest, embedding, model_features) {
-  //model_features : Later must be read throguh lessonId
-
-  console.log(classifierRequest);
-
   var question = classifierRequest.config.question;
   var ans = classifierRequest.input;
-
   var ques_words = preprocess_sentence(question);
   var ans_words = preprocess_sentence(ans);
   var expectationResults = [];
-
   var featExt = new FeatureExtractor(embedding);
-  // var model_features = model_features;
 
   for (var j = 0; j < classifierRequest.config.expectations.length; j++) {
     var expectation = classifierRequest.config.expectations[j];
@@ -422,11 +422,11 @@ export function evaluate(classifierRequest, embedding, model_features) {
 
     if (score > 0.5) {
       expectationResults.push(
-        new ExpectationResult(expectation.expectationId, 'GOOD', score)
+        new ExpectationResult(expectation.expectationId, 'Good', score)
       );
     } else {
       expectationResults.push(
-        new ExpectationResult(expectation.expectationId, 'BAD', 1 - score)
+        new ExpectationResult(expectation.expectationId, 'Bad', 1 - score)
       );
     }
   }

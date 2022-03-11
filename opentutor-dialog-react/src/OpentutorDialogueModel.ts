@@ -5,12 +5,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import {
-  ClassfierRequest,
   Classifier,
-  ClassifierResponse,
   DialogConfig,
-  Evaluation,
-  ExpectationResult,
   ExpectationStatus,
   Lesson,
   OpenTutorResponse,
@@ -21,14 +17,11 @@ import { toConfig } from './config';
 import { handlerFor } from './handler';
 import { calculateScore } from './dialog';
 import { addTutorDialog, addUserDialog, newSession } from './session-data';
-import { LessonExpectation } from '.';
-import { evaluate as classifierEvaluate } from './classifier';
 
 export interface DialogueModel {
   init: (props: InitRequest) => Promise<InitResponse>;
   respond: (props: RespondRequest) => Promise<RespondResponse>;
 }
-
 interface InitRequest {
   sessionId: string;
 }
@@ -50,65 +43,16 @@ interface RespondResponse {
   expectationActive: number;
 }
 
-function normalizeInput(str: string): string {
-  return str.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '');
-}
-
-class OpentutorClassifier implements Classifier {
-  lesson: Lesson;
-  w2v: any;
-  features: any;
-
-  constructor(lesson: Lesson, w2v: any, features: any) {
-    this.lesson = lesson;
-    this.w2v = w2v;
-    this.features = features;
-  }
-
-  async evaluate(props: ClassfierRequest): Promise<ClassifierResponse> {
-    props.config = {
-      question: this.lesson.question,
-      expectations: this.lesson.expectations.map((le) => ({
-        expectationId: le.expectationId,
-        ideal: le.expectation,
-      })),
-    };
-    const expectationResults = classifierEvaluate(
-      props,
-      this.w2v,
-      this.features
-    );
-    console.log(expectationResults);
-    return {
-      output: {
-        expectationResults,
-        speechActs: {
-          metacognitive: {
-            expectationId: '',
-            evaluation: Evaluation.Good,
-            score: 0,
-          },
-          profanity: {
-            expectationId: '',
-            evaluation: Evaluation.Good,
-            score: 0,
-          },
-        },
-      },
-    };
-  }
-}
-
 export class OpentutorDialogueModel implements DialogueModel {
   lesson: Lesson;
   classifier: Classifier;
   config: DialogConfig;
   sdp: SessionData;
 
-  constructor(lesson: Lesson, w2v: any, features: any) {
+  constructor(lesson: Lesson, classifier: Classifier) {
     this.lesson = lesson;
+    this.classifier = classifier;
     this.config = toConfig(lesson);
-    this.classifier = new OpentutorClassifier(lesson, w2v, features);
   }
 
   async init(props: InitRequest): Promise<InitResponse> {

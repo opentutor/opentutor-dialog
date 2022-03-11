@@ -4,58 +4,45 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { OpentutorClassifier } from './OpentutorClassifier';
-import { OpentutorDialogueModel } from './OpentutorDialogueModel';
 import {
   Classifier,
-  ClassifierConfig,
   ClassifierRequest,
   ClassifierResponse,
-  ClassifierResult,
-  DialogState,
   Evaluation,
-  Expectation,
-  ExpectationData,
-  ExpectationResult,
-  ExpectationStatus,
-  Hint,
-  ImageData,
-  Lesson,
-  LessonExpectation,
-  LessonPrompt,
-  OpenTutorResponse,
-  ResponseType,
-  SessionData,
-  SessionHistory,
-  SpeechActs,
-  TextData,
-  UserResponse,
 } from './types';
+import { evaluate as classifierEvaluate } from './classifier';
 
-export {
-  Classifier,
-  ClassifierConfig,
-  ClassifierRequest,
-  ClassifierResponse,
-  ClassifierResult,
-  DialogState,
-  Evaluation,
-  Expectation,
-  ExpectationData,
-  ExpectationResult,
-  ExpectationStatus,
-  Hint,
-  ImageData,
-  Lesson,
-  LessonExpectation,
-  LessonPrompt,
-  OpenTutorResponse,
-  ResponseType,
-  SessionData,
-  SessionHistory,
-  SpeechActs,
-  TextData,
-  UserResponse,
-  OpentutorClassifier,
-  OpentutorDialogueModel,
-};
+export class OpentutorClassifier implements Classifier {
+  w2v: any;
+  features: any;
+
+  constructor(w2v: any, features: any) {
+    this.w2v = w2v;
+    this.features = features;
+  }
+
+  async evaluate(props: ClassifierRequest): Promise<ClassifierResponse> {
+    const expectationResults = classifierEvaluate(
+      props,
+      this.w2v,
+      this.features
+    );
+    return {
+      output: {
+        expectationResults,
+        speechActs: {
+          metacognitive: {
+            expectationId: '',
+            evaluation: Evaluation.Bad,
+            score: 0,
+          },
+          profanity: {
+            expectationId: '',
+            evaluation: Evaluation.Bad,
+            score: 0,
+          },
+        },
+      },
+    };
+  }
+}

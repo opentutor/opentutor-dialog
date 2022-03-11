@@ -6,568 +6,449 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { expect } from 'chai';
 import { OpentutorDialogueModel } from '../src/OpentutorDialogueModel';
+import { OpentutorClassifier } from '../src/OpentutorClassifier';
 
-describe('opentutor dialogue', () => {
-  it.only('navy integrity', async () => {
-    const model = new OpentutorDialogueModel(
-      require('./fixtures/navy_integrity/lesson').lesson,
-      require('./fixtures/navy_integrity/words_w2v').word_w2v,
-      require('./fixtures/navy_integrity/model_features').model_features
-    );
-    const init = await model.init({ sessionId: 'test-session-id' });
-    const response = await model.respond({
-      message: 'Peer pressure can cause you to allow inappropriate behavior.',
-      username: 'test-user-name',
+describe('opentutor dialogue model', () => {
+  describe('lesson navy integrity', () => {
+    it('initializes', async () => {
+      const classifier = new OpentutorClassifier(
+        require('./fixtures/navy_integrity/words_w2v'),
+        require('./fixtures/navy_integrity/model_features')
+      );
+      const model = new OpentutorDialogueModel(
+        require('./fixtures/navy_integrity/lesson'),
+        classifier
+      );
+      const init = await model.init({ sessionId: 'test-session-id' });
+      expect(init).to.eql({
+        lessonId: 'navy_integrity',
+        sessionInfo: {
+          sessionHistory: {
+            userResponses: [],
+            systemResponses: [
+              [
+                'Here is a question about integrity, a key Navy attribute.',
+                'What are the challenges to demonstrating integrity in a group?',
+              ],
+            ],
+            userScores: [],
+            classifierGrades: [],
+          },
+          sessionId: 'test-session-id',
+          previousUserResponse: '',
+          previousSystemResponse: [
+            'Here is a question about integrity, a key Navy attribute.',
+            'What are the challenges to demonstrating integrity in a group?',
+          ],
+          dialogState: {
+            expectationsCompleted: [false, false, false],
+            expectationData: [
+              {
+                ideal: '',
+                score: 0,
+                dialogScore: 0,
+                numPrompts: 0,
+                numHints: 0,
+                satisfied: false,
+                status: 'none',
+              },
+              {
+                ideal: '',
+                score: 0,
+                dialogScore: 0,
+                numPrompts: 0,
+                numHints: 0,
+                satisfied: false,
+                status: 'none',
+              },
+              {
+                ideal: '',
+                score: 0,
+                dialogScore: 0,
+                numPrompts: 0,
+                numHints: 0,
+                satisfied: false,
+                status: 'none',
+              },
+            ],
+            currentExpectation: -1,
+            hints: false,
+            limitHintsMode: false,
+            numCorrectStreak: 0,
+          },
+        },
+        response: [
+          {
+            author: 'them',
+            type: 'opening',
+            data: {
+              text: 'Here is a question about integrity, a key Navy attribute.',
+            },
+          },
+          {
+            author: 'them',
+            type: 'mainQuestion',
+            data: {
+              text: 'What are the challenges to demonstrating integrity in a group?',
+            },
+          },
+        ],
+      });
     });
-    console.log(JSON.stringify(response, null, ' '));
+
+    describe('w2v model', () => {
+      it('responds to bad answers with hints', async () => {
+        const classifier = new OpentutorClassifier(
+          require('./fixtures/navy_integrity/words_w2v'),
+          require('./fixtures/navy_integrity/model_features')
+        );
+        const model = new OpentutorDialogueModel(
+          require('./fixtures/navy_integrity/lesson'),
+          classifier
+        );
+        await model.init({ sessionId: 'test-session-id' });
+        // get hint for first expectation
+        let response = await model.respond({
+          message: 'aasdfjklsdafsdf',
+          username: 'test-user-name',
+        });
+        response.response[0].data = { text: '' };
+        response.response[1].data = { text: '' };
+        expect(response.response).to.eql([
+          {
+            author: 'them',
+            type: 'feedbackNegative',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'hint',
+            data: {
+              text: 'Whose influence might cause you to overlook bad behavior?',
+            },
+          },
+        ]);
+        expect(
+          response.sessionInfo.sessionHistory.classifierGrades[0]
+            .expectationResults
+        ).to.eql([
+          {
+            expectationId: '0',
+            evaluation: 'Bad',
+            score: 0.6133668706399765,
+          },
+          {
+            expectationId: '1',
+            evaluation: 'Bad',
+            score: 0.663895633676956,
+          },
+          {
+            expectationId: '2',
+            evaluation: 'Bad',
+            score: 0.6272114772684214,
+          },
+        ]);
+        expect(response.sessionInfo.dialogState).to.eql({
+          expectationsCompleted: [false, false, false],
+          expectationData: [
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'active',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+          ],
+          currentExpectation: 0,
+          hints: true,
+          limitHintsMode: false,
+          numCorrectStreak: 0,
+        });
+        expect(response.expectationActive).to.eql(0);
+        expect(response.completed).to.eql(false);
+        expect(response.score).to.eql(0.18258766973577434);
+        // get another hint for first expectation
+        response = await model.respond({
+          message: 'aasdfjklsdafsdf',
+          username: 'test-user-name',
+        });
+        response.response[0].data = { text: '' };
+        response.response[1].data = { text: '' };
+        expect(response.response).to.eql([
+          {
+            author: 'them',
+            type: 'feedbackNeutral',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'hint',
+            data: {
+              text: 'What type of pressure might cause you to lower your standards?',
+            },
+          },
+        ]);
+        expect(response.sessionInfo.dialogState).to.eql({
+          expectationsCompleted: [false, false, false],
+          expectationData: [
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 1,
+              satisfied: false,
+              status: 'active',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+          ],
+          currentExpectation: 0,
+          hints: true,
+          limitHintsMode: false,
+          numCorrectStreak: 0,
+        });
+        expect(response.expectationActive).to.eql(0);
+        expect(response.completed).to.eql(false);
+        expect(response.score).to.eql(0.18258766973577434);
+        // get answer for first expectation and hint for second expectation
+        response = await model.respond({
+          message: 'aasdfjklsdafsdf',
+          username: 'test-user-name',
+        });
+        console.log(JSON.stringify(response));
+        response.response[0].data = { text: '' };
+        response.response[2].data = { text: '' };
+        expect(response.response).to.eql([
+          {
+            author: 'them',
+            type: 'feedbackNegative',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: {
+              text: 'Peer pressure can cause you to allow inappropriate behavior.',
+            },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'hint',
+            data: {
+              text: 'How can it affect someone when you correct their behavior?',
+            },
+          },
+        ]);
+        expect(response.sessionInfo.dialogState).to.eql({
+          expectationsCompleted: [true, false, false],
+          expectationData: [
+            {
+              ideal:
+                'Peer pressure can cause you to allow inappropriate behavior.',
+              score: 0.3866331293600235,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 2,
+              satisfied: false,
+              status: 'complete',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'active',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+          ],
+          currentExpectation: 1,
+          hints: true,
+          limitHintsMode: false,
+          numCorrectStreak: 0,
+        });
+        expect(response.expectationActive).to.eql(1);
+        expect(response.completed).to.eql(false);
+        expect(response.score).to.eql(0.18258766973577434);
+      });
+
+      it('responds to ideal answer for expectation with hint for next expectation', async () => {
+        const classifier = new OpentutorClassifier(
+          require('./fixtures/navy_integrity/words_w2v'),
+          require('./fixtures/navy_integrity/model_features')
+        );
+        const model = new OpentutorDialogueModel(
+          require('./fixtures/navy_integrity/lesson'),
+          classifier
+        );
+        await model.init({ sessionId: 'test-session-id' });
+        // get hint for first expectation
+        let response = await model.respond({
+          message:
+            'Peer pressure can cause you to allow inappropriate behavior.',
+          username: 'test-user-name',
+        });
+        response.response[0].data = { text: '' };
+        response.response[1].data = { text: '' };
+        expect(response.response).to.eql([
+          {
+            author: 'them',
+            type: 'feedbackPositive',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'hint',
+            data: {
+              text: 'How can it affect someone when you correct their behavior?',
+            },
+          },
+        ]);
+        expect(
+          response.sessionInfo.sessionHistory.classifierGrades[0]
+            .expectationResults
+        ).to.eql([
+          {
+            expectationId: '0',
+            evaluation: 'Good',
+            score: 0.8253439296905862,
+          },
+          {
+            expectationId: '1',
+            evaluation: 'Good',
+            score: 0.5334600138117138,
+          },
+          {
+            expectationId: '2',
+            evaluation: 'Bad',
+            score: 0.5635210840952418,
+          },
+        ]);
+        expect(response.sessionInfo.dialogState).to.eql({
+          expectationsCompleted: [true, false, false],
+          expectationData: [
+            {
+              ideal:
+                'Peer pressure can cause you to allow inappropriate behavior.',
+              score: 0.8253439296905862,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: true,
+              status: 'complete',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'active',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+          ],
+          currentExpectation: 1,
+          hints: true,
+          limitHintsMode: false,
+          numCorrectStreak: 1,
+        });
+        expect(response.expectationActive).to.eql(1);
+        expect(response.completed).to.eql(false);
+        expect(response.score).to.eql(0.6616564882860786);
+      });
+
+      it.skip('responds to ideal answer for all expectations', async () => {
+        const classifier = new OpentutorClassifier(
+          require('./fixtures/navy_integrity/words_w2v'),
+          require('./fixtures/navy_integrity/model_features')
+        );
+        const model = new OpentutorDialogueModel(
+          require('./fixtures/navy_integrity/lesson'),
+          classifier
+        );
+        await model.init({ sessionId: 'test-session-id' });
+        // get hint for first expectation
+        let response = await model.respond({
+          message:
+            "Peer pressure can cause you to allow inappropriate behavior. If you correct someone's behavior, you may get them in trouble or it may be harder to work with them. Enforcing the rules can make you unpopular.",
+          username: 'test-user-name',
+        });
+      });
+    });
   });
-
-  // describe('with default classifier', () => {
-  //   describe('with lesson current flow', () => {
-  //     it('inits with prompt', async () => {
-  //       const model = new OpentutorDialogueModel(currentFlowLesson);
-  //       const response = await model.init({ sessionId: 'test-session-id' });
-  //       expect(response).to.eql({
-  //         lessonId: 'q2',
-  //         sessionInfo: {
-  //           sessionHistory: {
-  //             userResponses: [],
-  //             systemResponses: [
-  //               [
-  //                 '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-  //                 'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-  //               ],
-  //             ],
-  //             userScores: [],
-  //             classifierGrades: [],
-  //           },
-  //           sessionId: 'test-session-id',
-  //           previousUserResponse: '',
-  //           previousSystemResponse: [
-  //             '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-  //             'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-  //           ],
-  //           dialogState: {
-  //             expectationsCompleted: [false],
-  //             expectationData: [
-  //               {
-  //                 ideal: '',
-  //                 score: 0,
-  //                 dialogScore: 0,
-  //                 numPrompts: 0,
-  //                 numHints: 0,
-  //                 satisfied: false,
-  //                 status: 'none',
-  //               },
-  //             ],
-  //             currentExpectation: -1,
-  //             hints: false,
-  //             limitHintsMode: false,
-  //             numCorrectStreak: 0,
-  //           },
-  //         },
-  //         response: [
-  //           {
-  //             author: 'them',
-  //             type: 'opening',
-  //             data: {
-  //               text: '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-  //             },
-  //           },
-  //           {
-  //             author: 'them',
-  //             type: 'mainQuestion',
-  //             data: {
-  //               text: 'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-  //             },
-  //           },
-  //         ],
-  //       });
-  //     });
-
-  //     it('responds with ideal answer', async () => {
-  //       const model = new OpentutorDialogueModel(currentFlowLesson);
-  //       await model.init({ sessionId: 'test-session-id' });
-  //       const response = await model.respond({
-  //         message: 'current flows in the same direction as the arrow',
-  //         username: 'test-user-name',
-  //       });
-  //       response.sessionInfo.sessionHistory.systemResponses[1].shift();
-  //       response.response[0].data = undefined;
-  //       expect(response).to.eql({
-  //         sessionInfo: {
-  //           sessionHistory: {
-  //             userResponses: [
-  //               {
-  //                 text: 'current flows in the same direction as the arrow',
-  //                 activeExpectation: -1,
-  //               },
-  //             ],
-  //             systemResponses: [
-  //               [
-  //                 '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-  //                 'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-  //               ],
-  //               [
-  //                 'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //                 "Let's try a different problem.",
-  //               ],
-  //             ],
-  //             userScores: [],
-  //             classifierGrades: [
-  //               {
-  //                 expectationResults: [
-  //                   {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 1,
-  //                   },
-  //                 ],
-  //                 speechActs: {
-  //                   metacognitive: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                   profanity: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //           sessionId: 'test-session-id',
-  //           previousUserResponse:
-  //             'current flows in the same direction as the arrow',
-  //           previousSystemResponse: [
-  //             'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //             "Let's try a different problem.",
-  //           ],
-  //           dialogState: {
-  //             expectationsCompleted: [true],
-  //             expectationData: [
-  //               {
-  //                 ideal: 'Current flows in the same direction as the arrow.',
-  //                 score: 1,
-  //                 dialogScore: 0,
-  //                 numPrompts: 0,
-  //                 numHints: 0,
-  //                 satisfied: true,
-  //                 status: 'complete',
-  //               },
-  //             ],
-  //             currentExpectation: -1,
-  //             hints: false,
-  //             limitHintsMode: false,
-  //             numCorrectStreak: 1,
-  //           },
-  //         },
-  //         response: [
-  //           {
-  //             author: 'them',
-  //             type: 'feedbackPositive',
-  //             data: undefined,
-  //           },
-  //           {
-  //             author: 'them',
-  //             type: 'closing',
-  //             data: {
-  //               text: 'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //             },
-  //           },
-  //           {
-  //             author: 'them',
-  //             type: 'closing',
-  //             data: {
-  //               text: "Let's try a different problem.",
-  //             },
-  //           },
-  //         ],
-  //         sentToGrader: false,
-  //         completed: true,
-  //         score: 1,
-  //         expectationActive: -1,
-  //       });
-  //     });
-
-  //     it('responds with bad answer', async () => {
-  //       const model = new OpentutorDialogueModel(currentFlowLesson);
-  //       await model.init({ sessionId: 'test-session-id' });
-  //       const response = await model.respond({
-  //         message: 'blah',
-  //         username: 'test-user-name',
-  //       });
-  //       response.sessionInfo.sessionHistory.systemResponses[1].shift();
-  //       response.sessionInfo.sessionHistory.systemResponses[1].shift();
-  //       response.response[0].data = undefined;
-  //       response.response[1].data = undefined;
-  //       expect(response).to.eql({
-  //         completed: false,
-  //         expectationActive: 0,
-  //         response: [
-  //           { author: 'them', data: undefined, type: 'feedbackNeutral' },
-  //           { author: 'them', data: undefined, type: 'text' },
-  //           {
-  //             author: 'them',
-  //             data: {
-  //               text: 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-  //             },
-  //             type: 'hint',
-  //           },
-  //         ],
-  //         score: 0.5,
-  //         sentToGrader: false,
-  //         sessionInfo: {
-  //           dialogState: {
-  //             currentExpectation: 0,
-  //             expectationData: [
-  //               {
-  //                 dialogScore: 0,
-  //                 ideal: '',
-  //                 numHints: 0,
-  //                 numPrompts: 0,
-  //                 satisfied: false,
-  //                 score: 0,
-  //                 status: 'active',
-  //               },
-  //             ],
-  //             expectationsCompleted: [false],
-  //             hints: true,
-  //             limitHintsMode: false,
-  //             numCorrectStreak: 0,
-  //           },
-  //           previousSystemResponse: [
-  //             'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-  //           ],
-  //           previousUserResponse: 'blah',
-  //           sessionHistory: {
-  //             classifierGrades: [
-  //               {
-  //                 expectationResults: [
-  //                   { evaluation: 'Bad', expectationId: '0', score: 0 },
-  //                 ],
-  //                 speechActs: {
-  //                   metacognitive: {
-  //                     evaluation: 'Good',
-  //                     expectationId: '0',
-  //                     score: 0,
-  //                   },
-  //                   profanity: {
-  //                     evaluation: 'Good',
-  //                     expectationId: '0',
-  //                     score: 0,
-  //                   },
-  //                 },
-  //               },
-  //             ],
-  //             systemResponses: [
-  //               [
-  //                 '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-  //                 'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-  //               ],
-  //               [
-  //                 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-  //               ],
-  //             ],
-  //             userResponses: [{ activeExpectation: -1, text: 'blah' }],
-  //             userScores: [],
-  //           },
-  //           sessionId: 'test-session-id',
-  //         },
-  //       });
-  //     });
-
-  //     it('passes after bad answer then ideal answer', async () => {
-  //       const model = new OpentutorDialogueModel(currentFlowLesson);
-  //       await model.init({ sessionId: 'test-session-id' });
-  //       await model.respond({
-  //         message: 'blah',
-  //         username: 'test-user-name',
-  //       });
-  //       const response = await model.respond({
-  //         message: 'current flows in the same direction as the arrow',
-  //         username: 'test-user-name',
-  //       });
-  //       response.sessionInfo.sessionHistory.systemResponses[1].shift();
-  //       response.sessionInfo.sessionHistory.systemResponses[1].shift();
-  //       response.sessionInfo.sessionHistory.systemResponses[2].shift();
-  //       response.response[0].data = undefined;
-  //       expect(response).to.eql({
-  //         sessionInfo: {
-  //           sessionHistory: {
-  //             userResponses: [
-  //               {
-  //                 text: 'blah',
-  //                 activeExpectation: -1,
-  //               },
-  //               {
-  //                 text: 'current flows in the same direction as the arrow',
-  //                 activeExpectation: 0,
-  //               },
-  //             ],
-  //             systemResponses: [
-  //               [
-  //                 '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-  //                 'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-  //               ],
-  //               [
-  //                 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-  //               ],
-  //               [
-  //                 'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //                 "Let's try a different problem.",
-  //               ],
-  //             ],
-  //             userScores: [],
-  //             classifierGrades: [
-  //               {
-  //                 expectationResults: [
-  //                   {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 1,
-  //                   },
-  //                 ],
-  //                 speechActs: {
-  //                   metacognitive: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                   profanity: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                 },
-  //               },
-  //               {
-  //                 expectationResults: [
-  //                   {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 1,
-  //                   },
-  //                 ],
-  //                 speechActs: {
-  //                   metacognitive: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                   profanity: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //           sessionId: 'test-session-id',
-  //           previousUserResponse:
-  //             'current flows in the same direction as the arrow',
-  //           previousSystemResponse: [
-  //             'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //             "Let's try a different problem.",
-  //           ],
-  //           dialogState: {
-  //             expectationsCompleted: [true],
-  //             expectationData: [
-  //               {
-  //                 ideal: 'Current flows in the same direction as the arrow.',
-  //                 score: 1,
-  //                 dialogScore: 0,
-  //                 numPrompts: 0,
-  //                 numHints: 1,
-  //                 satisfied: true,
-  //                 status: 'complete',
-  //               },
-  //             ],
-  //             currentExpectation: 0,
-  //             hints: true,
-  //             limitHintsMode: false,
-  //             numCorrectStreak: 1,
-  //           },
-  //         },
-  //         response: [
-  //           {
-  //             author: 'them',
-  //             type: 'feedbackPositive',
-  //             data: undefined,
-  //           },
-  //           {
-  //             author: 'them',
-  //             type: 'closing',
-  //             data: {
-  //               text: 'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //             },
-  //           },
-  //           {
-  //             author: 'them',
-  //             type: 'closing',
-  //             data: {
-  //               text: "Let's try a different problem.",
-  //             },
-  //           },
-  //         ],
-  //         sentToGrader: false,
-  //         completed: true,
-  //         score: 0.98,
-  //         expectationActive: -1,
-  //       });
-  //     });
-
-  //     it('fails after 2 bad answers', async () => {
-  //       const model = new OpentutorDialogueModel(currentFlowLesson);
-  //       await model.init({ sessionId: 'test-session-id' });
-  //       await model.respond({
-  //         message: 'blah',
-  //         username: 'test-user-name',
-  //       });
-  //       const response = await model.respond({
-  //         message: 'blah again',
-  //         username: 'test-user-name',
-  //       });
-  //       response.sessionInfo.sessionHistory.systemResponses[1].shift();
-  //       response.sessionInfo.sessionHistory.systemResponses[1].shift();
-  //       response.sessionInfo.sessionHistory.systemResponses[2].shift();
-  //       response.response[0].data = undefined;
-  //       expect(response).to.eql({
-  //         sessionInfo: {
-  //           sessionHistory: {
-  //             userResponses: [
-  //               {
-  //                 text: 'blah',
-  //                 activeExpectation: -1,
-  //               },
-  //               {
-  //                 text: 'blah again',
-  //                 activeExpectation: 0,
-  //               },
-  //             ],
-  //             systemResponses: [
-  //               [
-  //                 '_user_, this is a warm up question on the behavior of P-N junction diodes.',
-  //                 'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
-  //               ],
-  //               [
-  //                 'Why might you allow bad behavior in a group that you normally would not allow yourself to do?',
-  //               ],
-  //               [
-  //                 'Current flows in the same direction as the arrow.',
-  //                 'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //                 "Let's try a different problem.",
-  //               ],
-  //             ],
-  //             userScores: [],
-  //             classifierGrades: [
-  //               {
-  //                 expectationResults: [
-  //                   {
-  //                     expectationId: '0',
-  //                     evaluation: 'Bad',
-  //                     score: 0,
-  //                   },
-  //                 ],
-  //                 speechActs: {
-  //                   metacognitive: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                   profanity: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                 },
-  //               },
-  //               {
-  //                 expectationResults: [
-  //                   {
-  //                     expectationId: '0',
-  //                     evaluation: 'Bad',
-  //                     score: 0,
-  //                   },
-  //                 ],
-  //                 speechActs: {
-  //                   metacognitive: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                   profanity: {
-  //                     expectationId: '0',
-  //                     evaluation: 'Good',
-  //                     score: 0,
-  //                   },
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //           sessionId: 'test-session-id',
-  //           previousUserResponse: 'blah again',
-  //           previousSystemResponse: [
-  //             'Current flows in the same direction as the arrow.',
-  //             'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //             "Let's try a different problem.",
-  //           ],
-  //           dialogState: {
-  //             expectationsCompleted: [true],
-  //             expectationData: [
-  //               {
-  //                 ideal: 'Current flows in the same direction as the arrow.',
-  //                 score: 1,
-  //                 dialogScore: 0,
-  //                 numPrompts: 0,
-  //                 numHints: 1,
-  //                 satisfied: false,
-  //                 status: 'complete',
-  //               },
-  //             ],
-  //             currentExpectation: 0,
-  //             hints: true,
-  //             limitHintsMode: false,
-  //             numCorrectStreak: 0,
-  //           },
-  //         },
-  //         response: [
-  //           {
-  //             author: 'them',
-  //             type: 'feedbackNegative',
-  //             data: undefined,
-  //           },
-  //           {
-  //             author: 'them',
-  //             type: 'text',
-  //             data: {
-  //               text: 'Current flows in the same direction as the arrow.',
-  //             },
-  //           },
-  //           {
-  //             author: 'them',
-  //             type: 'closing',
-  //             data: {
-  //               text: 'Summing up, this diode is forward biased. Positive current flows in the same direction of the arrow, from anode to cathode.',
-  //             },
-  //           },
-  //           {
-  //             author: 'them',
-  //             type: 'closing',
-  //             data: {
-  //               text: "Let's try a different problem.",
-  //             },
-  //           },
-  //         ],
-  //         sentToGrader: false,
-  //         completed: true,
-  //         score: 0.5,
-  //         expectationActive: -1,
-  //       });
-  //     });
-  //   });
-  // });
 });
