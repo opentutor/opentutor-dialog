@@ -6,7 +6,10 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { expect } from 'chai';
 import { OpentutorDialogueModel } from '../src/OpentutorDialogueModel';
-import { OpentutorClassifier } from '../src/OpentutorClassifier';
+import {
+  OpentutorClassifier,
+  OpentutorDefaultClassifier,
+} from '../src/OpentutorClassifier';
 
 describe('opentutor dialogue model', () => {
   describe('lesson navy integrity', () => {
@@ -96,7 +99,7 @@ describe('opentutor dialogue model', () => {
       });
     });
 
-    describe('w2v model', () => {
+    describe('custom w2v model', () => {
       it('responds to bad answers with hints', async () => {
         const classifier = new OpentutorClassifier(
           require('./fixtures/navy_integrity/words_w2v'),
@@ -262,7 +265,6 @@ describe('opentutor dialogue model', () => {
           message: 'aasdfjklsdafsdf',
           username: 'test-user-name',
         });
-        console.log(JSON.stringify(response));
         response.response[0].data = { text: '' };
         response.response[2].data = { text: '' };
         expect(response.response).to.eql([
@@ -343,7 +345,7 @@ describe('opentutor dialogue model', () => {
           classifier
         );
         await model.init({ sessionId: 'test-session-id' });
-        // get hint for first expectation
+        // answer first expectation and get hint for second
         let response = await model.respond({
           message:
             'Peer pressure can cause you to allow inappropriate behavior.',
@@ -430,10 +432,81 @@ describe('opentutor dialogue model', () => {
         expect(response.expectationActive).to.eql(1);
         expect(response.completed).to.eql(false);
         expect(response.score).to.eql(0.6616564882860786);
+        // answer second expectation and get hint for third
+        response = await model.respond({
+          message:
+            "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+          username: 'test-user-name',
+        });
+        response.response[0].data = { text: '' };
+        response.response[1].data = { text: '' };
+        expect(response.response).to.eql([
+          {
+            author: 'them',
+            type: 'feedbackPositive',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'hint',
+            data: {
+              text: "How can it affect you when you correct someone's behavior?",
+            },
+          },
+        ]);
+        expect(response.sessionInfo.dialogState).to.eql({
+          expectationsCompleted: [true, true, false],
+          expectationData: [
+            {
+              ideal:
+                'Peer pressure can cause you to allow inappropriate behavior.',
+              score: 0.6306547892971618,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: true,
+              status: 'complete',
+            },
+            {
+              ideal:
+                "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
+              score: 0.7491795340041529,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 1,
+              satisfied: true,
+              status: 'complete',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'active',
+            },
+          ],
+          currentExpectation: 2,
+          hints: true,
+          limitHintsMode: false,
+          numCorrectStreak: 2,
+        });
+        expect(response.expectationActive).to.eql(2);
+        expect(response.completed).to.eql(false);
+        expect(response.score).to.eql(0.7327464859841264);
       });
+    });
 
-      it.skip('responds to ideal answer for all expectations', async () => {
-        const classifier = new OpentutorClassifier(
+    describe('default model', () => {
+      it('responds to bad answers with hints', async () => {
+        const classifier = new OpentutorDefaultClassifier(
+          require('./fixtures/navy_integrity/lesson'),
           require('./fixtures/navy_integrity/words_w2v'),
           require('./fixtures/navy_integrity/model_features')
         );
@@ -444,10 +517,169 @@ describe('opentutor dialogue model', () => {
         await model.init({ sessionId: 'test-session-id' });
         // get hint for first expectation
         let response = await model.respond({
-          message:
-            "Peer pressure can cause you to allow inappropriate behavior. If you correct someone's behavior, you may get them in trouble or it may be harder to work with them. Enforcing the rules can make you unpopular.",
+          message: 'aasdfjklsdafsdf',
           username: 'test-user-name',
         });
+        response.response[0].data = { text: '' };
+        response.response[1].data = { text: '' };
+        expect(response.response).to.eql([
+          {
+            author: 'them',
+            type: 'feedbackNegative',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'hint',
+            data: {
+              text: 'Whose influence might cause you to overlook bad behavior?',
+            },
+          },
+        ]);
+        expect(
+          response.sessionInfo.sessionHistory.classifierGrades[0]
+            .expectationResults
+        ).to.eql([
+          {
+            expectationId: '0',
+            evaluation: 'Bad',
+            score: 0.6133668706399765,
+          },
+          {
+            expectationId: '1',
+            evaluation: 'Bad',
+            score: 0.663895633676956,
+          },
+          {
+            expectationId: '2',
+            evaluation: 'Bad',
+            score: 0.6272114772684214,
+          },
+        ]);
+        expect(response.sessionInfo.dialogState).to.eql({
+          expectationsCompleted: [false, false, false],
+          expectationData: [
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'active',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+          ],
+          currentExpectation: 0,
+          hints: true,
+          limitHintsMode: false,
+          numCorrectStreak: 0,
+        });
+        expect(response.expectationActive).to.eql(0);
+        expect(response.completed).to.eql(false);
+        expect(response.score).to.eql(0.18258766973577434);
+      });
+
+      it('responds to ideal answer for expectation with hint for next expectation', async () => {
+        const classifier = new OpentutorDefaultClassifier(
+          require('./fixtures/navy_integrity/lesson'),
+          require('./fixtures/navy_integrity/words_w2v'),
+          require('./fixtures/navy_integrity/model_features')
+        );
+        const model = new OpentutorDialogueModel(
+          require('./fixtures/navy_integrity/lesson'),
+          classifier
+        );
+        await model.init({ sessionId: 'test-session-id' });
+        // answer first expectation and get hint for second
+        let response = await model.respond({
+          message:
+            'Peer pressure can cause you to allow inappropriate behavior.',
+          username: 'test-user-name',
+        });
+        response.response[0].data = { text: '' };
+        response.response[1].data = { text: '' };
+        expect(response.response).to.eql([
+          {
+            author: 'them',
+            type: 'feedbackPositive',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'text',
+            data: { text: '' },
+          },
+          {
+            author: 'them',
+            type: 'hint',
+            data: {
+              text: 'How can it affect someone when you correct their behavior?',
+            },
+          },
+        ]);
+        expect(response.sessionInfo.dialogState).to.eql({
+          expectationsCompleted: [true, false, false],
+          expectationData: [
+            {
+              ideal:
+                'Peer pressure can cause you to allow inappropriate behavior.',
+              score: 0.6762118905176867,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: true,
+              status: 'complete',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'active',
+            },
+            {
+              ideal: '',
+              score: 0,
+              dialogScore: 0,
+              numPrompts: 0,
+              numHints: 0,
+              satisfied: false,
+              status: 'none',
+            },
+          ],
+          currentExpectation: 1,
+          hints: true,
+          limitHintsMode: false,
+          numCorrectStreak: 1,
+        });
+        expect(response.expectationActive).to.eql(1);
+        expect(response.completed).to.eql(false);
+        expect(response.score).to.eql(0.6706119831445682);
       });
     });
   });

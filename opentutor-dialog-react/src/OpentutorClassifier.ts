@@ -9,8 +9,12 @@ import {
   ClassifierRequest,
   ClassifierResponse,
   Evaluation,
+  Lesson,
 } from './types';
-import { evaluate as classifierEvaluate } from './classifier';
+import {
+  evaluate as classifierEvaluate,
+  evaluate_default as defaultClassifierEvaluate,
+} from './classifier';
 
 export class OpentutorClassifier implements Classifier {
   w2v: any;
@@ -26,6 +30,48 @@ export class OpentutorClassifier implements Classifier {
       props,
       this.w2v,
       this.features
+    );
+    return {
+      output: {
+        expectationResults,
+        speechActs: {
+          metacognitive: {
+            expectationId: '',
+            evaluation: Evaluation.Bad,
+            score: 0,
+          },
+          profanity: {
+            expectationId: '',
+            evaluation: Evaluation.Bad,
+            score: 0,
+          },
+        },
+      },
+    };
+  }
+}
+
+export class OpentutorDefaultClassifier implements Classifier {
+  lesson: Lesson;
+  w2v: any;
+  features: any;
+  ideal: string = '';
+
+  constructor(lesson: Lesson, w2v: any, features: any) {
+    this.lesson = lesson;
+    this.w2v = w2v;
+    this.features = features;
+    for (const e of lesson.expectations) {
+      this.ideal += `${e.expectation} `;
+    }
+  }
+
+  async evaluate(props: ClassifierRequest): Promise<ClassifierResponse> {
+    const expectationResults = defaultClassifierEvaluate(
+      props,
+      this.w2v,
+      this.features,
+      this.ideal
     );
     return {
       output: {

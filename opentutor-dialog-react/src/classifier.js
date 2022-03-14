@@ -433,6 +433,114 @@ export function evaluate(classifierRequest, embedding, model_features) {
   return expectationResults;
 }
 
+export function evaluate_default(
+  classifierRequest,
+  embedding,
+  model_features,
+  ideal
+) {
+  var question = classifierRequest.config.question;
+  var ans = classifierRequest.input;
+  var ques_words = preprocess_sentence(question);
+  var ans_words = preprocess_sentence(ans);
+  var expectationResults = [];
+  var featExt = new FeatureExtractor(embedding);
+
+  for (var j = 0; j < classifierRequest.config.expectations.length; j++) {
+    var expectation = classifierRequest.config.expectations[j];
+    var ideal_words = preprocess_sentence(ideal);
+
+    const regex_good = featExt.regex_match(
+      ans,
+      model_features[expectation.expectationId]['regex_good']
+    );
+    const regex_bad = featExt.regex_match(
+      ans,
+      model_features[expectation.expectationId]['regex_bad']
+    );
+
+    const negatives = number_of_negatives(ans_words);
+    var feat = Array();
+    feat.push(negatives[0]);
+    feat.push(negatives[1]);
+    feat.push(featExt.word_alignment_feature(ans_words, ideal_words));
+    feat.push(featExt.word2vec_example_similarity(ans_words, ideal_words));
+    feat.push(featExt.word2vec_question_similarity(ans_words, ques_words));
+    if (model_features[expectation.expectationId]['featureLengthRatio']) {
+      feat.push(featExt.length_ratio_feature(ans_words, ideal_words));
+    }
+
+    if (
+      model_features[expectation.expectationId]['featureRegexAggregateDisabled']
+    ) {
+      for (var val in regex_good) {
+        feat.push(val);
+      }
+      for (var val in regex_bad) {
+        feat.push(val);
+      }
+    } else {
+      feat.push(
+        featExt.regex_match_ratio(
+          ans,
+          model_features[expectation.expectationId]['regex_good']
+        )
+      );
+      feat.push(
+        featExt.regex_match_ratio(
+          ans,
+          model_features[expectation.expectationId]['regex_bad']
+        )
+      );
+    }
+
+    if (
+      model_features[expectation.expectationId][
+        'featureDbScanClustersArchetypeEnabled'
+      ]
+    ) {
+      let archtype_good =
+        model_features[expectation.expectationId]['archetype_good'];
+      for (var i = 0; i < archtype_good.length; i++) {
+        feat.push(
+          featExt.word2vec_example_similarity(
+            ans_words,
+            archtype_good[i].split(' ')
+          )
+        );
+      }
+
+      let archtype_bad =
+        model_features[expectation.expectationId]['archetype_bad'];
+      for (var i = 0; i < archtype_bad.length; i++) {
+        feat.push(
+          featExt.word2vec_example_similarity(
+            ans_words,
+            archtype_bad[i].split(' ')
+          )
+        );
+      }
+    }
+
+    var score = calculate_score(
+      model_features[expectation.expectationId]['weights_bias'][0],
+      model_features[expectation.expectationId]['weights_bias'][1],
+      feat
+    );
+
+    if (score > 0.5) {
+      expectationResults.push(
+        new ExpectationResult(expectation.expectationId, 'Good', score)
+      );
+    } else {
+      expectationResults.push(
+        new ExpectationResult(expectation.expectationId, 'Bad', 1 - score)
+      );
+    }
+  }
+  return expectationResults;
+}
+
 var stopwords = new Set([
   'i',
   'me',
