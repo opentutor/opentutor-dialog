@@ -1,6 +1,6 @@
 {
-  "id": "q2",
-  "lessonId": "q2",
+  "id": "current-flow",
+  "lessonId": "current-flow",
   "name": "Current Flow",
   "intro": "_user_, this is a warm up question on the behavior of P-N junction diodes.",
   "question": "With a DC input source, does current flow in the same or the opposite direction of the diode arrow?",

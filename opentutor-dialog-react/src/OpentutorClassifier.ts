@@ -16,6 +16,9 @@ import {
   evaluate_default as defaultClassifierEvaluate,
 } from './classifier';
 
+const default_w2v = require('./default/words_w2v');
+const default_features = require('./default/model_features');
+
 export class OpentutorClassifier implements Classifier {
   w2v: any;
   features: any;
@@ -52,25 +55,17 @@ export class OpentutorClassifier implements Classifier {
 }
 
 export class OpentutorDefaultClassifier implements Classifier {
-  lesson: Lesson;
-  w2v: any;
-  features: any;
   ideal: string = '';
 
-  constructor(lesson: Lesson, w2v: any, features: any) {
-    this.lesson = lesson;
-    this.w2v = w2v;
-    this.features = features;
-    for (const e of lesson.expectations) {
-      this.ideal += `${e.expectation} `;
-    }
+  constructor(lesson: Lesson) {
+    this.ideal = lesson.expectations.map((e) => e.expectation).join(' ');
   }
 
   async evaluate(props: ClassifierRequest): Promise<ClassifierResponse> {
     const expectationResults = defaultClassifierEvaluate(
       props,
-      this.w2v,
-      this.features,
+      default_w2v,
+      default_features,
       this.ideal
     );
     return {
