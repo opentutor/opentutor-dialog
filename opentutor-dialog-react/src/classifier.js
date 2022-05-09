@@ -262,8 +262,8 @@ function check_is_pattern_match(sentence, pattern) {
 
 function lap(cost) {
   let r = cost.length;
+  if (r == 0) return [[], []];
   let c = cost[0].length;
-
   if (c == 0) return [[], []];
   var cost_best = Number.MIN_VALUE;
   var col_idx = Array();
