@@ -5,4 +5,4 @@ node_modules
 public
 static
 dist
-opentutor-dialog-react/test/fixtures/*
+react/test/fixtures/*

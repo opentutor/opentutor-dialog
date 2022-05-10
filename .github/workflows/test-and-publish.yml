@@ -19,7 +19,7 @@ jobs:
       - name: test node
         run: cd node && make test
       - name: test react
-        run: cd opentutor-dialog-react && make test
+        run: cd react && make test
   publish-check:
     name: publish check
     needs:
@@ -52,18 +52,18 @@ jobs:
       - name: docker build node
         run: cd node && export DOCKER_IMAGE=opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: docker build react
-        run: cd opentutor-dialog-react && export DOCKER_IMAGE=opentutor/opentutor-dialog-react:${{ steps.tag.outputs.image_tag }} && make docker-build
+        run: cd react && export DOCKER_IMAGE=opentutor/react:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: docker tag release as version
         if: needs.publish-check.outputs.is_release == 'true'
         run: |
           docker tag "opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog:${GITHUB_REF#refs/tags/}"
-          docker tag "opentutor/opentutor-dialog-react:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog-react:${GITHUB_REF#refs/tags/}"
+          docker tag "opentutor/react:${{ steps.tag.outputs.image_tag }}" "opentutor/react:${GITHUB_REF#refs/tags/}"
       - name: docker tag main as latest
         if: github.ref == 'refs/heads/main'
         run: |
           docker tag "opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog:latest"
-          docker tag "opentutor/opentutor-dialog-react:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog-react:latest"
+          docker tag "opentutor/react:${{ steps.tag.outputs.image_tag }}" "opentutor/react:latest"
       - name: docker push node
         run: docker push --all-tags opentutor/opentutor-dialog
       - name: docker push react
-        run: docker push --all-tags opentutor/opentutor-dialog-react
+        run: docker push --all-tags opentutor/react
