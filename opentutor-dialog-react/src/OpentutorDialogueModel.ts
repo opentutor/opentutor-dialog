@@ -5,12 +5,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import {
-  ClassfierRequest,
   Classifier,
-  ClassifierResponse,
   DialogConfig,
-  Evaluation,
-  ExpectationResult,
   ExpectationStatus,
   Lesson,
   OpenTutorResponse,
@@ -21,13 +17,11 @@ import { toConfig } from './config';
 import { handlerFor } from './handler';
 import { calculateScore } from './dialog';
 import { addTutorDialog, addUserDialog, newSession } from './session-data';
-import { LessonExpectation } from '.';
 
 export interface DialogueModel {
   init: (props: InitRequest) => Promise<InitResponse>;
   respond: (props: RespondRequest) => Promise<RespondResponse>;
 }
-
 interface InitRequest {
   sessionId: string;
 }
@@ -49,99 +43,16 @@ interface RespondResponse {
   expectationActive: number;
 }
 
-function normalizeInput(str: string): string {
-  return str.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '');
-}
-
-export class OpentutorDefaultClassifier implements Classifier {
-  lesson: Lesson;
-  expectationResults: ExpectationResult[];
-
-  constructor(lesson: Lesson) {
-    this.lesson = lesson;
-    this.expectationResults = [];
-  }
-
-  async evaluate(props: ClassfierRequest): Promise<ClassifierResponse> {
-    console.log(props);
-    let expectation: LessonExpectation;
-    const input = normalizeInput(props.input);
-    if (props.expectation) {
-      expectation = this.lesson.expectations[props.expectation];
-    } else {
-      expectation =
-        this.lesson.expectations.find(
-          (e) => input === normalizeInput(e.expectation)
-        ) ||
-        this.lesson.expectations.find((e) =>
-          this.expectationResults.find(
-            (er) =>
-              er.expectationId === e.expectationId &&
-              er.evaluation === Evaluation.Bad
-          )
-        ) ||
-        this.lesson.expectations.find(
-          (e) =>
-            !this.expectationResults
-              .map((er) => er.expectationId)
-              .includes(e.expectationId)
-        );
-    }
-    const score =
-      input ===
-      expectation.expectation.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '')
-        ? 1
-        : 0;
-    const idx = this.expectationResults.findIndex(
-      (er) => er.expectationId === expectation.expectationId
-    );
-    if (idx === -1) {
-      this.expectationResults.push({
-        expectationId: expectation.expectationId,
-        evaluation: score > 0.5 ? Evaluation.Good : Evaluation.Bad,
-        score: score,
-      });
-    } else {
-      this.expectationResults[idx] = {
-        expectationId: expectation.expectationId,
-        evaluation: score > 0.5 ? Evaluation.Good : Evaluation.Bad,
-        score: score,
-      };
-    }
-    return {
-      output: {
-        expectationResults: this.expectationResults,
-        speechActs: {
-          metacognitive: {
-            expectationId: expectation.expectationId,
-            evaluation: Evaluation.Good,
-            score: 0,
-          },
-          profanity: {
-            expectationId: expectation.expectationId,
-            evaluation: Evaluation.Good,
-            score: 0,
-          },
-        },
-      },
-    };
-  }
-}
-
 export class OpentutorDialogueModel implements DialogueModel {
   lesson: Lesson;
   classifier: Classifier;
   config: DialogConfig;
   sdp: SessionData;
 
-  constructor(lesson: Lesson, classifier?: Classifier) {
+  constructor(lesson: Lesson, classifier: Classifier) {
     this.lesson = lesson;
+    this.classifier = classifier;
     this.config = toConfig(lesson);
-    if (classifier) {
-      this.classifier = classifier;
-    } else {
-      this.classifier = new OpentutorDefaultClassifier(lesson);
-    }
   }
 
   async init(props: InitRequest): Promise<InitResponse> {

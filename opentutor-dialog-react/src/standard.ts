@@ -39,11 +39,12 @@ function setActiveExpecation(sdp: SessionData) {
 }
 
 export async function processUserResponse(
-  lessonId: string,
+  lesson: Lesson,
   config: DialogConfig,
   classifier: Classifier,
   sdp: SessionData
 ): Promise<OpenTutorResponse[]> {
+  const lessonId = lesson.lessonId;
   let classifierResult: ClassifierResponse;
   try {
     config.expectations.map((exp) => {
@@ -55,8 +56,11 @@ export async function processUserResponse(
       input: sdp.previousUserResponse,
       lesson: lessonId,
       config: {
-        question: '', //atd.questionText,
-        expectations: [], //expectations,
+        question: lesson.question,
+        expectations: lesson.expectations.map((le) => ({
+          expectationId: le.expectationId,
+          ideal: le.expectation,
+        })),
       },
     });
   } catch (err) {
@@ -73,7 +77,6 @@ export async function processUserResponse(
           }
     );
   }
-
   const expectationResults = classifierResult.output.expectationResults;
   const speechActs = classifierResult.output.speechActs;
   //add results to the session history
@@ -82,7 +85,6 @@ export async function processUserResponse(
     speechActs: classifierResult.output.speechActs,
   });
   const responses: OpenTutorResponse[] = [];
-
   //check if user used profanity or metacog response
   if (
     speechActs?.profanity?.score > config.goodThreshold &&
@@ -121,7 +123,6 @@ export async function processUserResponse(
       return responses.concat(toNextExpectation(config, sdp, false, false));
     }
   }
-
   //check if response was for a prompt
   let p: Prompt;
   let e: DExpectation = config.expectations.find((e) => {
@@ -134,7 +135,6 @@ export async function processUserResponse(
       handlePrompt(lessonId, config, sdp, expectationResults, e, p)
     );
   }
-
   //check if response was to a hint
   let h: string;
   e = config.expectations.find((e) => {
@@ -147,7 +147,6 @@ export async function processUserResponse(
       handleHints(lessonId, config, sdp, expectationResults, e, h)
     );
   }
-
   if (
     expectationResults.every(
       (x) => x.evaluation === Evaluation.Good && x.score > config.goodThreshold
@@ -159,8 +158,8 @@ export async function processUserResponse(
   } else if (
     expectationResults.every(
       (x) =>
-        (x.score < config.goodThreshold && x.evaluation === Evaluation.Good) ||
-        (x.score < config.badThreshold && x.evaluation === Evaluation.Bad)
+        (x.evaluation === Evaluation.Good && x.score < config.goodThreshold) ||
+        (x.evaluation === Evaluation.Bad && x.score < config.badThreshold)
     )
   ) {
     //answer did not match any expectation, guide user through expectations
@@ -771,11 +770,6 @@ export class StandardDialogHandler implements DialogHandler {
     if (!this.config) {
       throw new Error('not loaded');
     }
-    return processUserResponse(
-      this.lesson.lessonId,
-      this.config,
-      classifier,
-      sdp
-    );
+    return processUserResponse(this.lesson, this.config, classifier, sdp);
   }
 }

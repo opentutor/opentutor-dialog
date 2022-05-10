@@ -1,0 +1,19 @@
+{
+  "0": {
+    "ideal": "",
+    "archetype_bad": [],
+    "archetype_good": [],
+    "regex_good": [],
+    "regex_bad": [],
+    "featureRegexAggregateDisabled": false,
+    "featureDbScanClustersArchetypeEnabled": true,
+    "featureDbScanClustersPatternsEnabled": true,
+    "featureLengthRatio": false,
+    "patterns_bad": [],
+    "patterns_good": [],
+    "weights_bias": [
+      [0.48983515, -0.84181031, 1.43300435, 0.7299697, 0.1489, 0, 0],
+      -0.35197516
+    ]
+  }
+}

@@ -38,14 +38,11 @@ test-license: node_modules LICENSE LICENSE_HEADER
 .PHONY: test-audit
 test-audit:
 	cd node && $(MAKE) test-audit
-	cd opentutor-dialog-react && $(MAKE) test-audit
 
 .PHONY: test-lint
 test-lint:
 	cd node && $(MAKE) test-lint
-	cd opentutor-dialog-react && $(MAKE) test-lint
 
 .PHONY: test-types
 test-types:
 	cd node && $(MAKE) test-types
-	cd opentutor-dialog-react && $(MAKE) test-types

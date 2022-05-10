@@ -8,10 +8,10 @@ The full terms of this copyright and license should always be found in the root 
 /** classifier */
 
 export interface Classifier {
-  evaluate: (request: ClassfierRequest) => Promise<ClassifierResponse>;
+  evaluate: (request: ClassifierRequest) => Promise<ClassifierResponse>;
 }
 
-export interface ClassfierRequest {
+export interface ClassifierRequest {
   lesson: string;
   input: string;
   config: ClassifierConfig;
