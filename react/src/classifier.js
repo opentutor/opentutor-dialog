@@ -80,10 +80,9 @@ class FeatureExtractor {
       ia_.delete(common_words[i]);
     }
 
-    if (ia_.size === 0) {
+    if (ia_.size == 0) {
       return 1;
     }
-
     for (let ia_i of ia_) {
       if (!this.avail_words.has(ia_i)) continue;
       var inner_cost = Array();
@@ -136,7 +135,7 @@ class FeatureExtractor {
       den1 += a[i] * a[i];
       den2 += b[i] * b[i];
     }
-    if (den1 === 0 || den2 === 0) {
+    if ((den1 == 0) | (den2 == 0)) {
       return 0;
     }
     return num / (Math.sqrt(den1) * Math.sqrt(den2));
@@ -158,8 +157,8 @@ class FeatureExtractor {
       return 0;
     }
 
-    var example_feat_vec = this._avg_feature_vector(example, 300);
-    var ideal_feat_vec = this._avg_feature_vector(ideal, 300);
+    var example_feat_vec = this._avg_feature_vector(example, 100);
+    var ideal_feat_vec = this._avg_feature_vector(ideal, 100);
     return this._calculate_similarity(example_feat_vec, ideal_feat_vec);
   }
 
@@ -167,8 +166,8 @@ class FeatureExtractor {
     if (example.length == 1 && example[0] == '') {
       return 0;
     }
-    var example_feat_vec = this._avg_feature_vector(example, 300);
-    var question_feat_vec = this._avg_feature_vector(question, 300);
+    var example_feat_vec = this._avg_feature_vector(example, 100);
+    var question_feat_vec = this._avg_feature_vector(question, 100);
     return this._calculate_similarity(example_feat_vec, question_feat_vec);
   }
 
@@ -213,7 +212,9 @@ function preprocess_punctuations(sentence) {
 
 function number_of_negatives(example) {
   var negative_regex =
-    /\b(?:no|never|nothing|nowhere|none|not|havent|hasnt|hadnt|cant|couldnt|shouldnt|wont|wouldnt|dont|doesnt|didnt|isnt|arent|aint)\b/g;
+    /\b(no|never|nothing|nowhere|none|not|havent|hasnt|hadnt|cant|couldnt|shouldnt|wont|wouldnt|dont|doesnt|didnt|isnt|arent|aint)\b/g;
+  // var negative_regex =
+  //   /\b(?:no|never|nothing|nowhere|none|not|havent|hasnt|hadnt|cant|couldnt|shouldnt|wont|wouldnt|dont|doesnt|didnt|isnt|arent|aint)\b/g;
   var str_example = example.join(' ');
   var replaced_example = str_example.replace("[.*'.*]", '');
   var no_of_negatives = [...replaced_example.matchAll(negative_regex)].length;
@@ -262,7 +263,6 @@ function check_is_pattern_match(sentence, pattern) {
 
 function lap(cost) {
   let r = cost.length;
-  if (r == 0) return [[], []];
   let c = cost[0].length;
   if (c == 0) return [[], []];
   var cost_best = Number.MIN_VALUE;
@@ -308,8 +308,9 @@ function check_profanity(sentence) {
 
 function check_meta_cognitive(sentence) {
   var regex_var = new RegExp(
-    /\b(idk|belie\w*|don\w*|comprehend\w*|confuse\w*|guess\w*|(?<=n[o']t)\s?\b(know\w*|underst\w*|follow\w*|recogniz\w*|sure\w*|get)\b|messed|no\s?(idea|clue)|lost|forg[eo]t|need\s?help|imagined?|interpret(ed)?|(seen?|saw)|suppos(ed)?)\b/g
+    /\b(idk|belie\w*|don\w*|comprehend\w*|confuse\w*|guess\w*|(n[o']t)\s?\b(know\w*|underst\w*|follow\w*|recogniz\w*|sure\w*|get)\b|messed|no\s?(idea|clue)|lost|forg[eo]t|need\s?help|imagined?|interpret(ed)?|(seen?|saw)|suppos(ed)?)\b/g
   );
+  // var regex_var = new RegExp(/\b(idk|belie\w*|don\w*|comprehend\w*|confuse\w*|guess\w*|(?<=n[o']t)\s?\b(know\w*|underst\w*|follow\w*|recogniz\w*|sure\w*|get)\b|messed|no\s?(idea|clue)|lost|forg[eo]t|need\s?help|imagined?|interpret(ed)?|(seen?|saw)|suppos(ed)?)\b/g);
   if (regex_var.test(sentence.toLowerCase())) {
     return 1;
   } else {
@@ -330,6 +331,8 @@ function calculate_score(weights, bias, features) {
 }
 
 export function evaluate(classifierRequest, embedding, model_features) {
+  //model_features : Later must be read throguh lessonId
+
   var question = classifierRequest.config.question;
   var ans = classifierRequest.input;
   var ques_words = preprocess_sentence(question);
@@ -422,11 +425,11 @@ export function evaluate(classifierRequest, embedding, model_features) {
 
     if (score > 0.5) {
       expectationResults.push(
-        new ExpectationResult(expectation.expectationId, 'Good', score)
+        new ExpectationResult(expectation.expectationId, 'GOOD', score)
       );
     } else {
       expectationResults.push(
-        new ExpectationResult(expectation.expectationId, 'Bad', 1 - score)
+        new ExpectationResult(expectation.expectationId, 'BAD', 1 - score)
       );
     }
   }
@@ -439,6 +442,8 @@ export function evaluate_default(
   model_features,
   ideal
 ) {
+  //model_features : Later must be read throguh lessonId
+
   var question = classifierRequest.config.question;
   var ans = classifierRequest.input;
   var ques_words = preprocess_sentence(question);
@@ -530,11 +535,11 @@ export function evaluate_default(
 
     if (score > 0.5) {
       expectationResults.push(
-        new ExpectationResult(expectation.expectationId, 'Good', score)
+        new ExpectationResult(expectation.expectationId, 'GOOD', score)
       );
     } else {
       expectationResults.push(
-        new ExpectationResult(expectation.expectationId, 'Bad', 1 - score)
+        new ExpectationResult(expectation.expectationId, 'BAD', 1 - score)
       );
     }
   }

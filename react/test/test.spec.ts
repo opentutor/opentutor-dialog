@@ -142,17 +142,17 @@ describe('opentutor dialogue model', () => {
         ).to.eql([
           {
             expectationId: '0',
-            evaluation: 'Bad',
+            evaluation: 'BAD',
             score: 0.6133668706399765,
           },
           {
             expectationId: '1',
-            evaluation: 'Bad',
+            evaluation: 'BAD',
             score: 0.663895633676956,
           },
           {
             expectationId: '2',
-            evaluation: 'Bad',
+            evaluation: 'BAD',
             score: 0.6272114772684214,
           },
         ]);
@@ -378,18 +378,18 @@ describe('opentutor dialogue model', () => {
         ).to.eql([
           {
             expectationId: '0',
-            evaluation: 'Good',
-            score: 0.8253439296905862,
+            evaluation: 'GOOD',
+            score: 0.8201073656332946,
           },
           {
             expectationId: '1',
-            evaluation: 'Good',
-            score: 0.5334600138117138,
+            evaluation: 'GOOD',
+            score: 0.5317596443182736,
           },
           {
             expectationId: '2',
-            evaluation: 'Bad',
-            score: 0.5635210840952418,
+            evaluation: 'BAD',
+            score: 0.5857489388490615,
           },
         ]);
         expect(response.sessionInfo.dialogState).to.eql({
@@ -398,7 +398,7 @@ describe('opentutor dialogue model', () => {
             {
               ideal:
                 'Peer pressure can cause you to allow inappropriate behavior.',
-              score: 0.8253439296905862,
+              score: 0.8201073656332946,
               dialogScore: 0,
               numPrompts: 0,
               numHints: 0,
@@ -431,7 +431,7 @@ describe('opentutor dialogue model', () => {
         });
         expect(response.expectationActive).to.eql(1);
         expect(response.completed).to.eql(false);
-        expect(response.score).to.eql(0.6616564882860786);
+        expect(response.score).to.eql(0.6576684509115354);
         // answer second expectation and get hint for third
         response = await model.respond({
           message:
@@ -465,7 +465,7 @@ describe('opentutor dialogue model', () => {
             {
               ideal:
                 'Peer pressure can cause you to allow inappropriate behavior.',
-              score: 0.6306547892971618,
+              score: 0.6303971650871202,
               dialogScore: 0,
               numPrompts: 0,
               numHints: 0,
@@ -475,7 +475,7 @@ describe('opentutor dialogue model', () => {
             {
               ideal:
                 "If you correct someone's behavior, you may get them in trouble or it may be harder to work with them.",
-              score: 0.7491795340041529,
+              score: 0.747400061821224,
               dialogScore: 0,
               numPrompts: 0,
               numHints: 1,
@@ -499,7 +499,7 @@ describe('opentutor dialogue model', () => {
         });
         expect(response.expectationActive).to.eql(2);
         expect(response.completed).to.eql(false);
-        expect(response.score).to.eql(0.7327464859841264);
+        expect(response.score).to.eql(0.7290418435251564);
       });
     });
   });
@@ -524,7 +524,7 @@ describe('opentutor dialogue model', () => {
               userResponses: [],
               systemResponses: [
                 [
-                  '_user_, this is a warm up question on the behavior of P-N junction diodes.',
+                  'This is a warm up question on the behavior of P-N junction diodes.',
                   'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
                 ],
               ],
@@ -534,7 +534,7 @@ describe('opentutor dialogue model', () => {
             sessionId: 'test-session-id',
             previousUserResponse: '',
             previousSystemResponse: [
-              '_user_, this is a warm up question on the behavior of P-N junction diodes.',
+              'This is a warm up question on the behavior of P-N junction diodes.',
               'With a DC input source, does current flow in the same or the opposite direction of the diode arrow?',
             ],
             dialogState: {
@@ -561,7 +561,7 @@ describe('opentutor dialogue model', () => {
               author: 'them',
               type: 'opening',
               data: {
-                text: '_user_, this is a warm up question on the behavior of P-N junction diodes.',
+                text: 'This is a warm up question on the behavior of P-N junction diodes.',
               },
             },
             {
@@ -618,7 +618,7 @@ describe('opentutor dialogue model', () => {
         ).to.eql([
           {
             expectationId: '0',
-            evaluation: 'Bad',
+            evaluation: 'BAD',
             score: 0.7674174087872743,
           },
         ]);
@@ -742,8 +742,8 @@ describe('opentutor dialogue model', () => {
         ).to.eql([
           {
             expectationId: '0',
-            evaluation: 'Good',
-            score: 0.749539151609352,
+            evaluation: 'GOOD',
+            score: 0.7489128887797948,
           },
         ]);
         expect(response.sessionInfo.dialogState).to.eql({
@@ -751,7 +751,7 @@ describe('opentutor dialogue model', () => {
           expectationData: [
             {
               ideal: 'Current flows in the same direction as the arrow.',
-              score: 0.749539151609352,
+              score: 0.7489128887797948,
               dialogScore: 0,
               numPrompts: 0,
               numHints: 0,

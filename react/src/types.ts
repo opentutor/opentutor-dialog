@@ -74,8 +74,8 @@ export interface ExpectationResult {
 }
 
 export enum Evaluation {
-  Good = 'Good',
-  Bad = 'Bad',
+  Good = 'GOOD',
+  Bad = 'BAD',
 }
 
 export interface SpeechActs {
