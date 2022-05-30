@@ -40,14 +40,14 @@ function setActiveExpecation(sdp: SessionData) {
 
 export async function processUserResponse(
   lesson: Lesson,
-  config: DialogConfig,
-  classifier: Classifier,
-  sdp: SessionData
+  atd: DialogConfig,
+  sdp: SessionData,
+  classifier: Classifier
 ): Promise<OpenTutorResponse[]> {
   const lessonId = lesson.lessonId;
   let classifierResult: ClassifierResponse;
   try {
-    config.expectations.map((exp) => {
+    atd.expectations.map((exp) => {
       return {
         ideal: exp.expectation,
       } as CExpectation;
@@ -77,6 +77,7 @@ export async function processUserResponse(
           }
     );
   }
+
   const expectationResults = classifierResult.output.expectationResults;
   const speechActs = classifierResult.output.speechActs;
   //add results to the session history
@@ -85,30 +86,31 @@ export async function processUserResponse(
     speechActs: classifierResult.output.speechActs,
   });
   const responses: OpenTutorResponse[] = [];
+
   //check if user used profanity or metacog response
   if (
-    speechActs?.profanity?.score > config.goodThreshold &&
+    speechActs?.profanity?.score > atd.goodThreshold &&
     speechActs?.profanity?.evaluation === Evaluation.Good
   ) {
     responses.push(
       createTextResponse(
-        pickRandom(config.profanityFeedback),
+        pickRandom(atd.profanityFeedback),
         ResponseType.Profanity
       )
     );
     return responses;
   } else if (
-    speechActs?.metacognitive?.score > config.goodMetacognitiveThreshold &&
+    speechActs?.metacognitive?.score > atd.goodMetacognitiveThreshold &&
     speechActs?.metacognitive?.evaluation === Evaluation.Good &&
     expectationResults.every(
-      (x) => x.evaluation === Evaluation.Good && x.score <= config.goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score <= atd.goodThreshold
     )
   ) {
     //50 percent of the time it will use encouragement. Else, it will go on.
     if (nextRandom() < 0.5) {
       responses.push(
         createTextResponse(
-          pickRandom(config.confusionFeedback),
+          pickRandom(atd.confusionFeedback),
           ResponseType.Encouragement
         )
       );
@@ -116,99 +118,101 @@ export async function processUserResponse(
     } else {
       responses.push(
         createTextResponse(
-          pickRandom(config.confusionFeedbackWithHint),
+          pickRandom(atd.confusionFeedbackWithHint),
           ResponseType.Encouragement
         )
       );
-      return responses.concat(toNextExpectation(config, sdp, false, false));
+      return responses.concat(toNextExpectation(atd, sdp, false, false));
     }
   }
+
   //check if response was for a prompt
   let p: Prompt;
-  let e: DExpectation = config.expectations.find((e) => {
+  let e: DExpectation = atd.expectations.find((e) => {
     p = e.prompts.find((p) => sdp.previousSystemResponse.includes(p.prompt));
     return Boolean(p);
   });
   if (e && p) {
     //response was to a prompt.
     return responses.concat(
-      handlePrompt(lessonId, config, sdp, expectationResults, e, p)
+      handlePrompt(lessonId, atd, sdp, expectationResults, e, p)
     );
   }
   //check if response was to a hint
   let h: string;
-  e = config.expectations.find((e) => {
+  e = atd.expectations.find((e) => {
     h = e.hints.find((n) => sdp.previousSystemResponse.includes(n));
     return Boolean(h);
   });
   if (e && h) {
     //response is to a hint
     return responses.concat(
-      handleHints(lessonId, config, sdp, expectationResults, e, h)
+      handleHints(lessonId, atd, sdp, expectationResults, e, h)
     );
   }
+
   if (
     expectationResults.every(
-      (x) => x.evaluation === Evaluation.Good && x.score > config.goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
     )
   ) {
     //perfect answer
-    updateCompletedExpectations(expectationResults, sdp, config);
-    return responses.concat(giveClosingRemarks(config, sdp));
+    updateCompletedExpectations(expectationResults, sdp, atd);
+    return responses.concat(giveClosingRemarks(atd, sdp));
   } else if (
     expectationResults.every(
       (x) =>
-        (x.evaluation === Evaluation.Good && x.score < config.goodThreshold) ||
-        (x.evaluation === Evaluation.Bad && x.score < config.badThreshold)
+        (x.evaluation === Evaluation.Good && x.score < atd.goodThreshold) ||
+        (x.evaluation === Evaluation.Bad && x.score < atd.badThreshold)
     )
   ) {
     //answer did not match any expectation, guide user through expectations
     sdp.dialogState.numCorrectStreak = 0;
     responses.push(
       createTextResponse(
-        pickRandom(config.neutralFeedback),
+        pickRandom(atd.neutralFeedback),
         ResponseType.FeedbackNeutral
       )
     );
-    return responses.concat(toNextExpectation(config, sdp, true, false));
+    return responses.concat(toNextExpectation(atd, sdp, true, false));
   } else if (
     expectationResults.find(
-      (x) => x.evaluation === Evaluation.Good && x.score > config.goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
     ) &&
     expectationResults.find(
-      (x) => x.evaluation === Evaluation.Bad && x.score > config.badThreshold
+      (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
     )
   ) {
     //satisfied one expectation but gave very wrong answer(s) for others
     //TODO: check if this should count towards positive streak
     sdp.dialogState.numCorrectStreak = 0;
-    updateCompletedExpectations(expectationResults, sdp, config);
+    updateCompletedExpectations(expectationResults, sdp, atd);
     responses.push(
       createTextResponse(
-        pickRandom(config.expectationMetButOthersWrongFeedback),
+        pickRandom(atd.expectationMetButOthersWrongFeedback),
         ResponseType.FeedbackNeutral
       )
     );
-    return responses.concat(toNextExpectation(config, sdp, true, false));
+    return responses.concat(toNextExpectation(atd, sdp, true, false));
   } else if (
     expectationResults.find(
-      (x) => x.evaluation === Evaluation.Good && x.score > config.goodThreshold
+      (x) => x.evaluation === Evaluation.Good && x.score > atd.goodThreshold
     )
   ) {
     //matched atleast one specific expectation
-    updateCompletedExpectations(expectationResults, sdp, config);
-    responses.push(givePositiveFeedback(config, sdp));
-    return responses.concat(toNextExpectation(config, sdp, true, true));
+    updateCompletedExpectations(expectationResults, sdp, atd);
+    responses.push(givePositiveFeedback(atd, sdp));
+    return responses.concat(toNextExpectation(atd, sdp, true, true));
   } else if (
     expectationResults.find(
-      (x) => x.evaluation === Evaluation.Bad && x.score > config.badThreshold
+      (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
     )
   ) {
     //bad answer. use hint
     sdp.dialogState.numCorrectStreak = 0;
     const expectationId = expectationResults.indexOf(
       expectationResults.find(
-        (x) => x.evaluation === Evaluation.Bad && x.score > config.badThreshold
+        (x) => x.evaluation === Evaluation.Bad && x.score > atd.badThreshold
       )
     );
     sdp.dialogState.hints = true;
@@ -216,13 +220,13 @@ export async function processUserResponse(
       ExpectationStatus.Active;
     setActiveExpecation(sdp);
 
-    responses.push(giveNegativeFeedback(false, config, sdp));
+    responses.push(giveNegativeFeedback(false, atd, sdp));
     // check that a pump was not just added to responses, if not use hint
     if (responses[responses.length - 1].type !== ResponseType.Hint) {
       responses.push(
-        createTextResponse(pickRandom(config.hintStart)),
+        createTextResponse(pickRandom(atd.hintStart)),
         createTextResponse(
-          config.expectations[expectationId].hints[0],
+          atd.expectations[expectationId].hints[0],
           ResponseType.Hint
         )
       );
@@ -745,8 +749,8 @@ function normalizeScores(er: ExpectationResult) {
 }
 
 export class StandardDialogHandler implements DialogHandler {
-  lesson: Lesson;
   config: DialogConfig;
+  lesson: Lesson;
 
   constructor(lesson: Lesson) {
     this.lesson = lesson;
@@ -770,6 +774,6 @@ export class StandardDialogHandler implements DialogHandler {
     if (!this.config) {
       throw new Error('not loaded');
     }
-    return processUserResponse(this.lesson, this.config, classifier, sdp);
+    return processUserResponse(this.lesson, this.config, sdp, classifier);
   }
 }

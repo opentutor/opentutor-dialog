@@ -36,8 +36,8 @@ export interface ClassifierResult {
 
 export interface Lesson {
   id: string;
-  lessonId: string;
   name: string;
+  lessonId: string;
   intro: string;
   question: string;
   expectations: LessonExpectation[];

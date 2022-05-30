@@ -4,6 +4,14 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+
+// Most likely problem areas:
+// 1. Regex: Evaluation doesn't match evaluation when trained / gives weirdness
+// 2. Sigmoid / Math: Floating point or rounding issues
+// 3. Features vs. Weights: Order of features not matching the weights properly
+// 4. Least Assignment (LAP): Could cause errors in calculation, as this was hand-made
+// 5. Clusters: Using "similarity" distance instead of alignment distance? (check vs. Python version?)
+
 let ClassifierRequest = class ClassifierRequest {
   constructor(lesson, input, config, expectation) {
     this.lesson = lesson;
@@ -176,7 +184,7 @@ class FeatureExtractor {
       return 0;
     }
     var count = 0;
-    for (var regex in regexes) {
+    for (var regex of regexes) {
       var regex_var = new RegExp(regex);
       if (regex_var.test(str_example)) {
         count += 1;
@@ -190,7 +198,7 @@ class FeatureExtractor {
       return [];
     }
     var matches = Array();
-    for (var regex in regexes) {
+    for (var regex of regexes) {
       var regex_var = new RegExp(regex);
       if (regex_var.test(str_example)) {
         matches.push(1);
@@ -261,6 +269,7 @@ function check_is_pattern_match(sentence, pattern) {
   }
 }
 
+// Least Assignment Problem?
 function lap(cost) {
   let r = cost.length;
   let c = cost[0].length;
@@ -310,7 +319,9 @@ function check_meta_cognitive(sentence) {
   var regex_var = new RegExp(
     /\b(idk|belie\w*|don\w*|comprehend\w*|confuse\w*|guess\w*|(n[o']t)\s?\b(know\w*|underst\w*|follow\w*|recogniz\w*|sure\w*|get)\b|messed|no\s?(idea|clue)|lost|forg[eo]t|need\s?help|imagined?|interpret(ed)?|(seen?|saw)|suppos(ed)?)\b/g
   );
-  // var regex_var = new RegExp(/\b(idk|belie\w*|don\w*|comprehend\w*|confuse\w*|guess\w*|(?<=n[o']t)\s?\b(know\w*|underst\w*|follow\w*|recogniz\w*|sure\w*|get)\b|messed|no\s?(idea|clue)|lost|forg[eo]t|need\s?help|imagined?|interpret(ed)?|(seen?|saw)|suppos(ed)?)\b/g);
+  // var regex_var = new RegExp(
+  //   /\b(idk|belie\w*|don\w*|comprehend\w*|confuse\w*|guess\w*|(?<=n[o']t)\s?\b(know\w*|underst\w*|follow\w*|recogniz\w*|sure\w*|get)\b|messed|no\s?(idea|clue)|lost|forg[eo]t|need\s?help|imagined?|interpret(ed)?|(seen?|saw)|suppos(ed)?)\b/g
+  // );
   if (regex_var.test(sentence.toLowerCase())) {
     return 1;
   } else {
@@ -318,8 +329,9 @@ function check_meta_cognitive(sentence) {
   }
 }
 
+// USE BUILT-IN SIGMOID IF POSSIBLE! (check math libraries, due to floating point risks)
 function sigmoid(x) {
-  return 1 / (1 + Math.exp(-1 * x));
+  return 1 / (1 + Math.exp(-x));
 }
 
 function calculate_score(weights, bias, features) {
@@ -331,20 +343,18 @@ function calculate_score(weights, bias, features) {
 }
 
 export function evaluate(classifierRequest, embedding, model_features) {
-  //model_features : Later must be read throguh lessonId
-
+  //model_features : Later must be read through lessonId
   var question = classifierRequest.config.question;
   var ans = classifierRequest.input;
   var ques_words = preprocess_sentence(question);
   var ans_words = preprocess_sentence(ans);
-  var expectationResults = [];
   var featExt = new FeatureExtractor(embedding);
+  var expectationResults = [];
 
   for (var j = 0; j < classifierRequest.config.expectations.length; j++) {
     var expectation = classifierRequest.config.expectations[j];
     var ideal = expectation.ideal;
     var ideal_words = preprocess_sentence(ideal);
-
     const regex_good = featExt.regex_match(
       ans,
       model_features[expectation.expectationId]['regex_good']
@@ -353,7 +363,6 @@ export function evaluate(classifierRequest, embedding, model_features) {
       ans,
       model_features[expectation.expectationId]['regex_bad']
     );
-
     const negatives = number_of_negatives(ans_words);
     var feat = Array();
     feat.push(negatives[0]);
@@ -361,17 +370,17 @@ export function evaluate(classifierRequest, embedding, model_features) {
     feat.push(featExt.word_alignment_feature(ans_words, ideal_words));
     feat.push(featExt.word2vec_example_similarity(ans_words, ideal_words));
     feat.push(featExt.word2vec_question_similarity(ans_words, ques_words));
+
     if (model_features[expectation.expectationId]['featureLengthRatio']) {
       feat.push(featExt.length_ratio_feature(ans_words, ideal_words));
     }
-
     if (
       model_features[expectation.expectationId]['featureRegexAggregateDisabled']
     ) {
-      for (var val in regex_good) {
+      for (var val of regex_good) {
         feat.push(val);
       }
-      for (var val in regex_bad) {
+      for (var val of regex_bad) {
         feat.push(val);
       }
     } else {
@@ -388,7 +397,6 @@ export function evaluate(classifierRequest, embedding, model_features) {
         )
       );
     }
-
     if (
       model_features[expectation.expectationId][
         'featureDbScanClustersArchetypeEnabled'
@@ -478,10 +486,10 @@ export function evaluate_default(
     if (
       model_features[expectation.expectationId]['featureRegexAggregateDisabled']
     ) {
-      for (var val in regex_good) {
+      for (var val of regex_good) {
         feat.push(val);
       }
-      for (var val in regex_bad) {
+      for (var val of regex_bad) {
         feat.push(val);
       }
     } else {

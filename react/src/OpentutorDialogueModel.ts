@@ -56,8 +56,8 @@ export class OpentutorDialogueModel implements DialogueModel {
   }
 
   async init(props: InitRequest): Promise<InitResponse> {
-    this.sdp = newSession(this.lesson, props.sessionId);
     const handler = await handlerFor(this.lesson);
+    this.sdp = newSession(this.lesson, props.sessionId);
     const messages = await handler.beginDialog();
     addTutorDialog(this.sdp, messages);
     return {
