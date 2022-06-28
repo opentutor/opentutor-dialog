@@ -24,6 +24,7 @@ export interface Expectation {
   expectationId: string;
   ideal: string;
 }
+
 export enum Evaluation {
   Good = 'Good',
   Bad = 'Bad',

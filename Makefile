@@ -1,10 +1,3 @@
-DIALOG_ENDPOINT?="http://localhost/dialog"
-
-.PHONY: docker-build
-docker-build:
-	cd node \
-	&& $(MAKE) docker-build
-
 .PHONY: format
 format:
 	$(MAKE) pretty
@@ -19,58 +12,37 @@ LICENSE_HEADER:
 	exit 1
 
 .PHONY: license
-license: node_modules/license-check-and-add LICENSE LICENSE_HEADER
+license: node_modules LICENSE LICENSE_HEADER
 	npm run license:fix
 
-node_modules/license-check-and-add:
-	npm ci
-
-node_modules/prettier:
+node_modules:
 	npm ci
 
 .PHONY: pretty
-pretty: node_modules/prettier
+pretty: node_modules
 	npm run pretty
-
-.PHONY: run
-run:
-	cd node \
-	&& $(MAKE) run
-
-.PHONY: test
-test:
-	cd node \
-	&& $(MAKE) test
-
-.PHONY: test-all
-test-all:
-	cd node \
-	&& $(MAKE) test-all
-
-.PHONY: test-audit
-test-audit:
-	cd node \
-	&& $(MAKE) test-audit
 
 .PHONY: test-format
 test-format:
 	$(MAKE) test-pretty
 	$(MAKE) test-license
 
+.PHONY: test-pretty
+test-pretty: node_modules
+	npm run test:pretty
+
 .PHONY: test-license
-test-license: node_modules/license-check-and-add LICENSE LICENSE_HEADER
+test-license: node_modules LICENSE LICENSE_HEADER
 	npm run test:license
+
+.PHONY: test-audit
+test-audit:
+	cd node && $(MAKE) test-audit
 
 .PHONY: test-lint
 test-lint:
-	cd node \
-	&& $(MAKE) test-lint
+	cd node && $(MAKE) test-lint
 
-.PHONY: test-pretty
-test-pretty: node_modules/prettier
-	npm run test:pretty
-	
 .PHONY: test-types
 test-types:
-	cd node \
-	&& $(MAKE) test-types
+	cd node && $(MAKE) test-types

@@ -16,8 +16,10 @@ jobs:
         run: make test-types
       - name: test license
         run: make test-license
-      - name: test behaviors
-        run: make test
+      - name: test node
+        run: cd node && make test
+      - name: test react
+        run: cd react && make test
   publish-check:
     name: publish check
     needs:
@@ -47,13 +49,21 @@ jobs:
           echo ::set-output name=image_tag::${IMAGE_TAG}
       - name: docker login
         run: docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - name: docker build
-        run: export DOCKER_IMAGE=opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }} && make docker-build
+      - name: docker build node
+        run: cd node && export DOCKER_IMAGE=opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }} && make docker-build
+      - name: docker build react
+        run: cd react && export DOCKER_IMAGE=opentutor/react:${{ steps.tag.outputs.image_tag }} && make docker-build
       - name: docker tag release as version
         if: needs.publish-check.outputs.is_release == 'true'
-        run: docker tag "opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog:${GITHUB_REF#refs/tags/}"
+        run: |
+          docker tag "opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog:${GITHUB_REF#refs/tags/}"
+          docker tag "opentutor/react:${{ steps.tag.outputs.image_tag }}" "opentutor/react:${GITHUB_REF#refs/tags/}"
       - name: docker tag main as latest
         if: github.ref == 'refs/heads/main'
-        run: docker tag "opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog:latest"
-      - name: docker push
+        run: |
+          docker tag "opentutor/opentutor-dialog:${{ steps.tag.outputs.image_tag }}" "opentutor/opentutor-dialog:latest"
+          docker tag "opentutor/react:${{ steps.tag.outputs.image_tag }}" "opentutor/react:latest"
+      - name: docker push node
         run: docker push --all-tags opentutor/opentutor-dialog
+      - name: docker push react
+        run: docker push --all-tags opentutor/react
