@@ -1,4 +1,4 @@
-LICENSE_CONFIG="license-config.json"
+LICENSE_CONFIG?="license-config.json"
 
 .PHONY: format
 format:
@@ -15,7 +15,7 @@ LICENSE_HEADER:
 
 .PHONY: license-deploy
 license-deploy: node_modules LICENSE LICENSE_HEADER
-	LICENSE_CONFIG=${LICENSE_CONFIG} npm run license:fix
+	LICENSE_CONFIG=${LICENSE_CONFIG} npm run license:deploy
 
 .PHONY: license
 license: node_modules LICENSE LICENSE_HEADER
