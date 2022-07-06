@@ -1,4 +1,4 @@
-LICENSE_CONFIG="license-config.json"
+LICENSE_CONFIG?="license-config.json"
 
 .PHONY: format
 format:
