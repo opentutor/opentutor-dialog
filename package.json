@@ -4,6 +4,7 @@
   "description": "open-tutor dialog backend setup",
   "scripts": {
     "pretty": "prettier --write '**/*.{js,jsx,json,ts,tsx,yml,yaml}'",
+	"license:deploy": "license-check-and-add remove -f license-config.json && license-check-and-add add -f $LICENSE_CONFIG",
     "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
     "test:pretty": "prettier --check '**/*.{js,jsx,json,ts,tsx,yml,yaml}'",
     "test:license": "license-check-and-add check -f license-config.json"

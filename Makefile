@@ -1,3 +1,5 @@
+LICENSE_CONFIG="license-config.json"
+
 .PHONY: format
 format:
 	$(MAKE) pretty
@@ -10,6 +12,10 @@ LICENSE:
 LICENSE_HEADER:
 	@echo "you must have a LICENSE_HEADER file" 1>&2
 	exit 1
+
+.PHONY: license-deploy
+license-deploy: node_modules LICENSE LICENSE_HEADER
+	LICENSE_CONFIG=${LICENSE_CONFIG} npm run license:fix
 
 .PHONY: license
 license: node_modules LICENSE LICENSE_HEADER
