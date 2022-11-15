@@ -6,7 +6,6 @@ The full terms of this copyright and license should always be found in the root 
 */
 import axios from 'axios';
 import logger from 'utils/logging';
-import { getApiKey } from 'config';
 
 export interface Hint {
   text: string;
@@ -57,16 +56,8 @@ const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
 
 export async function getLessonData(lessonId: string): Promise<Lesson> {
   try {
-    const API_SECRET = await getApiKey();
-    const headers = {
-      'opentutor-api-req': 'true',
-      Authorization: `bearer ${API_SECRET}`,
-    };
-    const response = await axios.post(
-      GRAPHQL_ENDPOINT,
-      {
-        query: `{
-        me {
+    const response = await axios.post(GRAPHQL_ENDPOINT, {
+      query: `{
           lesson(lessonId: "${lessonId}") {
             id
             lessonId
@@ -83,13 +74,10 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
               }
             }
           }  
-        }
       }
       `,
-      },
-      { headers: headers }
-    );
-    if (!response.data.data.me.lesson) {
+    });
+    if (!response.data.data.lesson) {
       throw {
         response: {
           status: 404,
@@ -97,7 +85,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
         },
       };
     }
-    return response.data.data.me.lesson;
+    return response.data.data.lesson;
   } catch (err) {
     logger.error(err);
     const status =
