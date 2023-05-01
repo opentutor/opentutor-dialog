@@ -8,7 +8,3 @@ The full terms of this copyright and license should always be found in the root 
 export function getClientID(): string {
   return process.env.GOOGLE_CLIENT_ID;
 }
-
-export function getApiKey(): string {
-  return process.env.API_SECRET;
-}

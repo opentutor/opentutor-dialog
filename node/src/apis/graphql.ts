@@ -7,7 +7,6 @@ The full terms of this copyright and license should always be found in the root 
 import axios from 'axios';
 import { logger } from 'utils/logging';
 import SessionData from 'dialog/session-data';
-import { getApiKey } from 'config';
 import { Lesson } from './lessons';
 
 export interface GraphQLRequest {
@@ -96,26 +95,15 @@ export async function updateSession(
   logger.debug(
     `graphql request to ${GRAPHQL_ENDPOINT}: ${JSON.stringify(request)}`
   );
-  const API_SECRET = getApiKey();
   const session = encodeURI(JSON.stringify(request));
-  const headers = {
-    'opentutor-api-req': 'true',
-    Authorization: `bearer ${API_SECRET}`,
-  };
-  const response = await axios.post(
-    GRAPHQL_ENDPOINT,
-    {
-      query: `mutation {
-        me {
-          updateSession(sessionId: "${request.sessionId}", session: "${session}") {
+  const response = await axios.post(GRAPHQL_ENDPOINT, {
+    query: `mutation {
+          updateSession(sessionId: "${request.sessionId}", session: "${session}", dialogApiKey: "${process.env.DIALOG_API_KEY}") {
             sessionId
           }  
-        }
       }
     `,
-    },
-    { headers: headers }
-  );
+  });
   return response.data;
 }
 
