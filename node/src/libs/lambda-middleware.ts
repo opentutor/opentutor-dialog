@@ -4,8 +4,15 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+import middy from "@middy/core";
+import cors, { Options } from "@middy/http-cors";
+import middyJsonBodyParser from "@middy/http-json-body-parser";
 
+const options: Options = {
+  headers:
+    "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Experience-API-Version",
+};
 
-export function getApiKey(): string {
-  return process.env.API_SECRET;
-}
+export const middyfy = (handler: any) => {
+  return middy(handler).use(middyJsonBodyParser()).use(cors(options));
+};
