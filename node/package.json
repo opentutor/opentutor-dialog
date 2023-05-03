@@ -39,6 +39,8 @@
     "http-errors": "^1.8.0",
     "longjohn": "^0.2.12",
     "morgan": "^1.10.0",
+    "serverless-domain-manager": "^7.0.2",
+    "serverless-esbuild": "^1.43.1",
     "uuid": "^8.3.2",
     "winston": "^3.3.3"
   },
@@ -55,7 +57,7 @@
     "@types/http-errors": "^1.8.0",
     "@types/mocha": "^8.2.2",
     "@types/morgan": "^1.9.2",
-    "@types/node": "^14.17.4",
+    "@types/node": "^18.16.3",
     "@types/sinon": "^10.0.2",
     "@types/sinon-chai": "^3.2.5",
     "@types/supertest": "^2.0.11",

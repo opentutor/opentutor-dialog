@@ -41,7 +41,7 @@ custom:
     sourcemap: true
     keepNames: true
     platform: 'node'
-    target: 'node17' # should match provider.runtime
+    target: 'node18' # should match provider.runtime
     exclude:
       - 'aws-sdk'
     define:
@@ -69,7 +69,7 @@ provider:
   name: aws
   region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'dev'} # stage is dev unless otherwise specified with --stage flag
-  runtime: nodejs17.x # should match custom.esbuild.target
+  runtime: nodejs18.x # should match custom.esbuild.target
   endpointType: regional
   memorySize: 256
   tracing:
