@@ -26,8 +26,9 @@ custom:
     apiType: rest
     createRoute53Record: true
     securityPolicy: tls_1_2
-    # we might have multiple services, better to manually invoke `sls create_domain`
-    autoDomain: false
+    autoDomain: true
+    # Using same domain in multiple services. https://github.com/amplify-education/serverless-domain-manager/issues/484#issuecomment-1028713546
+    preserveExternalPathMappings: true
 
   webpack:
     excludeFiles: '**/*.spec.ts'
