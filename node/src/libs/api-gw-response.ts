@@ -4,10 +4,19 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-export const formatJSONResponse = (response: any, statusCode = 200) => {
-    return {
-      statusCode: statusCode,
-      body: JSON.stringify(response),
-    };
+
+interface FormatJSONResponse {
+  statusCode: number;
+  body: string;
+}
+
+// eslint-disable-line @typescript-eslint/no-explicit-any
+export const formatJSONResponse = (
+  response: any,
+  statusCode = 200
+): FormatJSONResponse => {
+  return {
+    statusCode: statusCode,
+    body: JSON.stringify(response),
   };
-  
+};

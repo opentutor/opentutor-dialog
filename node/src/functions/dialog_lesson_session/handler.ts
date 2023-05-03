@@ -8,59 +8,61 @@ import type {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Handler,
-} from "aws-lambda";
-import Joi from '@hapi/joi';
-import { formatJSONResponse } from "../../libs/api-gw-response";
-import { middyfy } from "../../libs/lambda-middleware";
-import { getLessonData } from "../../apis/lessons";
-import { handlerFor } from "../../dialog/handler";
-import SessionData, { ExpectationStatus, SessionDto, addTutorDialog, addUserDialog, dataToDto, dtoToData, hasHistoryBeenTampered, newSession } from "../../dialog/session-data";
-import { updateSession } from "../../apis/graphql";
-import { ResponseType } from "../../dialog/response-data";
-import { calculateScore } from "../../dialog";
-
+} from 'aws-lambda';
+import { formatJSONResponse } from '../../libs/api-gw-response';
+import { middyfy } from '../../libs/lambda-middleware';
+import { getLessonData } from '../../apis/lessons';
+import { handlerFor } from '../../dialog/handler';
+import SessionData, {
+  ExpectationStatus,
+  SessionDto,
+  addTutorDialog,
+  addUserDialog,
+  dataToDto,
+  dtoToData,
+  hasHistoryBeenTampered,
+} from '../../dialog/session-data';
+import { updateSession } from '../../apis/graphql';
+import { ResponseType } from '../../dialog/response-data';
+import { calculateScore } from '../../dialog';
 
 export const dialogLesson: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
 > = async (event) => {
+  console.log(JSON.stringify(event));
   const body =
-    typeof event.body === "string" ? JSON.parse(event.body) : event.body;
+    typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
 
   const lessonId = event.pathParameters['lessonId'];
   const message = `${body['message'] || ''}`.trim();
   const username = `${body['username'] || ''}`.trim();
   const sessionDto = body['sessionInfo'] as SessionDto;
   if (!lessonId) {
-    return formatJSONResponse("Lesson not provided", 400)
+    return formatJSONResponse('Lesson not provided', 400);
   }
   if (!message) {
-    return formatJSONResponse("Message not provided", 400)
-
+    return formatJSONResponse('Message not provided', 400);
   }
   if (!username) {
-    return formatJSONResponse("Username not provided", 400)
-
+    return formatJSONResponse('Username not provided', 400);
   }
   let sessionData: SessionData;
   try {
     sessionData = dtoToData(sessionDto);
   } catch (err) {
-    return formatJSONResponse("Session data invalid", 400)
+    return formatJSONResponse('Session data invalid', 400);
   }
   if (hasHistoryBeenTampered(sessionData.sessionHistory, sessionDto.hash)) {
-    return formatJSONResponse("", 403)
+    return formatJSONResponse('', 403);
   }
   //if last system message was a closing, send error
-  if (
-    sessionData.dialogState.expectationsCompleted.every((v) => v == true)
-  ) {
-    return formatJSONResponse("", 410)
-
+  if (sessionData.dialogState.expectationsCompleted.every((v) => v == true)) {
+    return formatJSONResponse('', 410);
   }
   const lesson = await getLessonData(lessonId);
   if (!lesson) {
-    return formatJSONResponse(`No lesson found for id ${lessonId}`, 404)
+    return formatJSONResponse(`No lesson found for id ${lessonId}`, 404);
   }
   const handler = await handlerFor(lesson);
   addUserDialog(sessionData, message);
@@ -69,19 +71,23 @@ export const dialogLesson: Handler<
   const graphQLResponse = updateSession(lesson, sessionData, username)
     ? true
     : false;
-  const currentExpectation =
-    sessionData.dialogState.expectationData.findIndex(
-      (e) => e.status === ExpectationStatus.Active
-    );
+  const currentExpectation = sessionData.dialogState.expectationData.findIndex(
+    (e) => e.status === ExpectationStatus.Active
+  );
 
-  return formatJSONResponse({    sessionInfo: dataToDto(sessionData),
-    response: msg,
-    sentToGrader: graphQLResponse,
-    completed: msg.find((m) => m.type === ResponseType.Closing)
-      ? true
-      : false,
-    score: calculateScore(sessionData),
-    expectationActive: currentExpectation,},200)
+  return formatJSONResponse(
+    {
+      sessionInfo: dataToDto(sessionData),
+      response: msg,
+      sentToGrader: graphQLResponse,
+      completed: msg.find((m) => m.type === ResponseType.Closing)
+        ? true
+        : false,
+      score: calculateScore(sessionData),
+      expectationActive: currentExpectation,
+    },
+    200
+  );
 };
 
 export const main = middyfy(dialogLesson);

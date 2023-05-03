@@ -4,6 +4,9 @@
   "description": "open-tutor project backend setup",
   "main": "dist/app.js",
   "scripts": {
+    "deploy:dev": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s dev --region us-east-1",
+    "deploy:qa": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s qa --region us-east-1",
+    "deploy:prod": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s prod --region us-east-1",
     "build": "tsc",
     "deps:update": "ncu -u",
     "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
