@@ -13,7 +13,7 @@
     "lint:fix": "eslint src --ext ts --ext js --fix",
     "start:dev": "export NODE_PATH=$(pwd)/src && export NODE_ENV=dev && export ENV=dev && ts-node src/server.ts",
     "test": "export ENV=test && export NODE_ENV=test && npx mocha -r tsconfig-paths/register -r ts-node/register -r source-map-support/register './test/**/*.{spec,test}.{js,ts}' --timeout 5000 --full-trace --recursive --reporter spec",
-    "test:all": "npm run test:format && npm run test:lint && npm run test:audit && npm run test:types && npm test",
+    "test:all": "npm run test:format && npm run test:lint && npm run test:audit && npm run test:type",
     "test:audit": "npm audit --audit-level=moderate --production",
     "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx,yml,yaml}'",
     "test:lint": "eslint src --ext ts --ext js",
