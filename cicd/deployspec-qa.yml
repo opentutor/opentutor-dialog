@@ -8,6 +8,8 @@ phases:
   install:
     runtime-versions:
       nodejs: 14
+    commands:
+      - n 18
 
   build:
     commands:
