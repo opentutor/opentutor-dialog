@@ -1,0 +1,174 @@
+service: opentutor-dialog
+
+# pin to a specific Serverless version, major releases might not be backward compatible:
+frameworkVersion: '3'
+
+package:
+  individually: true
+
+plugins:
+  - serverless-esbuild
+  - serverless-domain-manager
+  # TODO
+  # - serverless-layers
+  # - serverless-offline
+
+custom:
+  domain:
+    dev: api-dev.opentutor.info
+    qa: api-qa.opentutor.info
+    prod: api.opentutor.info
+  customDomain:
+    domainName: ${self:custom.domain.${opt:stage, 'dev'}}
+    basePath: 'dialog' # api root url becomes: api.opentutor.info/dialog
+    stage: ${self:provider.stage}
+    endpointType: 'regional'
+    apiType: rest
+    createRoute53Record: true
+    securityPolicy: tls_1_2
+    autoDomain: true
+    # Using same domain in multiple services. https://github.com/amplify-education/serverless-domain-manager/issues/484#issuecomment-1028713546
+    preserveExternalPathMappings: true
+
+  webpack:
+    excludeFiles: '**/*.spec.ts'
+  esbuild:
+    # https://www.serverless.com/plugins/serverless-esbuild#supported-runtimes
+    # https://esbuild.github.io/api/#entry-points
+    bundle: true
+    minify: false
+    packager: 'npm'
+    sourcemap: true
+    keepNames: true
+    platform: 'node'
+    target: 'node18' # should match provider.runtime
+    exclude:
+      - 'aws-sdk'
+    define:
+      'require.resolve': 'undefined'
+    concurrency: 10
+    watch:
+      # anymatch-compatible definition (https://github.com/es128/anymatch)
+      pattern: ['src/**/*.ts'] # default .
+      ignore: ['.serverless/**/*', 'node_modules', '.build', 'dist']
+  stages:
+    dev:
+      WEBACL_ARN: ${ssm:/dev-opentutor/api_firewall_arn, ''}
+      CLASSIFIER_ENDPOINT: 'https://opentutor.info/classifier'
+      GRAPHQL_ENDPOINT: 'https://opentutor.info/graphql'
+    qa:
+      WEBACL_ARN: ${ssm:/qa-opentutor/api_firewall_arn, ''}
+      CLASSIFIER_ENDPOINT: 'https://opentutor.info/classifier'
+      GRAPHQL_ENDPOINT: 'https://opentutor.info/graphql'
+    prod:
+      WEBACL_ARN: ${ssm:/prod-opentutor/api_firewall_arn, ''}
+      CLASSIFIER_ENDPOINT: 'https://opentutor.info/classifier'
+      GRAPHQL_ENDPOINT: 'https://opentutor.info/graphql'
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'} # stage is dev unless otherwise specified with --stage flag
+  runtime: nodejs18.x # should match custom.esbuild.target
+  endpointType: regional
+  memorySize: 256
+  tracing:
+    lambda: true
+    apiGateway: true
+  logRetentionInDays: 30
+  apiGateway:
+    # https://www.serverless.com/framework/docs/deprecations#api-gateway-naming-will-be-changed-to-service-stage
+    shouldStartNameWithService: true
+    minimumCompressionSize: 1024
+  logs:
+    restApi:
+      # Enables HTTP access logs (default: true)
+      accessLogging: true
+      # # Log format to use for access logs
+      # format: 'requestId: $context.requestId'
+      # Enable execution logging (default: true)
+      executionLogging: true
+      level: INFO # INFO or ERROR
+      # Log full requests/responses for execution logging (default: true)
+      fullExecutionData: true
+
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    API_SECRET: ${ssm:/shared/api-secret, ''}
+    SESSION_SECURITY_KEY: ${ssm:/shared/session-security-key, ''}
+    CLASSIFIER_ENDPOINT: ${self:custom.stages.${self:provider.stage}.CLASSIFIER_ENDPOINT}
+    GRAPHQL_ENDPOINT: ${self:custom.stages.${self:provider.stage}.GRAPHQL_ENDPOINT}
+    STAGE: ${self:provider.stage}
+    NODE_ENV: opentutor-${self:provider.stage}
+    NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=50'
+
+  stackTags:
+    Environment: ${self:provider.stage}
+    Source: 'serverless-framework'
+    Project: 'opentutor'
+    Component: 'opentutor-dialog'
+
+functions:
+  dialog_lesson:
+    # lambda default timeout is 6 seconds
+    timeout: 20
+    handler: src/functions/dialog_lesson/handler.main
+    events:
+      - http:
+          path: /{lessonId}
+          method: POST
+          cors: true
+          request:
+            parameters:
+              paths:
+                lessonId: true
+  dialog_lesson_session:
+    # lambda default timeout is 6 seconds
+    timeout: 20
+    handler: src/functions/dialog_lesson_session/handler.main
+    events:
+      - http:
+          path: /{lessonId}/session
+          method: POST
+          cors: true
+          request:
+            parameters:
+              paths:
+                lessonId: true
+
+resources:
+  Conditions:
+    AttachFirewall:
+      Fn::Or:
+        - Fn::Equals: ['${self:provider.stage}', 'qa']
+        - Fn::Equals: ['${self:provider.stage}', 'prod']
+  Resources:
+    # this fails on first deploy because CloudFormation tries to create
+    # association but the gateway does not yet exist
+    # Workaround: Disable this resource on first deploy, when first deploy is successful, enable this resource and deploy again
+    FirewallAssociation:
+      Type: AWS::WAFv2::WebACLAssociation
+      Condition: AttachFirewall
+      DependsOn: 'ApiGatewayRestApi'
+      Properties:
+        ResourceArn:
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGatewayRestApi}/stages/${self:provider.stage}'
+        WebACLArn: '${self:custom.stages.${self:provider.stage}.WEBACL_ARN}'
+
+    # configure cors for apigw error responses:
+    Response5xx:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: 'method.request.header.origin'
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+    Response4xx:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: 'method.request.header.origin'
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
