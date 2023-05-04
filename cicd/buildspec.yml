@@ -14,7 +14,7 @@ phases:
 
   build:
     commands:
-      - cd node && npm run test:all
+      - npm run test:all
 
 artifacts:
   files:
