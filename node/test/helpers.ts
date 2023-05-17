@@ -12,6 +12,8 @@ import MockAxios from 'axios-mock-adapter';
 
 export const MOCKING_DISABLED = yn(process.env.MOCKING_DISABLED || 0);
 export const DIALOG_ENDPOINT = process.env.DIALOG_ENDPOINT || '/dialog';
+export const CLASSIFIER_ENDPOINT =
+  process.env.CLASSIFIER_ENPOINT || '/classifier/evaluate';
 
 export const MOCK_AXIOS = new MockAxios(axios);
 
