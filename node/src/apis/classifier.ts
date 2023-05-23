@@ -54,7 +54,7 @@ export async function evaluate(
   request: ClassfierRequest
 ): Promise<ClassifierResponse> {
   const response = await axios.post<ClassifierResponse>(
-    CLASSIFIER_ENDPOINT,
+    `${CLASSIFIER_ENDPOINT}/evaluate`,
     request
   );
   return response.data;

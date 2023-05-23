@@ -22,7 +22,7 @@ import { LResponseObject, Lesson } from 'apis/lessons';
 import { findAll as findAllScenarios } from 'test/fixtures/scenarios';
 import { findAll as findAllLessons } from 'test/fixtures/lessons';
 import { DialogScenario } from 'test/fixtures/types';
-import { postSession, MOCKING_DISABLED, MOCK_AXIOS } from './helpers';
+import { postSession, MOCK_AXIOS, CLASSIFIER_ENDPOINT } from './helpers';
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
 import { randomFunctionSet, randomFunctionRestore } from 'dialog/random';
@@ -117,9 +117,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult4];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult4];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'good answer',
         username: 'testuser',
@@ -161,24 +163,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Good, score: 1.0 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'good answer',
         username: 'testuser',
@@ -220,24 +224,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Bad, score: 0.7 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 0.7 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -273,9 +279,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult10];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult10];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'good answer',
         username: 'testuser',
@@ -312,9 +320,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult11];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult11];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -353,9 +363,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult9];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult9];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -398,10 +410,12 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        const reqBody = JSON.parse(config.data);
-        return [200, expectationResult12];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          return [200, expectationResult12];
+        });
       const response = await postSession(lessonIdq5, app, {
         message: 'Wrong for current exp, but got a different one.',
         username: 'testuser',
@@ -444,9 +458,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult9];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult9];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -540,9 +556,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult9];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult9];
+        });
       const response = await postSession(lessonIdq6, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -580,9 +598,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult9];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult9];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -685,9 +705,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult15];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult15];
+        });
       const response = await postSession(lessonIdq7, app, {
         message: 'good answer',
         username: 'testuser',
@@ -724,9 +746,11 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [200, expectationResult16];
-      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult16];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'good answer',
         username: 'testuser',
@@ -763,24 +787,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Bad, score: 0.7 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 0.7 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -817,24 +843,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Bad, score: 1.0 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const response = await postSession(lessonIdq6, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -874,24 +902,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Bad, score: 1.0 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const lessonIdq4 = 'q4';
       const response = await postSession(lessonIdq4, app, {
         message: 'good answer',
@@ -1011,24 +1041,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        const reqBody = JSON.parse(config.data);
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Good, score: 0.5 },
-                { evaluation: Evaluation.Good, score: 1.0 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          const reqBody = JSON.parse(config.data);
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Good, score: 0.5 },
+                  { evaluation: Evaluation.Good, score: 1.0 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const response = await postSession(lessonIdq5, app, {
         message: 'Wrong for current exp, but got a different one.',
         username: 'testuser',
@@ -1151,24 +1183,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Bad, score: 1.0 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -1293,24 +1327,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Bad, score: 1.0 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const response = await postSession(lessonIdq6, app, {
         message: 'bad answer',
         username: 'testuser',
@@ -1348,24 +1384,26 @@ describe('sensitive dialog', async () => {
           return [404, errData];
         }
       });
-      mockAxios.onPost('/classifier').reply((config: AxiosRequestConfig) => {
-        return [
-          200,
-          {
-            output: {
-              expectationResults: [
-                { evaluation: Evaluation.Bad, score: 1.0 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-                { evaluation: Evaluation.Good, score: 0.4 },
-              ],
-              speechActs: {
-                metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                profanity: { evaluation: Evaluation.Good, score: 0.5 },
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [
+            200,
+            {
+              output: {
+                expectationResults: [
+                  { evaluation: Evaluation.Bad, score: 1.0 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                  { evaluation: Evaluation.Good, score: 0.4 },
+                ],
+                speechActs: {
+                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                },
               },
             },
-          },
-        ];
-      });
+          ];
+        });
       const response = await postSession(lessonIdq4, app, {
         message: 'bad answer',
         username: 'testuser',

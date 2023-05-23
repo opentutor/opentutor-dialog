@@ -52,3 +52,7 @@ test-lint:
 .PHONY: test-types
 test-types:
 	cd node && $(MAKE) test-types
+
+.PHONY: test-all
+test-all:
+	cd node && $(MAKE) test-all
