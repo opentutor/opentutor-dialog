@@ -47,7 +47,9 @@ export interface ClassifierResult {
 }
 
 export interface ClassifierResponse {
-  output: ClassifierResult;
+  data: {
+    output: ClassifierResult;
+  };
 }
 
 export async function evaluate(
