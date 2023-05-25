@@ -75,12 +75,12 @@ export async function processUserResponse(
     );
   }
 
-  const expectationResults = classifierResult.output.expectationResults;
-  const speechActs = classifierResult.output.speechActs;
+  const expectationResults = classifierResult.data.output.expectationResults;
+  const speechActs = classifierResult.data.output.speechActs;
   //add results to the session history
   addClassifierGrades(sdp, {
-    expectationResults: classifierResult.output.expectationResults,
-    speechActs: classifierResult.output.speechActs,
+    expectationResults: classifierResult.data.output.expectationResults,
+    speechActs: classifierResult.data.output.speechActs,
   });
   const responses: OpenTutorResponse[] = [];
 
