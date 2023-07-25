@@ -10,22 +10,24 @@ export const scenario: DialogScenario = {
       userInput: 'Rules apply differently to the group',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
@@ -52,22 +54,24 @@ export const scenario: DialogScenario = {
       userInput: 'Peer pressure could cause someone to allow bad behavior.',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Good, score: 1.0 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
@@ -94,22 +98,24 @@ export const scenario: DialogScenario = {
       userInput: "It's possible it could be harder to work with them.",
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
@@ -136,22 +142,24 @@ export const scenario: DialogScenario = {
       userInput: 'It might make me unpopular',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },

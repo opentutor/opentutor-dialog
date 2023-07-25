@@ -387,15 +387,17 @@ describe('dialog', async () => {
           return [
             200,
             {
-              output: {
-                expectationResults: [
-                  { evaluation: Evaluation.Good, score: 1.0 },
-                  { evaluation: Evaluation.Good, score: 1.0 },
-                  { evaluation: Evaluation.Good, score: 1.0 },
-                ],
-                speechActs: {
-                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+              data: {
+                output: {
+                  expectationResults: [
+                    { evaluation: Evaluation.Good, score: 1.0 },
+                    { evaluation: Evaluation.Good, score: 1.0 },
+                    { evaluation: Evaluation.Good, score: 1.0 },
+                  ],
+                  speechActs: {
+                    metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                    profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                  },
                 },
               },
             },
@@ -914,15 +916,17 @@ describe('dialog', async () => {
           return [
             200,
             {
-              output: {
-                expectationResults: [
-                  { evaluation: Evaluation.Bad, score: 1.0 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                  { evaluation: Evaluation.Good, score: 0.4 },
-                ],
-                speechActs: {
-                  metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
-                  profanity: { evaluation: Evaluation.Good, score: 0.5 },
+              data: {
+                output: {
+                  expectationResults: [
+                    { evaluation: Evaluation.Bad, score: 1.0 },
+                    { evaluation: Evaluation.Good, score: 0.4 },
+                    { evaluation: Evaluation.Good, score: 0.4 },
+                  ],
+                  speechActs: {
+                    metacognitive: { evaluation: Evaluation.Good, score: 0.5 },
+                    profanity: { evaluation: Evaluation.Good, score: 0.5 },
+                  },
                 },
               },
             },

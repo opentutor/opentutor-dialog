@@ -18,22 +18,24 @@ export const scenario: DialogScenario = {
       nextRandom: 0.99,
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 1.0,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 1.0,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },

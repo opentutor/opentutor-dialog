@@ -17,20 +17,22 @@ export const scenario: DialogScenario = {
       userInput: 'Current flows in the same direction as the arrow.',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
