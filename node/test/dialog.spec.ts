@@ -212,6 +212,7 @@ describe('dialog', async () => {
         me: {
           lesson: {
             name: 'navyIntegrity',
+            arch: '',
             lessonId: 'navyIntegrity',
             intro: 'intro',
             question: 'main',

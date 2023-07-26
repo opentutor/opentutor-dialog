@@ -54,6 +54,7 @@ export async function processUserResponse(
     });
     classifierResult = await evaluate({
       input: sdp.previousUserResponse,
+      arch: atd.arch,
       lesson: lessonId,
       config: {
         question: '', //atd.questionText,

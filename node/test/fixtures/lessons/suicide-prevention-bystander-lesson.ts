@@ -9,6 +9,7 @@ import { Lesson } from 'apis/lessons';
 export const lesson: Lesson = {
   name: 'Suicide Prevention Bystander',
   lessonId: 'q5',
+  arch: '',
   intro: 'People considering suicide often have a plan.',
   question:
     'If a person loses the means to commit suicide, such as not having their gun, how does this affect their suicide risk?',

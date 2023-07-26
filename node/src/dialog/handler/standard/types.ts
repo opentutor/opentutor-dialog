@@ -18,6 +18,7 @@ export interface Expectation {
 
 export interface DialogConfig {
   rootExpectationId: number;
+  arch: string;
   lessonId: string;
   expectations: Expectation[];
   questionIntro: string;
