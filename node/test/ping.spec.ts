@@ -9,6 +9,10 @@ import { Express } from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
 import { DIALOG_ENDPOINT } from './helpers';
+import { DialogScenario } from 'test/fixtures/types';
+import { findAll as findAllScenarios } from 'test/fixtures/scenarios';
+import { findAll as findAllLessons } from 'test/fixtures/lessons';
+import { Lesson } from 'apis/lessons';
 
 describe('ping', () => {
   let app: Express;
@@ -20,5 +24,12 @@ describe('ping', () => {
   it('responds with a 200 status', async () => {
     const response = await request(app).get(`${DIALOG_ENDPOINT}/ping`).send();
     expect(response.status).to.equal(200);
+  });
+
+  it('loads lessons and sessions', async () => {
+    const allScenarios: DialogScenario[] = await findAllScenarios();
+    const allLessons: Lesson[] = await findAllLessons();
+    expect(allScenarios).to.not.be.empty;
+    expect(allLessons).to.not.be.empty;
   });
 });

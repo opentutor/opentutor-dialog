@@ -16,21 +16,23 @@ export const scenario: DialogScenario = {
       userInput: "I don't know",
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 0.8 },
-              { expectationId: '1', evaluation: Evaluation.Bad, score: 0.6 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 1.0,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Bad,
-                score: 0.0,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Bad, score: 0.8 },
+                { expectationId: '1', evaluation: Evaluation.Bad, score: 0.6 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 1.0,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Bad,
+                  score: 0.0,
+                },
               },
             },
           },

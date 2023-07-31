@@ -27,6 +27,7 @@ export interface LessonPrompt {
 export interface Lesson {
   name: string;
   lessonId: string;
+  arch: string;
   intro: string;
   question: string;
   expectations: LessonExpectation[];
@@ -70,6 +71,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
           lesson(lessonId: "${lessonId}") {
             id
             lessonId
+            arch
             intro
             dialogCategory
             learningFormat

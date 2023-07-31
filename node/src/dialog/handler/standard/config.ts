@@ -176,6 +176,7 @@ export function allowNegativeFeedback(
 export function toConfig(lessonData: Lesson): DialogConfig {
   const defaultData: DialogConfig = {
     lessonId: '',
+    arch: '',
     rootExpectationId: 0,
     expectations: [],
     questionIntro: '',
@@ -278,6 +279,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
 
   try {
     defaultData.questionIntro = lessonData.intro;
+    defaultData.arch = lessonData.arch;
     if (lessonData.learningFormat === 'survey_says') {
       defaultData.questionIntro.concat(
         ' Try to list the top ${lessonData.expectations.length} expert answers.'

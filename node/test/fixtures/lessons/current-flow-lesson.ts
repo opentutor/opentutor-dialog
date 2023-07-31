@@ -9,6 +9,7 @@ import { Lesson } from 'apis/lessons';
 export const lesson: Lesson = {
   name: 'Current Flow',
   lessonId: 'q2',
+  arch: '',
   intro:
     '_user_, this is a warm up question on the behavior of P-N junction diodes.',
   question:
