@@ -10,6 +10,7 @@ const CLASSIFIER_ENDPOINT = process.env.CLASSIFIER_ENDPOINT || '/classifier';
 
 export interface ClassfierRequest {
   lesson: string;
+  arch: string;
   input: string;
   config: ClassifierConfig;
   expectation?: number;

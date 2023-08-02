@@ -11,22 +11,24 @@ export const scenario: DialogScenario = {
         'Because of peer pressure, you might allow inappropriate behavior.',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Good, score: 1.0 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 1.0 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },

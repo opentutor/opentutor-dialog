@@ -9,6 +9,7 @@ import { Lesson } from 'apis/lessons';
 export const lesson: Lesson = {
   name: 'Current Flow',
   lessonId: 'q1',
+  arch: '',
   intro: 'Here is a question about integrity, a key Navy attribute.',
   question: 'What are the challenges to demonstrating integrity in a group?',
   expectations: [

@@ -16,22 +16,24 @@ export const scenario: DialogScenario = {
       userInput: 'Rules apply differently to the group',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
@@ -58,22 +60,24 @@ export const scenario: DialogScenario = {
       userInput: "I wouldn't",
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Bad, score: 1.0 },
+                { expectationId: '1', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
@@ -115,22 +119,24 @@ export const scenario: DialogScenario = {
       userInput: 'They will not be affected',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Bad, score: 1.0 },
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '1', evaluation: Evaluation.Bad, score: 1.0 },
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
@@ -164,22 +170,24 @@ export const scenario: DialogScenario = {
       userInput: "they won't view me any differently",
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '1', evaluation: Evaluation.Bad, score: 0.5 },
-              { expectationId: '2', evaluation: Evaluation.Bad, score: 1.0 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: '',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '0', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '1', evaluation: Evaluation.Bad, score: 0.5 },
+                { expectationId: '2', evaluation: Evaluation.Bad, score: 1.0 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: '',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },

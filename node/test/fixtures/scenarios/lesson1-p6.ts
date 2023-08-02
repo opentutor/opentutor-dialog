@@ -16,22 +16,24 @@ export const scenario: DialogScenario = {
       userInput: 'Peer pressure can push you to allow inappropriate behavior.',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: 'metacognitive',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: 'profanity',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '2', evaluation: Evaluation.Good, score: 1.0 },
+                { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: 'metacognitive',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: 'profanity',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
@@ -65,22 +67,24 @@ export const scenario: DialogScenario = {
       userInput: "I don't know",
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: 'metacognitive',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: 'profanity',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '3', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: 'metacognitive',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: 'profanity',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
@@ -114,22 +118,24 @@ export const scenario: DialogScenario = {
       userInput: 'it may be harder to work with them',
       mockClassifierResponse: {
         data: {
-          output: {
-            expectationResults: [
-              { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
-              { expectationId: '3', evaluation: Evaluation.Good, score: 1.0 },
-              { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
-            ],
-            speechActs: {
-              metacognitive: {
-                expectationId: 'metacognitive',
-                evaluation: Evaluation.Good,
-                score: 0.5,
-              },
-              profanity: {
-                expectationId: 'profanity',
-                evaluation: Evaluation.Good,
-                score: 0.5,
+          data: {
+            output: {
+              expectationResults: [
+                { expectationId: '2', evaluation: Evaluation.Good, score: 0.5 },
+                { expectationId: '3', evaluation: Evaluation.Good, score: 1.0 },
+                { expectationId: '4', evaluation: Evaluation.Good, score: 0.5 },
+              ],
+              speechActs: {
+                metacognitive: {
+                  expectationId: 'metacognitive',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
+                profanity: {
+                  expectationId: 'profanity',
+                  evaluation: Evaluation.Good,
+                  score: 0.5,
+                },
               },
             },
           },
