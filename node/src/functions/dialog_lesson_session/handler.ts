@@ -22,7 +22,7 @@ import SessionData, {
   dtoToData,
   hasHistoryBeenTampered,
 } from '../../dialog/session-data';
-import { updateSession } from '../../apis/graphql';
+import { SessionStatus, updateSession } from '../../apis/graphql';
 import { ResponseType } from '../../dialog/response-data';
 import { calculateScore } from '../../dialog';
 
@@ -69,7 +69,19 @@ export const dialogLesson: Handler<
   const msg = await handler.process(sessionData);
   addTutorDialog(sessionData, msg);
   console.log(`session update request ${JSON.stringify(sessionData, null, 2)}`);
-  const graphQLResponse = (await updateSession(lesson, sessionData, username))
+  const completed = msg.find((m) => m.type === ResponseType.Closing)
+    ? true
+    : false;
+
+  const sessionStatus: SessionStatus = completed
+    ? SessionStatus.COMPLETED
+    : SessionStatus.LAUNCHED;
+  const graphQLResponse = (await updateSession(
+    lesson,
+    sessionData,
+    username,
+    sessionStatus
+  ))
     ? true
     : false;
   const currentExpectation = sessionData.dialogState.expectationData.findIndex(
@@ -81,9 +93,7 @@ export const dialogLesson: Handler<
       sessionInfo: dataToDto(sessionData),
       response: msg,
       sentToGrader: graphQLResponse,
-      completed: msg.find((m) => m.type === ResponseType.Closing)
-        ? true
-        : false,
+      completed: completed,
       score: calculateScore(sessionData),
       expectationActive: currentExpectation,
     },
