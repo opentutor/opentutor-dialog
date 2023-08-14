@@ -68,7 +68,8 @@ export const dialogLesson: Handler<
   addUserDialog(sessionData, message);
   const msg = await handler.process(sessionData);
   addTutorDialog(sessionData, msg);
-  const graphQLResponse = updateSession(lesson, sessionData, username)
+  console.log(`session update request ${JSON.stringify(sessionData, null, 2)}`);
+  const graphQLResponse = (await updateSession(lesson, sessionData, username))
     ? true
     : false;
   const currentExpectation = sessionData.dialogState.expectationData.findIndex(
