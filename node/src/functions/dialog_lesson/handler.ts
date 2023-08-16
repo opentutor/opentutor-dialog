@@ -9,7 +9,6 @@ import type {
   APIGatewayProxyResult,
   Handler,
 } from 'aws-lambda';
-import Joi from '@hapi/joi';
 import { formatJSONResponse } from '../../libs/api-gw-response';
 import { middyfy } from '../../libs/lambda-middleware';
 import { getLessonData } from '../../apis/lessons';
@@ -19,16 +18,14 @@ import {
   dataToDto,
   newSession,
 } from '../../dialog/session-data';
-
-const dialogSchema = Joi.object({
-  lessonId: Joi.string(),
-}).unknown(true);
+import { SessionStatus, updateSession } from 'apis/graphql';
 
 export const dialogLesson: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
 > = async (event) => {
   console.log(JSON.stringify(event));
+
   const pathParams = event.pathParameters;
   const lessonId = pathParams['lessonId'];
   if (!lessonId) {
@@ -39,16 +36,21 @@ export const dialogLesson: Handler<
     return formatJSONResponse('body not provided', 400);
   }
 
-  const result = dialogSchema.validate(event.body);
-  const { value: body, error } = result;
-  if (Boolean(error)) {
-    return formatJSONResponse(error, 400);
+  const body =
+    typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+
+  const username = `${body['username'] || ''}`.trim();
+
+  if (!username) {
+    return formatJSONResponse('Username not provided', 400);
   }
+
   const lesson = await getLessonData(lessonId);
   const handler = await handlerFor(lesson);
   const sdp = newSession(lesson, body.sessionId);
   const messages = await handler.beginDialog();
   addTutorDialog(sdp, messages);
+  await updateSession(lesson, sdp, username, SessionStatus.LAUNCHED);
   return formatJSONResponse(
     {
       lessonId: lessonId,

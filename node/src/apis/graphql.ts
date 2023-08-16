@@ -16,6 +16,13 @@ export interface GraphQLRequest {
   username: string;
   question: Question;
   userResponses: Response[];
+  sessionStatus: SessionStatus;
+}
+
+export enum SessionStatus {
+  LAUNCHED = 'LAUNCHED',
+  STARTED = 'STARTED',
+  COMPLETED = 'COMPLETED',
 }
 
 export interface Response {
@@ -47,7 +54,8 @@ const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
 function toGqlRequest(
   lesson: Lesson,
   sdp: SessionData,
-  username: string
+  username: string,
+  sessionStatus: SessionStatus
 ): GraphQLRequest {
   const expectationScores: ExpectationScores[] =
     sdp.sessionHistory.classifierGrades.map((r) => {
@@ -84,15 +92,22 @@ function toGqlRequest(
         } as Expectation;
       }),
     },
+    sessionStatus: sessionStatus,
     userResponses: userResponses,
   };
 }
 export async function updateSession(
   lesson: Lesson,
   sdp: SessionData,
-  username: string
+  username: string,
+  sessionStatus: SessionStatus
 ): Promise<string> {
-  const request: GraphQLRequest = toGqlRequest(lesson, sdp, username);
+  const request: GraphQLRequest = toGqlRequest(
+    lesson,
+    sdp,
+    username,
+    sessionStatus
+  );
   logger.debug(
     `graphql request to ${GRAPHQL_ENDPOINT}: ${JSON.stringify(request)}`
   );

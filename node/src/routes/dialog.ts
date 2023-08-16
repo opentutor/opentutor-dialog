@@ -19,8 +19,7 @@ import {
   ExpectationStatus,
   SessionDto,
 } from 'dialog/session-data';
-import { updateSession } from 'apis/graphql';
-import Joi from '@hapi/joi';
+import { SessionStatus, updateSession } from 'apis/graphql';
 import logger from 'utils/logging';
 import { getLessonData } from 'apis/lessons';
 import { ResponseType } from 'dialog/response-data';
@@ -32,28 +31,25 @@ router.get('/ping', (req: Request, res: Response) => {
   res.send({ status: 'ok' });
 });
 
-const dialogSchema = Joi.object({
-  lessonId: Joi.string(),
-}).unknown(true);
-
 router.post(
   '/:lessonId',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const lessonId = req.params['lessonId'];
+      const sessionId = `${req.body['sessionId'] || ''}`.trim();
+      const username = `${req.body['username'] || ''}`.trim();
       if (!lessonId) {
         return next(createError(400, 'Lesson not provided'));
       }
-      const result = dialogSchema.validate(req.body);
-      const { value: body, error } = result;
-      if (Boolean(error)) {
-        return next(createError(400, error));
+      if (!username) {
+        return next(createError(400, 'username not provided'));
       }
       const lesson = await getLessonData(lessonId);
       const handler = await handlerFor(lesson);
-      const sdp = newSession(lesson, body.sessionId);
+      const sdp = newSession(lesson, sessionId);
       const messages = await handler.beginDialog();
       addTutorDialog(sdp, messages);
+      updateSession(lesson, sdp, username, SessionStatus.LAUNCHED);
       res.send({
         status: 200,
         lessonId: lessonId,
@@ -105,7 +101,21 @@ router.post(
       addUserDialog(sessionData, message);
       const msg = await handler.process(sessionData);
       addTutorDialog(sessionData, msg);
-      const graphQLResponse = updateSession(lesson, sessionData, username)
+
+      const completed = msg.find((m) => m.type === ResponseType.Closing)
+        ? true
+        : false;
+
+      const sessionStatus: SessionStatus = completed
+        ? SessionStatus.COMPLETED
+        : SessionStatus.LAUNCHED;
+
+      const graphQLResponse = updateSession(
+        lesson,
+        sessionData,
+        username,
+        sessionStatus
+      )
         ? true
         : false;
       const currentExpectation =
@@ -118,9 +128,7 @@ router.post(
         sessionInfo: dataToDto(sessionData),
         response: msg,
         sentToGrader: graphQLResponse,
-        completed: msg.find((m) => m.type === ResponseType.Closing)
-          ? true
-          : false,
+        completed: completed,
         score: calculateScore(sessionData),
         expectationActive: currentExpectation,
       });
