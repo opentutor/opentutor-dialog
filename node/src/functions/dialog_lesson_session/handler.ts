@@ -75,7 +75,7 @@ export const dialogLesson: Handler<
 
   const sessionStatus: SessionStatus = completed
     ? SessionStatus.COMPLETED
-    : SessionStatus.LAUNCHED;
+    : SessionStatus.STARTED;
   const graphQLResponse = (await updateSession(
     lesson,
     sessionData,
