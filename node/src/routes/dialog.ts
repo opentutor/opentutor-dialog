@@ -108,7 +108,7 @@ router.post(
 
       const sessionStatus: SessionStatus = completed
         ? SessionStatus.COMPLETED
-        : SessionStatus.LAUNCHED;
+        : SessionStatus.STARTED;
 
       const graphQLResponse = updateSession(
         lesson,
