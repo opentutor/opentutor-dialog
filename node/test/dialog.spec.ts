@@ -126,7 +126,7 @@ describe('dialog', async () => {
       const responseStartSession = await postDialog(ex.lessonId, app, {
         lessonId: ex.lessonId,
         id: '1',
-        user: 'rush',
+        username: 'rush',
         UseDB: true,
         ScriptXML: null,
         LSASpaceName: 'English_TASA',
@@ -230,6 +230,7 @@ describe('dialog', async () => {
     it('responds with a 404 error if lesson id passed does not correspond to a valid lesson', async () => {
       const response = await postDialog('q3', app, {
         lessonId: 'q3',
+        username: 'user',
       });
       expect(response.status).to.equal(404);
     });
@@ -245,7 +246,7 @@ describe('dialog', async () => {
       const responseStartSession = await postDialog('q1', app, {
         lessonId: 'q1',
         id: '1',
-        user: 'rush',
+        username: 'rush',
         UseDB: true,
         ScriptXML: null,
         LSASpaceName: 'English_TASA',
@@ -270,7 +271,7 @@ describe('dialog', async () => {
       const responseStartSession = await postDialog('q1', app, {
         lessonId: 'q1',
         id: '1',
-        user: 'rush',
+        username: 'rush',
         UseDB: true,
         ScriptXML: null,
         LSASpaceName: 'English_TASA',
@@ -427,7 +428,7 @@ describe('dialog', async () => {
       const responseStartSession = await postDialog('q1', app, {
         lessonId: 'q1',
         id: '1',
-        user: 'rush',
+        username: 'rush',
         UseDB: true,
         ScriptXML: null,
         LSASpaceName: 'English_TASA',
@@ -507,7 +508,7 @@ describe('dialog', async () => {
       const response = await postDialog(lessonId, app, {
         lessonId: 'q1',
         id: '1',
-        user: 'rush',
+        username: 'rush',
         UseDB: true,
         ScriptXML: null,
         LSASpaceName: 'English_TASA',
@@ -543,6 +544,7 @@ describe('dialog', async () => {
       const sessionId = 'some-user-generated-session-id';
       const response = await postDialog(lessonId, app, {
         sessionId: sessionId,
+        username: 'user',
       });
       expect(response.status).to.equal(200);
       expect(response.body).to.have.deep.nested.property(
@@ -594,6 +596,7 @@ describe('dialog', async () => {
       });
       const responseStartSession = await postDialog('navyIntegrity', app, {
         lessonId: 'navyIntegrity',
+        username: 'user',
       });
       expect(responseStartSession.status).to.equal(200);
       expect(responseStartSession.body).to.have.property('response');
