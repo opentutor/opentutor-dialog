@@ -5,13 +5,9 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      nodejs: 14
-    commands:
-      - n 18
-
   build:
+    runtime-versions:
+      nodejs: 18
     commands:
       - cd node
       - echo Deploying prod stack
