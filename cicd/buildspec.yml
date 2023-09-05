@@ -7,8 +7,9 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+      nodejs: 14
     commands:
+      - n 18
       - NODE_ENV=dev cd node && npm ci
 
   build:
