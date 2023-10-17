@@ -234,7 +234,9 @@ export async function processUserResponse(
     return responses;
   }
   return responses.concat([
-    createTextResponse('this path has not been implemented yet.'),
+    createTextResponse(
+      'Apologies, that message didn’t send right. Let’s try this again.'
+    ),
   ]);
 }
 
