@@ -34,7 +34,7 @@ export const FEEDBACK_EXPECTATIONS_LEFT = [
 export const SOME_WRONG_FEEDBACK = [
   "Okay, that's part of it.",
   'Well, some of that is correct.',
-  "I see. Good point, but that's not enitrely right.",
+  "I see. Good point, but that's not entirely right.",
 ];
 
 export const SENSITIVE_SOME_WRONG_FEEDBACK = [
