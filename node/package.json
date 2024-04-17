@@ -35,7 +35,7 @@
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1",
+    "express": "^4.19.2",
     "http-errors": "^1.8.0",
     "longjohn": "^0.2.12",
     "morgan": "^1.10.0",
