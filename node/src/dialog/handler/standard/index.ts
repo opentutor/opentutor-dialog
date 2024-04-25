@@ -10,6 +10,7 @@ import SessionData, {
   ExpectationStatus,
   SessionHistory,
 } from 'dialog/session-data';
+import { calculateScore } from 'dialog';
 import {
   evaluate,
   ClassifierResponse,
@@ -688,55 +689,6 @@ function revealExpectation(answer: string, atd: Dialog, sdp: SessionData) {
     );
   }
   return response.concat(toNextExpectation(atd, sdp, true, false));
-}
-
-function calculateQuality(
-  sessionHistory: SessionHistory,
-  expectationIndex: number
-) {
-  const qualityOfUtterancesForExpecation: number[] = [];
-
-  const baseQuality = 0.5;
-
-  sessionHistory.userResponses.forEach((value, index) => {
-    if (
-      value.activeExpectation === expectationIndex ||
-      value.activeExpectation === -1
-    ) {
-      let classifierScore =
-        sessionHistory.classifierGrades[index].expectationResults[
-          expectationIndex
-        ].score;
-      if (
-        sessionHistory.classifierGrades[index].expectationResults[
-          expectationIndex
-        ].evaluation === Evaluation.Bad
-      ) {
-        classifierScore = classifierScore * -1;
-      }
-      qualityOfUtterancesForExpecation.push(baseQuality + classifierScore / 2);
-    }
-  });
-  return (
-    qualityOfUtterancesForExpecation.reduce((a, b) => a + b, 0) /
-    qualityOfUtterancesForExpecation.length
-  );
-}
-
-export function calculateScore(sdp: SessionData): number {
-  const expectationScores: number[] = [];
-  const c = 0.02;
-
-  sdp.dialogState.expectationData.forEach((value, index) => {
-    if (value.satisfied) {
-      expectationScores.push(1 - c * value.numHints);
-    } else {
-      expectationScores.push(calculateQuality(sdp.sessionHistory, index));
-    }
-  });
-  return (
-    expectationScores.reduce((a, b) => a + b, 0) / expectationScores.length
-  );
 }
 
 function normalizeScores(er: ExpectationResult) {
