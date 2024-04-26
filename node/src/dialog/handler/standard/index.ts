@@ -39,11 +39,12 @@ function setActiveExpecation(sdp: SessionData) {
       (e) => e.status === ExpectationStatus.Active
     );
 }
+//iterates through elements of the array (expectationData) and find the 
 
 export async function processUserResponse(
   lessonId: string,
-  atd: Dialog,
-  sdp: SessionData
+  atd: Dialog, //represents a Dialog object which likely contains information about the dialog or conversation context
+  sdp: SessionData 
 ): Promise<OpenTutorResponse[]> {
   let classifierResult: ClassifierResponse;
   try {
@@ -221,7 +222,14 @@ export async function processUserResponse(
 
     responses.push(giveNegativeFeedback(false, atd, sdp));
     // check that a pump was not just added to responses, if not use hint
-    if (responses[responses.length - 1].type !== ResponseType.Hint) {
+          //check for a Pump, and add a Lead In ONLY if a Pump does NOT exist
+
+    // if (responses[responses.length - 1].type !== ResponseType.Hint) {  
+          // logic of the above line -> checking if the last message in Responses is a "Hint"
+          //"Hints" and "Pumps" are using the same type ????
+
+      // If last string on list of responses is NOT a pump, THEN we add a Leadin/hint start
+    if (responses[responses.length - 1].type !== ResponseType.Pump) {
       responses.push(
         createTextResponse(pickRandom(atd.hintStart)),
         createTextResponse(

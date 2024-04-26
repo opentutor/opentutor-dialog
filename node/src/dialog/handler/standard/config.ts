@@ -237,7 +237,8 @@ export function toConfig(lessonData: Lesson): DialogConfig {
         : [],
     pump: [
       // "Let's work through this together.",
-      'And can you add to that?',
+      //'And can you add to that?',   CHANGED THIS LINE TO THE ONE BELOW
+      'What else could you add to that?',
       'What else?',
       'Anything else?',
       'Could you elaborate on that a little?',
