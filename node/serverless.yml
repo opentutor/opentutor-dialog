@@ -1,20 +1,44 @@
+# "org" ensures this Service is used with the correct Serverless Framework License Key.
+org: uscict
 service: opentutor-dialog
 
 # pin to a specific Serverless version, major releases might not be backward compatible:
-frameworkVersion: '3'
 
 package:
   individually: true
 
 plugins:
-  - serverless-esbuild
   - serverless-domain-manager
+  - serverless-localstack
   # TODO
   # - serverless-layers
   # - serverless-offline
 
 custom:
+  localstack:
+    stages:
+      # list of stages for which the plugin should be enabled
+      - local
+    host: http://localhost  # optional - LocalStack host to connect to
+    edgePort: 4566  # optional - LocalStack edge port to connect to
+    autostart: true  # optional - Start LocalStack in Docker on Serverless deploy
+    networks: #optional - attaches the list of networks to the localstack docker container after startup
+      - host
+      - overlay
+      - my_custom_network
+    lambda:
+      # Enable this flag to improve performance
+      mountCode: true  # specify either "true", or a relative path to the root Lambda mount path
+    docker:
+      # Enable this flag to run "docker ..." commands as sudo
+      sudo: False
+  createDomain:
+    local: false
+    dev: true
+    qa: true
+    prod: true
   domain:
+    local: api-dev.opentutor.info
     dev: api-dev.opentutor.info
     qa: api-qa.opentutor.info
     prod: api.opentutor.info
@@ -26,7 +50,7 @@ custom:
     apiType: rest
     createRoute53Record: true
     securityPolicy: tls_1_2
-    autoDomain: true
+    autoDomain: ${self:custom.createDomain.${opt:stage, 'dev'}}
     # Using same domain in multiple services. https://github.com/amplify-education/serverless-domain-manager/issues/484#issuecomment-1028713546
     preserveExternalPathMappings: true
 
@@ -52,6 +76,10 @@ custom:
       pattern: ['src/**/*.ts'] # default .
       ignore: ['.serverless/**/*', 'node_modules', '.build', 'dist']
   stages:
+    local:
+      WEBACL_ARN: ${ssm:/dev-opentutor/api_firewall_arn, ''}
+      CLASSIFIER_ENDPOINT: 'https://api-dev.opentutor.info/classifier'
+      GRAPHQL_ENDPOINT: 'https://api-dev.opentutor.info/graphql/graphql'  
     dev:
       WEBACL_ARN: ${ssm:/dev-opentutor/api_firewall_arn, ''}
       CLASSIFIER_ENDPOINT: 'https://api-dev.opentutor.info/classifier'
