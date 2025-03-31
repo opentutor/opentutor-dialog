@@ -4,12 +4,11 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import requireEnv from './require-env';
 
 export function getBypassHeaders(): Record<string, string> {
-  const apiWafSecretHeader = requireEnv('API_WAF_SECRET_HEADER');
-  const apiWafSecretHeaderValue = requireEnv('API_WAF_SECRET_HEADER_VALUE');
-  const apiSecret = requireEnv('API_SECRET');
+  const apiWafSecretHeader = process.env.API_WAF_SECRET_HEADER;
+  const apiWafSecretHeaderValue = process.env.API_WAF_SECRET_HEADER_VALUE;
+  const apiSecret = process.env.API_SECRET;
   return {
     [apiWafSecretHeader]: apiWafSecretHeaderValue,
     'opentutor-api-req': 'true',
