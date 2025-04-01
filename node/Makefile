@@ -43,7 +43,7 @@ test: node_modules/mocha
 	&& npm test
 
 .PHONY: test-all
-test-all: test-format test-lint test-license test-types test
+test-all: test-audit test-format test-lint test-license test-types test
 
 .PHONY: test-audit
 test-audit:
