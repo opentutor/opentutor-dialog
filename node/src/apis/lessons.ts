@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import axios from 'axios';
 import logger from 'utils/logging';
-import { getApiKey } from 'config';
+import { getBypassHeaders } from 'utils/helpers';
 
 export interface Hint {
   text: string;
@@ -58,11 +58,7 @@ const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || '/graphql';
 
 export async function getLessonData(lessonId: string): Promise<Lesson> {
   try {
-    const API_SECRET = await getApiKey();
-    const headers = {
-      'opentutor-api-req': 'true',
-      Authorization: `bearer ${API_SECRET}`,
-    };
+    const headers = getBypassHeaders();
     const response = await axios.post(
       GRAPHQL_ENDPOINT,
       {

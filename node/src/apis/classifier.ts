@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios from 'axios';
+import { getBypassHeaders } from 'utils/helpers';
 
 const CLASSIFIER_ENDPOINT = process.env.CLASSIFIER_ENDPOINT || '/classifier';
 
@@ -56,9 +57,13 @@ export interface ClassifierResponse {
 export async function evaluate(
   request: ClassfierRequest
 ): Promise<ClassifierResponse> {
+  const headers = getBypassHeaders();
   const response = await axios.post<ClassifierResponse>(
     `${CLASSIFIER_ENDPOINT}/evaluate`,
-    request
+    request,
+    {
+      headers,
+    }
   );
   return response.data;
 }
