@@ -38,7 +38,7 @@
     "express": "^4.21.2",
     "http-errors": "^1.8.0",
     "longjohn": "^0.2.12",
-    "morgan": "^1.10.0",
+    "morgan": "^1.10.1",
     "serverless-domain-manager": "^7.0.2",
     "serverless-esbuild": "^1.55.0",
     "uuid": "^8.3.2",
