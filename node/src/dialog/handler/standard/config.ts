@@ -13,7 +13,7 @@ const goodThreshold: number =
 const badThreshold: number =
   Number.parseFloat(process.env.BAD_THRESHOLD) || 0.6;
 const sensitiveBadThreshold: number =
-  Number.parseFloat(process.env.SENSITIVE_BAD_THRESHOLD) || 0.9;
+  Number.parseFloat(process.env.SENSITIVE_BAD_THRESHOLD) || 0.89;
 const goodMetacognitiveThreshold: number =
   Number.parseFloat(process.env.GOOD_METACOGNITIVE_THRESHOLD) || 0.8;
 
