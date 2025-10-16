@@ -235,7 +235,8 @@ export async function processUserResponse(
   }
   return responses.concat([
     createTextResponse(
-      'Apologies, that message didn’t send right. Let’s try this again.'
+      pickRandom(atd.confusionFeedback),
+      ResponseType.FeedbackNeutral
     ),
   ]);
 }
