@@ -8,7 +8,6 @@ import Dialog, { Prompt, Expectation } from './types';
 import SessionData, {
   addClassifierGrades,
   ExpectationStatus,
-  SessionHistory,
 } from 'dialog/session-data';
 import { calculateScore } from 'dialog';
 import {
@@ -297,7 +296,8 @@ export function toNextExpectation(
     if (
       afterPositiveFeedback &&
       atd.givePumpOnMainQuestion &&
-      sdp.sessionHistory.systemResponses.length === 1
+      sdp.sessionHistory.systemResponses.length === 1 &&
+      atd.usePump
     ) {
       answer.push(createTextResponse(pickRandom(atd.pump), ResponseType.Hint));
     } else if (
@@ -415,7 +415,8 @@ function giveNegativeFeedback(
     if (
       nextRandom() < 0.5 ||
       expectationEnded ||
-      sdp.sessionHistory.userResponses.length === 1
+      sdp.sessionHistory.userResponses.length === 1 ||
+      !atd.usePump
     ) {
       return createTextResponse(
         pickRandom(atd.neutralFeedback),

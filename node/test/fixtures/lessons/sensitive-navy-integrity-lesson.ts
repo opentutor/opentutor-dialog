@@ -70,6 +70,7 @@ export const lesson: Lesson = {
   ],
   dialogCategory: 'sensitive',
   learningFormat: 'standard',
+  usePump: true,
 };
 
 export default lesson;
