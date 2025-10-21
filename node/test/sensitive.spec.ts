@@ -536,6 +536,7 @@ describe('sensitive dialog', async () => {
 
     // Update the session data for testing dialog behavior with streaks of negative answers
     const lessonIdq6 = 'q6';
+    const lessonIdq8 = 'q8';
     const updatedValidSessionDto = dataToDto(streaksOfNegativeAnswers);
     mockNextRandom = sandbox.stub().returns(0.7);
     randomFunctionSet(mockNextRandom);
@@ -628,6 +629,50 @@ describe('sensitive dialog', async () => {
         'Could you elaborate on that a little?',
         'Can you add anything to that?',
       ]);
+    });
+
+    it('responds with no pump if pumps are disabled the other 50% of the time when the confidence is above 90% and negative feedback is not allowed', async () => {
+      mockNextRandom = sandbox.stub().returns(0.7);
+      randomFunctionSet(mockNextRandom);
+      mockAxios.reset();
+      mockAxios.onGet('/config').reply(() => {
+        return [200, { API_SECRET: 'api_secret' }];
+      });
+      mockAxios.onPost('/graphql').reply((config: AxiosRequestConfig) => {
+        const reqBody = JSON.parse(config.data);
+        if ((reqBody.query as string).includes('q8')) {
+          return [200, { data: { me: { lesson: lessonById.q8 } } }];
+        } else {
+          const errData: LResponseObject = {
+            data: {
+              me: {
+                lesson: null,
+              },
+            },
+          };
+          return [404, errData];
+        }
+      });
+      mockAxios
+        .onPost(CLASSIFIER_ENDPOINT)
+        .reply((config: AxiosRequestConfig) => {
+          return [200, expectationResult9];
+        });
+      const response = await postSession(lessonIdq8, app, {
+        message: 'bad answer',
+        username: 'testuser',
+        sessionInfo: updatedValidSessionDto,
+        lessonId: lessonIdq4,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('response');
+      console.log(response.body.response);
+      expect(
+        (response.body.response as OpenTutorResponse[])
+          .filter((m) => m.type == ResponseType.FeedbackNeutral)
+          .map((m) => (m.data as TextData).text)[0]
+      ).to.be.oneOf(['Ok.', 'So.', 'Well.', 'I see.', 'Okay.']);
     });
   });
 
