@@ -34,6 +34,7 @@ export interface Lesson {
   conclusion: string[] | string;
   dialogCategory: 'sensitive' | 'default';
   learningFormat: 'standard' | 'survey_says';
+  usePump?: boolean;
 }
 
 export interface LessonWrapper {
@@ -73,6 +74,7 @@ export async function getLessonData(lessonId: string): Promise<Lesson> {
             learningFormat
             question
             conclusion
+            usePump
             expectations {
               expectationId
               expectation

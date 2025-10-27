@@ -8,7 +8,7 @@ import { Lesson } from 'apis/lessons';
 
 export const lesson: Lesson = {
   name: 'Current Flow',
-  lessonId: 'q4',
+  lessonId: 'q8',
   arch: '',
   intro: 'Here is a question about integrity, a key Navy attribute.',
   question: 'What are the challenges to demonstrating integrity in a group?',
@@ -70,7 +70,7 @@ export const lesson: Lesson = {
   ],
   dialogCategory: 'sensitive',
   learningFormat: 'standard',
-  usePump: true,
+  usePump: false,
 };
 
 export default lesson;

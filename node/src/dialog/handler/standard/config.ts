@@ -272,6 +272,7 @@ export function toConfig(lessonData: Lesson): DialogConfig {
       lessonData.learningFormat === 'survey_says' &&
       lessonData.dialogCategory === 'default',
     givePumpOnMainQuestion: lessonData.dialogCategory === 'sensitive',
+    usePump: lessonData.usePump !== undefined ? lessonData.usePump : true,
     limitHints: lessonData.dialogCategory === 'sensitive',
     dialogCategory: lessonData.dialogCategory,
     learningFormat: lessonData.learningFormat,
