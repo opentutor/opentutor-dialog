@@ -85,19 +85,21 @@ export async function processUserResponse(
   });
   const responses: OpenTutorResponse[] = [];
 
+  // TEMPORARY DISABLE PROFANITY HANDLING
   //check if user used profanity or metacog response
+  // if (
+  //   speechActs?.profanity?.score > atd.goodThreshold &&
+  //   speechActs?.profanity?.evaluation === Evaluation.Good
+  // ) {
+  //   responses.push(
+  //     createTextResponse(
+  //       pickRandom(atd.profanityFeedback),
+  //       ResponseType.Profanity
+  //     )
+  //   );
+  //   return responses;
+  // } else
   if (
-    speechActs?.profanity?.score > atd.goodThreshold &&
-    speechActs?.profanity?.evaluation === Evaluation.Good
-  ) {
-    responses.push(
-      createTextResponse(
-        pickRandom(atd.profanityFeedback),
-        ResponseType.Profanity
-      )
-    );
-    return responses;
-  } else if (
     speechActs?.metacognitive?.score > atd.goodMetacognitiveThreshold &&
     speechActs?.metacognitive?.evaluation === Evaluation.Good &&
     expectationResults.every(
