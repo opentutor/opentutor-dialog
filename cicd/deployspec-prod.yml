@@ -4,6 +4,10 @@
 #The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 version: 0.2
 
+env:
+  parameter-store:
+    SERVERLESS_ACCESS_KEY: "/shared/serverless-cicd-token"
+
 phases:
   install:
     runtime-versions:

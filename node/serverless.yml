@@ -1,13 +1,12 @@
 service: opentutor-dialog
 
 # pin to a specific Serverless version, major releases might not be backward compatible:
-frameworkVersion: '3'
+frameworkVersion: '4'
 
 package:
   individually: true
 
 plugins:
-  - serverless-esbuild
   - serverless-domain-manager
   # TODO
   # - serverless-layers
