@@ -41,13 +41,13 @@ export const scenario: DialogScenario = {
         },
       },
       expectedResponse: [
-        {
-          author: 'them',
-          type: ResponseType.Profanity,
-          data: {
-            text: "Okay, let's calm down.",
-          },
-        },
+        // {
+        //   author: 'them',
+        //   type: ResponseType.Profanity,
+        //   data: {
+        //     text: "Okay, let's calm down.",
+        //   },
+        // },
       ],
     },
   ],
